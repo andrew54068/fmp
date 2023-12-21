@@ -213,7 +213,7 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
             Inscription.totalSupply <= Inscription.hardCap: "Total supply must less than or equal to hard cap."
         }
 
-        let inscription = "{\"p\":\"frc-20\",\"op\":\"mint\",\"tick\":\"flows\",\"amt\":\""
+        let inscription = "{\"p\":\"frc-20\",\"op\":\"free-mint\",\"tick\":\"ff\",\"amt\":\""
             .concat(amount.toString())
             .concat("\"}")
 
