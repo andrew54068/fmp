@@ -37,14 +37,15 @@ const theme = extendTheme(
         "html body": {
           minHeight: "100%",
           width: "100%",
+          bg: 'gray.800',
+          color: 'white',
         },
         body: {
           fontFamily: "boFontFamily.base",
           fontSize: "size.body.3",
           lineHeight: "line.height.body.3",
-          color: "font.primary",
           textRendering: "geometricPrecision",
-          bg: "white",
+
         },
         "body.fontLoaded": {
           fontFamily: "boFontFamily.base",
@@ -141,6 +142,25 @@ const theme = extendTheme(
               color: "font.primary.pressed",
               svg: { fill: "icon.secondary" },
               _disabled: { color: "inherit", svg: { fill: "icon.primary" } },
+            },
+          },
+          outlineDark: {
+            border: '2px solid',
+            borderColor: 'gray.600',
+            color: 'white',
+            bg: 'transparent',
+            _hover: {
+              bg: 'gray.800',
+              color: 'white',
+            },
+            _active: {
+              bg: 'gray.800',
+              borderColor: 'gray.400',
+            },
+            _disabled: {
+              bg: 'gray.700',
+              borderColor: 'gray.500',
+              opacity: 0.6,
             },
           },
         },

@@ -1,13 +1,12 @@
 import { useEffect, useContext } from "react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { GlobalContext } from "src/context/global";
-import { Box, Image, ListItem as ChakraListItem, Collapse, Flex, IconButton, List } from "@chakra-ui/react";
+import { Box, ListItem as ChakraListItem, Collapse, Flex, IconButton, List } from "@chakra-ui/react";
 import Button from "src/components/Button";
 import useClickAway from "src/hooks/useClickAway";
 import { useState } from "react";
 import * as fcl from "@blocto/fcl";
 import { Link } from "react-router-dom";
-import LogoImg from "src/assets/react.svg";
 import formatAddress from "src/utils/formatAddress";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,7 +18,16 @@ const ListItem = ({ children, ...rest }: any) => (
     py="14px"
     cursor="pointer"
     transition=".2s all"
-    _hover={{ bg: "#f8f8f8" }}
+    _hover={{
+      bg: "gray.200",
+      color: "gray.800",
+      "& button": {
+        color: "gray.800",
+        _hover: {
+          color: "white",
+        },
+      }
+    }}
     {...rest}
   >
     <Box mx={2} width="100%">
@@ -71,17 +79,17 @@ export default function Navbar() {
       zIndex="banner"
       position="fixed"
       width="100%"
-      bg="white"
+      bg="gray.800"
       boxShadow="0 0 10px 0 rgba(0, 0, 0, 0.05)"
     >
       <Flex justify="space-between" alignItems="center" width="100%">
-        <Box fontSize="size.heading.4" fontWeight="weight.l">
-          <Link to="/">
-            <Image src={LogoImg} alt="logo" width="100px" height="33px" />
+        <Box fontSize="size.heading.4" pl="space.l" >
+          <Link to="/mint">
+            Freeflow
           </Link>
         </Box>
         <Flex alignItems="center">
-          <IconButton onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
+          <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
         </Flex>
       </Flex>
       {/* Dropdown menu on mobile */}
@@ -93,24 +101,25 @@ export default function Navbar() {
           left: 0,
           width: "100%",
           zIndex: 1400,
+          background: "gray.800",
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.05)",
         }}
       >
         <Box
-          bg="white"
           py="space.s"
           zIndex="overlay"
+          background="gray.800"
           onClick={() => setShowDropdown(false)}
           boxShadow="0px 4px 8px rgba(0, 0, 0, 0.05)"
         >
-          <List bgColor="white" fontWeight={500}>
+          <List fontWeight={500}>
             <ListItem onClick={onClickConnect}>
               <Flex alignItems="center" justify="space-between">
                 <Box as="span" ml="space.s">
                   {account ? `${formatAddress(account)} ` : "Connect Wallet"}
                 </Box>
                 {account && (
-                  <Button onClick={onClickCopyAccount} w="auto" variant="outline">
+                  <Button color="white" onClick={onClickCopyAccount} w="auto" variant="outlineDark" >
                     Copy Address
                   </Button>
                 )}
