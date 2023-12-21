@@ -1,9 +1,10 @@
 import NonFungibleToken from 0x631e88ae7f1d7c20
 import Inscription from 0x564b229bd8380848
+import InscriptionMetadata from 0x564b229bd8380848
 
 /// Mints a new Inscription into recipient's account
 
-transaction(recipient: Address, amount: UInt64) {
+transaction(amount: UInt64) {
     /// local variable for storing the minter reference
     // let minter: &Inscription.InscriptionMinter
 
@@ -16,15 +17,26 @@ transaction(recipient: Address, amount: UInt64) {
     prepare(signer: AuthAccount) {
         self.mintingIDBefore = Inscription.totalSupply
 
-        // Borrow a reference to the InscriptionMinter resource in storage
-        // self.minter = signer.borrow<&Inscription.InscriptionMinter>(from: Inscription.MinterStoragePath)
-        //     ?? panic("signer does not store Inscription.InscriptionMinter")
+
+        if signer
+            .getCapability(Inscription.CollectionPublicPath)
+            .borrow<&{NonFungibleToken.CollectionPublic}>() == nil {
+            let collection <- Inscription.createEmptyCollection()
+            signer.save(<-collection, to: Inscription.CollectionStoragePath)
+
+            // create a public capability for the collection
+            signer.link<&Inscription.Collection{NonFungibleToken.CollectionPublic, Inscription.InscriptionCollectionPublic, InscriptionMetadata.ResolverCollection}>(
+                Inscription.CollectionPublicPath,
+                target: Inscription.CollectionStoragePath
+            )
+        }
 
         // Borrow the recipient's public Inscription collection reference
-        self.recipientCollectionRef = getAccount(recipient)
+        self.recipientCollectionRef = signer
             .getCapability(Inscription.CollectionPublicPath)
             .borrow<&{NonFungibleToken.CollectionPublic}>()
             ?? panic("Could not get receiver reference to the recipient's Inscription Collection")
+
     }
 
     execute {
