@@ -21,6 +21,7 @@
     "noImplicitAny": false,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "."
+    
   },
   "include": ["src"],
   "exclude": ["prettierrc"],

@@ -1,5 +1,5 @@
 import "MetadataViews"
-import "Inscription"
+import Inscription from 0x564b229bd8380848
 
 /// This script gets all the view-based metadata associated with the specified Inscription
 /// and returns it as a single struct

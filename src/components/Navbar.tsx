@@ -40,7 +40,6 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const { account, setAccount } = useContext(GlobalContext)
 
-  //@todo: add wallet connection logic.
   const disconnect = () => {
     fcl.unauthenticate()
     setAccount("")
