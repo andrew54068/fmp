@@ -18,7 +18,7 @@ function App() {
   return (
     <GlobalProvider>
       <ChakraProvider theme={theme}>
-        <Box margin="0 auto" width="100%" bg="gray.800" >
+        <Box margin="0 auto" width="100%" bg="gray.700" >
           <Navbar />
           <Box margin="0 auto" maxW={isLanding ? "100%" : `520px`} >
             <Routes>

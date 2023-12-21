@@ -21,6 +21,21 @@ const tagTheme = defineMultiStyleConfig({
 
 const IS_PROD = import.meta.env.VITE_APP_ENV === "production";
 
+const variants = {
+  darkCard: definePartsStyle({
+    container: {
+      bg: 'gray.700',
+      color: 'white',
+      borderRadius: '12px',
+      padding: '16px',
+      border: '1px solid white',
+      p: "16px"
+    }
+  })
+};
+
+const cardTheme = defineMultiStyleConfig({ variants });
+
 const theme = extendTheme(
   merge(boTheme, {
     semanticTokens: {
@@ -60,6 +75,7 @@ const theme = extendTheme(
       },
     },
     components: {
+      Card: cardTheme,
       Tag: tagTheme,
       Button: {
         fontSize: "size.heading.5",
