@@ -99,8 +99,8 @@ const theme = extendTheme(
             width: "100%",
             height: "54px",
             py: "space.m",
-            bg: "white",
-            borderRadius: "168px",
+            bg: "gray.100",
+            borderRadius: "6px",
             color: "#2A1136",
             _hover: {
               bg: { md: "white" },

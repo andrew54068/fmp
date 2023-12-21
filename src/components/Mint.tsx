@@ -1,5 +1,7 @@
 import { useState, useContext } from 'react'
-import { Button, Box, Card } from '@chakra-ui/react'
+//useToast
+import { Box, Card } from '@chakra-ui/react'
+import Button from 'src/components/Button'
 import StepInput from 'src/components/StepInput'
 import { GlobalContext } from 'src/context/global'
 
@@ -29,6 +31,7 @@ const JsonDisplay = ({ data }) => {
 
 export default function Mint() {
   const [waitingForTx, setWaitingForTx] = useState(false)
+  // const toast = useToast()
   console.log('waitingForTx :', waitingForTx);
   const { account } = useContext(GlobalContext)
   const [amount, setAmount] = useState(0)
@@ -67,7 +70,7 @@ export default function Mint() {
 
       <StepInput onChange={onInputChange} mb="space.l" />
 
-      <Button w="100%" onClick={onClickMint}>
+      <Button w="100%" onClick={onClickMint} isLoading={waitingForTx}>
         Mint
       </Button>
 

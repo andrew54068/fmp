@@ -25,7 +25,7 @@ const Button = forwardRef<HTMLButtonElement, CustomButtonProps>(
         {...rest}
       >
         <Flex px="space.s" alignItems="center" justifyContent="space-between" width="100%">
-          <Box as="span">{isLoading ? <Spinner size="sm" /> : children}</Box>
+          <Box as="span" w="100%">{isLoading ? <Spinner size="sm" /> : children}</Box>
         </Flex>
       </ChakraButton>
     );
