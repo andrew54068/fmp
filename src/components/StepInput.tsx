@@ -7,7 +7,7 @@ interface StepInputProps {
 
 const MAX_PER_MINT = 500
 const StepInput = ({ onChange, ...rest }: StepInputProps & StackProps) => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(100);
 
   const increment = () => {
     if (value >= MAX_PER_MINT) return

@@ -11,4 +11,4 @@ fcl.config({
   'flow.network': 'testnet',
   "accessNode.api": "https://rest-testnet.onflow.org", // connect to Flow mainnet
   "discovery.wallet": `https://wallet-v2-dev.blocto.app/${DEFAULT_APP_ID}/flow/authn` // use Blocto mainnet wallet
-});
+})
