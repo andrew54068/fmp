@@ -1,0 +1,61 @@
+{
+	"contracts": {
+		"FungibleToken": {
+			"source": "cadence/contracts/standards/FungibleToken.cdc",
+			"aliases": {
+				"emulator": "ee82856bf20e2aa6"
+			}
+		},
+		"Inscription": "cadence/contracts/inscription/Inscription.cdc",
+		"InscriptionMetadata": "cadence/contracts/inscription/InscriptionMetadata.cdc",
+		"MetadataViews": {
+			"source": "cadence/contracts/standards/MetadataViews.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"NonFungibleToken": {
+			"source": "cadence/contracts/standards/NonFungibleToken.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"ViewResolver": "cadence/contracts/standards/ViewResolver.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"sandboxnet": "access.sandboxnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"default": {
+			"address": "01cf0e2f2f715450",
+			"key": "d2c3686da84d61c13627bdf2127866fe358165734f5470be792e6771901d2856"
+		},
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "d2c3686da84d61c13627bdf2127866fe358165734f5470be792e6771901d2856"
+		},
+		"inscription": {
+			"address": "179b6b1cb6755e31",
+			"key": "d2c3686da84d61c13627bdf2127866fe358165734f5470be792e6771901d2856"
+		},
+		"standards": {
+			"address": "f3fcd2c1a78f5eee",
+			"key": "d2c3686da84d61c13627bdf2127866fe358165734f5470be792e6771901d2856"
+		}
+	},
+	"deployments": {
+		"emulator": {
+			"default": [],
+			"inscription": [
+				"InscriptionMetadata",
+				"Inscription"
+			],
+			"standards": [
+				"ViewResolver"
+			]
+		}
+	}
+}

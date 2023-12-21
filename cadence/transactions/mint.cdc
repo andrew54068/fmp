@@ -1,0 +1,46 @@
+import "NonFungibleToken"
+import "Inscription"
+
+/// Mints a new Inscription into recipient's account
+
+transaction(recipient: Address, amount: UInt64) {
+    /// local variable for storing the minter reference
+    // let minter: &Inscription.InscriptionMinter
+
+    /// Reference to the receiver's collection
+    let recipientCollectionRef: &{NonFungibleToken.CollectionPublic}
+
+    /// Previous Inscription ID before the transaction executes
+    let mintingIDBefore: UInt64
+
+    prepare(signer: AuthAccount) {
+        self.mintingIDBefore = Inscription.totalSupply
+
+        // Borrow a reference to the InscriptionMinter resource in storage
+        // self.minter = signer.borrow<&Inscription.InscriptionMinter>(from: Inscription.MinterStoragePath)
+        //     ?? panic("signer does not store Inscription.InscriptionMinter")
+
+        // Borrow the recipient's public Inscription collection reference
+        self.recipientCollectionRef = getAccount(recipient)
+            .getCapability(Inscription.CollectionPublicPath)
+            .borrow<&{NonFungibleToken.CollectionPublic}>()
+            ?? panic("Could not get receiver reference to the recipient's Inscription Collection")
+    }
+
+    execute {
+
+        let currentIDString = self.mintingIDBefore.toString()
+
+        // Mint the Inscription and deposit it to the recipient's collection
+        Inscription.mintInscription(
+            recipient: self.recipientCollectionRef,
+            amount: amount
+        )
+        log(amount.toString())
+    }
+
+    post {
+        self.recipientCollectionRef.getIDs().contains(self.mintingIDBefore): "The next Inscription ID should have been minted and delivered"
+        Inscription.totalSupply == self.mintingIDBefore + amount: "The total supply should have been increased by ".concat(amount.toString())
+    }
+}

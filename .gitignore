@@ -23,4 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Envs
 .env
+.env.*
+!.env.example
+**/flow-mainnet.json
