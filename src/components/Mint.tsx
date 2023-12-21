@@ -41,12 +41,12 @@ export default function Mint() {
     setAmount(value)
   }
 
-  const getMetaData = async () => {
-    const metaData = await sendScript(getMetaDataScript, (arg, t) => [
-      arg(account, t.Address),
-    ]);
-    console.log('metaData :', metaData);
-  }
+  // const getMetaData = async () => {
+  //   const metaData = await sendScript(getMetaDataScript, (arg, t) => [
+  //     arg(account, t.Address),
+  //   ]);
+  //   console.log('metaData :', metaData);
+  // }
 
   const onClickMint = async () => {
     setWaitingForTx(true)
