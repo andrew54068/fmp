@@ -3,24 +3,45 @@
 		"FungibleToken": {
 			"source": "cadence/contracts/standards/FungibleToken.cdc",
 			"aliases": {
-				"emulator": "ee82856bf20e2aa6"
+				"emulator": "ee82856bf20e2aa6",
+				"testnet": "9a0766d93b6608b7"
 			}
 		},
-		"Inscription": "cadence/contracts/inscription/Inscription.cdc",
-		"InscriptionMetadata": "cadence/contracts/inscription/InscriptionMetadata.cdc",
+		"Inscription": {
+			"source": "cadence/contracts/inscription/Inscription.cdc",
+			"aliases": {
+				"emulator": "179b6b1cb6755e31",
+				"testnet": "564b229bd8380848"
+			}
+		},
+		"InscriptionMetadata": {
+			"source": "cadence/contracts/inscription/InscriptionMetadata.cdc",
+			"aliases": {
+				"emulator": "179b6b1cb6755e31",
+				"testnet": "564b229bd8380848"
+			}
+		},
 		"MetadataViews": {
 			"source": "cadence/contracts/standards/MetadataViews.cdc",
 			"aliases": {
-				"emulator": "f8d6e0586b0a20c7"
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "631e88ae7f1d7c20"
 			}
 		},
 		"NonFungibleToken": {
 			"source": "cadence/contracts/standards/NonFungibleToken.cdc",
 			"aliases": {
-				"emulator": "f8d6e0586b0a20c7"
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "631e88ae7f1d7c20"
 			}
 		},
-		"ViewResolver": "cadence/contracts/standards/ViewResolver.cdc"
+		"ViewResolver": {
+			"source": "cadence/contracts/standards/ViewResolver.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		}
 	},
 	"networks": {
 		"emulator": "127.0.0.1:3569",
@@ -44,17 +65,31 @@
 		"standards": {
 			"address": "f3fcd2c1a78f5eee",
 			"key": "d2c3686da84d61c13627bdf2127866fe358165734f5470be792e6771901d2856"
+		},
+		"testnet": {
+			"address": "564b229bd8380848",
+			"key": "08142cbd4807ca8e7e433483a4b0a28d74e8203e0b69be6724d8b410c65a9880"
+		},
+		"testnet-user": {
+			"address": "564b229bd8380848",
+			"key": "08142cbd4807ca8e7e433483a4b0a28d74e8203e0b69be6724d8b410c65a9880"
 		}
 	},
 	"deployments": {
 		"emulator": {
 			"default": [],
 			"inscription": [
-				"InscriptionMetadata",
-				"Inscription"
+				"Inscription",
+				"InscriptionMetadata"
 			],
 			"standards": [
 				"ViewResolver"
+			]
+		},
+		"testnet": {
+			"testnet": [
+				"Inscription",
+				"InscriptionMetadata"
 			]
 		}
 	}
