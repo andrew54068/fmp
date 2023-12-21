@@ -2,8 +2,8 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import theme from "./theme";
 import { useEffect } from "react";
 import { ChakraProvider, Box } from "@chakra-ui/react";
-import "./App.css";
 import Navbar from "./components/Navbar";
+import "src/services/fcl"
 import NotFound from "src/components/NotFound";
 import { GlobalProvider } from "./context/globalContextProvider";
 

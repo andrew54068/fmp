@@ -1,8 +1,11 @@
+import { useEffect, useContext } from "react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import { GlobalContext } from "src/context/global";
 import { Box, Image, ListItem as ChakraListItem, Collapse, Flex, IconButton, List } from "@chakra-ui/react";
 import Button from "src/components/Button";
 import useClickAway from "src/hooks/useClickAway";
 import { useState } from "react";
+import * as fcl from "@blocto/fcl";
 import { Link } from "react-router-dom";
 import LogoImg from "src/assets/react.svg";
 import formatAddress from "src/utils/formatAddress";
@@ -27,11 +30,23 @@ const ListItem = ({ children, ...rest }: any) => (
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const { account, setAccount } = useContext(GlobalContext)
 
   //@todo: add wallet connection logic.
-  const disconnect = () => { };
-  const account = "";
+  const disconnect = () => {
+    fcl.unauthenticate()
+    setAccount("")
+  };
+
+  useEffect(
+    () => {
+      fcl.currentUser().subscribe((user) => {
+        setAccount(user?.addr)
+      })
+      return () => { }
+    },
+    [setAccount]
+  );
 
 
   const ref = useClickAway(() => setShowDropdown(false));
@@ -39,8 +54,13 @@ export default function Navbar() {
     setShowDropdown(!showDropdown);
   };
 
-  const onClickCopyAccount = () => { };
-  const onClickConnect = () => { };
+  const onClickCopyAccount = () => {
+    navigator.clipboard.writeText(account || "");
+  };
+
+  const onClickConnect = async () => {
+    await fcl.authenticate();
+  };
 
   return (
     <Flex
