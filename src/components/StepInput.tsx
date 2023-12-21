@@ -5,10 +5,14 @@ interface StepInputProps {
 }
 
 
+const MAX_PER_MINT = 500
 const StepInput = ({ onChange, ...rest }: StepInputProps & StackProps) => {
   const [value, setValue] = useState(0);
 
-  const increment = () => setValue((prev) => prev + 100);
+  const increment = () => {
+    if (value >= MAX_PER_MINT) return
+    setValue((prev) => prev + 100)
+  };
   const decrement = () => setValue((prev) => prev - 100);
 
   useEffect(() => {
