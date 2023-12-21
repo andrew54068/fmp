@@ -1,6 +1,6 @@
-import NonFungibleToken from 0x631e88ae7f1d7c20
-import Inscription from 0x564b229bd8380848
-import InscriptionMetadata from 0x564b229bd8380848
+import "NonFungibleToken"
+import "Inscription"
+import "InscriptionMetadata"
 
 /// Mints a new Inscription into recipient's account
 
