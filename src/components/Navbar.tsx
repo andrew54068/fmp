@@ -8,6 +8,7 @@ import { useState } from "react";
 import * as fcl from "@blocto/fcl";
 import { Link } from "react-router-dom";
 import formatAddress from "src/utils/formatAddress";
+import MarketplaceShowOff from './MarketplaceShowOff';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ListItem = ({ children, ...rest }: any) => (
@@ -87,6 +88,9 @@ export default function Navbar() {
             Freeflow
           </Link>
         </Box>
+        <Flex flex="1" justifyContent="flex-end">
+          <MarketplaceShowOff />
+        </Flex>
         <Flex alignItems="center">
           <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
         </Flex>
