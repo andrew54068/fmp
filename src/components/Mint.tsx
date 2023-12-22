@@ -24,11 +24,6 @@ export default function Mint() {
   const toast = useToast()
 
   const { account } = useContext(GlobalContext)
-  // const [amount, setAmount] = useState(0)
-
-  // const onInputChange = (value) => {
-  //   setAmount(value)
-  // }
 
   const clearErrorMessage = () => {
     setErrorMessage('')
@@ -96,7 +91,7 @@ export default function Mint() {
   }
 
   return (
-    <Box mt="75px" minH="calc(100vh - 75px)" pt="40px" px="16px">
+    <Box mt="75px" minH="calc(100vh - 75px)" py="40px" px="16px">
       <Text fontSize="size.heading.3" mb="space.l" lineHeight="22px">
         Mint Your First Inscription on Flow
       </Text>
