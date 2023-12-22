@@ -6,13 +6,19 @@ import Navbar from "./components/Navbar";
 import Mint from "src/components/Mint";
 import "src/services/fcl"
 import NotFound from "src/components/NotFound";
+import { initAmplitude } from "./services/Amplitude"
+import { logPageView } from "./services/Amplitude/log"
 import { GlobalProvider } from "./context/globalContextProvider";
+
+initAmplitude()
 
 function App() {
   const { pathname } = useLocation();
   const isLanding = pathname === "/";
 
   useEffect(() => {
+
+    logPageView(pathname)
     if (isLanding) {
       window.location.href = "/mint";
     }

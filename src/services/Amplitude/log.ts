@@ -24,3 +24,16 @@ export const logPageView = (page: string) => {
     });
   }
 };
+
+export const logClickMintButton = (account: string) => {
+  logCore("click_mint_button", { account });
+};
+
+export const logMintError = () => {
+  logCore("mint_error");
+};
+
+export const logFinishMinting = () => {
+  logCore("finish_minting");
+};
+

@@ -15,6 +15,7 @@ import JsonDisplay from 'src/components/JsonDisplay'
 import InscriptionsList from 'src/components/InscriptionsList';
 import { getProgressScript } from 'src/utils/getScripts';
 import Progress from 'src/components/Progress';
+import { logClickMintButton, logMintError, logFinishMinting } from 'src/services/Amplitude/log'
 
 const MINT_AMOUNT = 1000
 
@@ -66,6 +67,7 @@ export default function Mint() {
   }, [account, updateMintedInscriptionList, updateProgress])
 
   const onClickMint = useCallback(async () => {
+    logClickMintButton(account || '')
     setWaitingForTx(true)
     clearErrorMessage()
     try {
@@ -80,6 +82,7 @@ export default function Mint() {
       console.log('txData :', txData);
       console.log('mintedId :', mintedId);
 
+      logFinishMinting()
       toast({
         status: "success",
         position: "top",
@@ -102,10 +105,11 @@ export default function Mint() {
       });
     } catch (err: any) {
       setErrorMessage(err.message);
+      logMintError()
     }
     setWaitingForTx(false)
 
-  }, [toast, updateMintedInscriptionList])
+  }, [account, toast, updateMintedInscriptionList, updateProgress])
 
   const inscriptionData = {
     "p": "frc-20", "op": "free-mint", "tick": "ff", "amt": MINT_AMOUNT.toString()
