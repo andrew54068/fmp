@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect, useCallback } from 'react'
-import { Icon, Flex, useToast, Text, Box, Card, Divider } from '@chakra-ui/react'
+import { Icon, Flex, useToast, Text, Box, Card, Divider, Spinner } from '@chakra-ui/react'
 import Button from 'src/components/Button'
 import { WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
@@ -19,6 +19,7 @@ const MINT_AMOUNT = 1000
 
 export default function Mint() {
   const [waitingForTx, setWaitingForTx] = useState(false)
+  const [updatingInscriptionList, setUpdatingInscriptionList] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [mintedInscriptionList, setMintedInscriptionList] = useState<Metadata[] | []>([])
   const toast = useToast()
@@ -31,6 +32,7 @@ export default function Mint() {
 
 
   const updateMintedInscriptionList = useCallback(async () => {
+    setUpdatingInscriptionList(true)
     const metaData: Metadata[] = await sendScript(getMetaDataListScripts(), (arg, t) => [
       arg(account, t.Address)
     ])
@@ -38,6 +40,7 @@ export default function Mint() {
     const sortedMetadata = sortMetaDataById(metaData || [])
 
     setMintedInscriptionList(sortedMetadata)
+    setUpdatingInscriptionList(false)
   }, [account])
 
   useEffect(() => {
@@ -111,7 +114,11 @@ export default function Mint() {
       {
         mintedInscriptionList.length > 0 && (<>
           <Divider mt="space.3xl" mb="space.3xl" />
-          <InscriptionsList inscriptionList={mintedInscriptionList} />
+          {!updatingInscriptionList ? <InscriptionsList inscriptionList={mintedInscriptionList} /> : <Flex
+            justifyContent="center" alignItems="center" minH="30vh">
+            <Spinner size="lg" />
+          </Flex>
+          }
         </>)
       }
 
