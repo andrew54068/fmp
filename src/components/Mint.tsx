@@ -51,7 +51,7 @@ export default function Mint() {
     }
   }, [account, updateMintedInscriptionList])
 
-  const onClickMint = async () => {
+  const onClickMint = useCallback(async () => {
     setWaitingForTx(true)
     clearErrorMessage()
     try {
@@ -89,7 +89,7 @@ export default function Mint() {
     }
     setWaitingForTx(false)
 
-  }
+  }, [toast, updateMintedInscriptionList])
 
   const inscriptionData = {
     "p": "frc-20", "op": "free-mint", "tick": "ff", "amt": MINT_AMOUNT.toString()
