@@ -71,6 +71,7 @@ export default function Mint() {
     setWaitingForTx(true)
     clearErrorMessage()
     try {
+      if (!account) return;
       const txData = await sendTransaction(getMintScripts(), (arg, t) => [
         arg(MINT_AMOUNT, t.UInt64),
       ])
