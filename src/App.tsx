@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, redirect } from "react-router-dom";
 import theme from "./theme";
 import { useEffect } from "react";
 import { ChakraProvider, Box } from "@chakra-ui/react";
@@ -13,7 +13,10 @@ function App() {
   const isLanding = pathname === "/";
 
   useEffect(() => {
-  }, [pathname]);
+    if (isLanding) {
+      window.location.href = "/mint";
+    }
+  }, [isLanding, pathname]);
 
   return (
     <GlobalProvider>
