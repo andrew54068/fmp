@@ -46,7 +46,9 @@ export default function Mint() {
   useEffect(() => {
     setMintedInscriptionList([])
     clearErrorMessage()
-    updateMintedInscriptionList()
+    if (account) {
+      updateMintedInscriptionList()
+    }
   }, [account, updateMintedInscriptionList])
 
   const onClickMint = async () => {
