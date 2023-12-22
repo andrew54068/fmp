@@ -1,5 +1,5 @@
 import "NonFungibleToken"
-import "MetadataViews"
+import "InscriptionMetadata"
 import "Inscription"
 
 /// This transaction is what an account would run
@@ -20,7 +20,7 @@ transaction {
         signer.save(<-collection, to: Inscription.CollectionStoragePath)
 
         // create a public capability for the collection
-        signer.link<&{NonFungibleToken.CollectionPublic, Inscription.InscriptionCollectionPublic, MetadataViews.ResolverCollection}>(
+        signer.link<&{NonFungibleToken.CollectionPublic, Inscription.InscriptionCollectionPublic, InscriptionMetadata.ResolverCollection}>(
             Inscription.CollectionPublicPath,
             target: Inscription.CollectionStoragePath
         )

@@ -4,7 +4,7 @@ import "InscriptionMetadata"
 
 /// Mints a new Inscription into recipient's account
 
-transaction(amount: UInt64) {
+transaction(amount: UInt64, count: UInt64) {
     /// local variable for storing the minter reference
     // let minter: &Inscription.InscriptionMinter
 
@@ -48,7 +48,7 @@ transaction(amount: UInt64) {
             recipient: self.recipientCollectionRef,
             amount: amount
         )
-        log(amount.toString())
+
     }
 
     post {

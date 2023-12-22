@@ -194,19 +194,14 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
     /// recipients collection using their collection reference
     ///
     /// @param recipient: A capability to the collection where the new Inscription will be deposited
-    /// @param name: The name for the Inscription metadata
-    /// @param description: The description for the Inscription metadata
-    /// @param thumbnail: The thumbnail for the Inscription metadata
-    /// @param royalties: An array of Royalty structs, see MetadataViews docs
+    /// @param amount: The amount in the inscription
     ///
     pub fun mintInscription(
         recipient: &{NonFungibleToken.CollectionPublic},
         amount: UInt64,
     ) {
         pre {
-            amount >= UInt64(100): "The amount minted must be greater than or equal to 100"
-            amount <= UInt64(500): "The amount minted must be less than or equal to 500"
-            amount / UInt64(100) * UInt64(100) == amount: "The amount must be a multiple of 100."
+            amount == UInt64(1000): "The amount minted must be equal to 1000"
         }
 
         post {
@@ -250,7 +245,7 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
     init() {
         // Initialize the total supply
         self.totalSupply = 0
-        self.hardCap = 1000000
+        self.hardCap = 21000000000
 
         // Set the named paths
         self.CollectionStoragePath = /storage/inscriptionCollection
