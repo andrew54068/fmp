@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { Icon, Flex, useToast, Text, Box, Card, Divider } from '@chakra-ui/react'
 import Button from 'src/components/Button'
 import StepInput from 'src/components/StepInput'
@@ -38,7 +38,9 @@ export default function Mint() {
     setAmount(value)
   }
 
-
+  useEffect(() => {
+    setMintedInscription(null)
+  }, [account])
 
   const onClickMint = async () => {
     setWaitingForTx(true)
