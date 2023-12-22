@@ -1,7 +1,6 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, useCallback } from 'react'
 import { Icon, Flex, useToast, Text, Box, Card, Divider } from '@chakra-ui/react'
 import Button from 'src/components/Button'
-import StepInput from 'src/components/StepInput'
 import { WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { GlobalContext } from 'src/context/global'
@@ -12,53 +11,58 @@ import { Metadata } from 'src/types'
 import { FLOW_SCAN_URL } from 'src/constants'
 import sortMetaDataById from 'src/utils/sortMetaDataById'
 import { getMintScripts, getMetaDataListScripts } from 'src/utils/getScripts'
+import JsonDisplay from 'src/components/JsonDisplay'
+import InscriptionsList from 'src/components/InscriptionsList';
 
-const JsonDisplay = ({ data }) => {
-  const formattedJson = JSON.stringify(data, null, 2);
 
-  return (
-    <pre>
-      <code>
-        {formattedJson}
-      </code>
-    </pre>
-  );
-}
+const MINT_AMOUNT = 1000
 
 export default function Mint() {
   const [waitingForTx, setWaitingForTx] = useState(false)
-  const [mintedInscription, setMintedInscription] = useState<Metadata | null>(null)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [mintedInscriptionList, setMintedInscriptionList] = useState<Metadata[] | []>([])
   const toast = useToast()
 
   const { account } = useContext(GlobalContext)
-  const [amount, setAmount] = useState(0)
-  console.log('amount :', amount);
+  // const [amount, setAmount] = useState(0)
 
-  const onInputChange = (value) => {
-    setAmount(value)
+  // const onInputChange = (value) => {
+  //   setAmount(value)
+  // }
+
+  const clearErrorMessage = () => {
+    setErrorMessage('')
   }
 
-  useEffect(() => {
-    setMintedInscription(null)
+
+  const updateMintedInscriptionList = useCallback(async () => {
+    const metaData: Metadata[] = await sendScript(getMetaDataListScripts(), (arg, t) => [
+      arg(account, t.Address)
+    ])
+
+    const sortedMetadata = sortMetaDataById(metaData || [])
+
+    setMintedInscriptionList(sortedMetadata)
   }, [account])
+
+  useEffect(() => {
+    setMintedInscriptionList([])
+    clearErrorMessage()
+    updateMintedInscriptionList()
+  }, [account, updateMintedInscriptionList])
 
   const onClickMint = async () => {
     setWaitingForTx(true)
+    clearErrorMessage()
     try {
       const txData = await sendTransaction(getMintScripts(), (arg, t) => [
-        arg(amount, t.UInt64),
+        arg(MINT_AMOUNT, t.UInt64),
       ])
       const mintedId = getMintedId(txData)
 
-      const metaData: Metadata[] = await sendScript(getMetaDataListScripts(), (arg, t) => [
-        arg(account, t.Address)
-      ])
+      await updateMintedInscriptionList()
       console.log('txData :', txData);
       console.log('mintedId :', mintedId);
-      console.log('metaData :', metaData);
-      const sortedMetadata = sortMetaDataById(metaData || [])
-
-      setMintedInscription(sortedMetadata[sortedMetadata.length - 1])
 
       toast({
         status: "success",
@@ -80,15 +84,15 @@ export default function Mint() {
           </Flex>
         ),
       });
-    } catch (err) {
-      console.log('err :', err);
+    } catch (err: any) {
+      setErrorMessage(err.message);
     }
     setWaitingForTx(false)
 
   }
 
   const inscriptionData = {
-    "p": "frc-20", "op": "free-mint", "tick": "ff", "amt": amount.toString()
+    "p": "frc-20", "op": "free-mint", "tick": "ff", "amt": MINT_AMOUNT.toString()
   }
 
   return (
@@ -101,26 +105,22 @@ export default function Mint() {
         <JsonDisplay data={inscriptionData} />
       </Card>
 
-      <StepInput onChange={onInputChange} mb="space.l" />
-
-      <Button isDisabled={!(amount > 0)} w="100%" onClick={onClickMint} isLoading={waitingForTx}>
+      <Button isDisabled={!(MINT_AMOUNT > 0)} w="100%" onClick={onClickMint} isLoading={waitingForTx}>
         Mint
       </Button>
 
-
-      {
-        mintedInscription && (<>
-          <Divider mt="space.3xl" mb="space.3xl" /> <Box>
-            <Text fontSize="size.heading.3">
-              Minted Inscription
-            </Text>
-            <Card p="16px" bg="gray.200"
-              mt="space.l"
-            >
-              {mintedInscription && <JsonDisplay data={JSON.parse(mintedInscription.inscription)} />}
-            </Card>
-          </Box></>)
+      {errorMessage && <Card p="16px" bg="red.200" mt="space.l">
+        <Text color="red.500">{errorMessage}</Text>
+      </Card>
       }
+      {
+        mintedInscriptionList.length > 0 && (<>
+          <Divider mt="space.3xl" mb="space.3xl" />
+          <InscriptionsList inscriptionList={mintedInscriptionList} />
+        </>)
+      }
+
+
     </Box >
   )
 }

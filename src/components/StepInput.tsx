@@ -4,8 +4,7 @@ interface StepInputProps {
   onChange?: (value: number) => void;
 }
 
-
-const MAX_PER_MINT = 500
+const MAX_PER_MINT = 1000
 const StepInput = ({ onChange, ...rest }: StepInputProps & StackProps) => {
   const [value, setValue] = useState(100);
 
