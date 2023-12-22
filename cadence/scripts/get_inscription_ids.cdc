@@ -6,10 +6,10 @@ import "Inscription"
 pub fun main(address: Address): [UInt64] {
     let account = getAccount(address)
 
-    let collectionRef = account
+    if let collectionRef = account
         .getCapability(Inscription.CollectionPublicPath)
-        .borrow<&{NonFungibleToken.CollectionPublic}>()
-        ?? panic("Could not borrow capability from public collection at specified path")
-
-    return collectionRef.getIDs()
+        .borrow<&{NonFungibleToken.CollectionPublic}>() {
+        return collectionRef.getIDs()
+    }
+    return []
 }

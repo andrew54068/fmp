@@ -4,22 +4,23 @@ import "Inscription"
 pub fun main(address: Address): [InscriptionMetadata.InscriptionView] {
     let account = getAccount(address)
 
-    let collectionRef = account
+    if let collectionRef = account
         .getCapability(Inscription.CollectionPublicPath)
-        .borrow<&{Inscription.InscriptionCollectionPublic}>()
-        ?? panic("Could not borrow a reference to the collection")
+        .borrow<&{Inscription.InscriptionCollectionPublic}>() {
+        let ids = collectionRef.getIDs()
 
-    let ids = collectionRef.getIDs()
+        var views: [InscriptionMetadata.InscriptionView] = []
 
-    var views: [InscriptionMetadata.InscriptionView] = []
+        for inscriptionId in ids {
+            let inscription = collectionRef.borrowInscription(id: inscriptionId)! as &{InscriptionMetadata.Resolver}
 
-    for inscriptionId in ids {
-        let inscription = collectionRef.borrowInscription(id: inscriptionId)! as &{InscriptionMetadata.Resolver}
+            // Get the basic display information for this Inscription
+            let view: InscriptionMetadata.InscriptionView = InscriptionMetadata.getInscriptionView(id: inscriptionId, viewResolver: inscription)
+            views.append(view)
+        }
 
-        // Get the basic display information for this Inscription
-        let view: InscriptionMetadata.InscriptionView = InscriptionMetadata.getInscriptionView(id: inscriptionId, viewResolver: inscription)
-        views.append(view)
+        return views 
     }
+    return []
 
-    return views
 }
