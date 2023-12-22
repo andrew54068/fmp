@@ -112,7 +112,7 @@ export default function Mint() {
   }, [account, toast, updateMintedInscriptionList, updateProgress])
 
   const inscriptionData = {
-    "p": "frc-20", "op": "free-mint", "tick": "ff", "amt": MINT_AMOUNT.toString()
+    "p": "frc-20", "op": "mint", "tick": "ff", "amt": MINT_AMOUNT.toString()
   }
 
   return (
