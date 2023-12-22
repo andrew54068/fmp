@@ -245,7 +245,7 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
     init() {
         // Initialize the total supply
         self.totalSupply = 0
-        self.hardCap = 21000000000
+        self.hardCap = 2100000000
 
         // Set the named paths
         self.CollectionStoragePath = /storage/inscriptionCollection
