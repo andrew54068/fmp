@@ -1,18 +1,6 @@
-import { Tooltip, Text, Box } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Tooltip, Box } from "@chakra-ui/react";
 
 export function MarketplaceShowOff() {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  useEffect(() => {
-    const hideTooltip = () => setShowTooltip(false);
-    document.addEventListener("click", hideTooltip);
-
-    return () => {
-      document.removeEventListener("click", hideTooltip);
-    };
-  }, []);
-
 
   return (
     <Tooltip bg='gray.300' color="gray.600" label={<Box padding="4px">Coming Soon</Box>}
