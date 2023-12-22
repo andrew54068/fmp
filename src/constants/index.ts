@@ -8,8 +8,8 @@ const testnetAddress = {
 
 const mainnetAddress = {
   NonFungibleToken: "0x1d7e57aa55817448",
-  Inscription: "0xa217c76f53a1a081",
-  InscriptionMetadata: "0xa217c76f53a1a081"
+  Inscription: "0x88dd257fcf26d3cc",
+  InscriptionMetadata: "0x88dd257fcf26d3cc"
 }
 
 //testnet
@@ -19,8 +19,8 @@ const mainnetAddress = {
 
 // mainnet
 // const NonFungibleToken = "0x1d7e57aa55817448"
-// const Inscription = "0xa217c76f53a1a081"
-// const InscriptionMetadata = "0xa217c76f53a1a081"
+// const Inscription = "0x88dd257fcf26d3cc"
+// const InscriptionMetadata = "0x88dd257fcf26d3cc"
 
 // testnet 
 // export const FLOW_SCAN_URL = 'https://testnet.flowdiver.io/tx/'
