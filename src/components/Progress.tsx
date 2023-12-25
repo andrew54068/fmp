@@ -23,6 +23,6 @@ export default function Progress({ progressData, isLoading }: ProgressProps) {
       mt="space.xs"
       size='xs'
       isIndeterminate={isLoading}
-      value={1 + Number(currentAmount) / Number(totalSupply)} />
+      value={1 + 100 * Number(currentAmount) / Number(totalSupply)} />
   </Box>
 }
