@@ -127,7 +127,7 @@ export default function Mint() {
         <JsonDisplay data={inscriptionData} />
       </Card>
 
-      <Button isDisabled={!(MINT_AMOUNT > 0)} w="100%" onClick={onClickMint} isLoading={waitingForTx}>
+      <Button isDisabled w="100%" onClick={onClickMint} isLoading={waitingForTx}>
         Mint
       </Button>
 
