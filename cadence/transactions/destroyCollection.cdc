@@ -1,5 +1,5 @@
-import NonFungibleToken from 0x631e88ae7f1d7c20
-import Inscription from 0x564b229bd8380848
+import NonFungibleToken from 0x1d7e57aa55817448
+import Inscription from 0xa217c76f53a1a081
 
 transaction() {
 	prepare(signer: AuthAccount) {
