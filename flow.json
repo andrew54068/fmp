@@ -1,5 +1,11 @@
 {
 	"contracts": {
+		"FlowToken": {
+			"source": "cadence/contracts/standards/.cdc",
+			"aliases": {
+				"emulator": "0ae53cb6e3f42a79"
+			}
+		},
 		"FungibleToken": {
 			"source": "cadence/contracts/standards/FungibleToken.cdc",
 			"aliases": {
@@ -10,15 +16,21 @@
 		"Inscription": {
 			"source": "cadence/contracts/inscription/Inscription.cdc",
 			"aliases": {
-				"emulator": "179b6b1cb6755e31",
+				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "564b229bd8380848"
 			}
 		},
 		"InscriptionMetadata": {
 			"source": "cadence/contracts/inscription/InscriptionMetadata.cdc",
 			"aliases": {
-				"emulator": "179b6b1cb6755e31",
+				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "564b229bd8380848"
+			}
+		},
+		"Marketplace": {
+			"source": "cadence/contracts/marketplace/Marketplace.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
 			}
 		},
 		"MetadataViews": {
@@ -26,6 +38,12 @@
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"NFTStorefront": {
+			"source": "cadence/contracts/marketplace/NFTStorefront.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
 			}
 		},
 		"NonFungibleToken": {
@@ -77,13 +95,11 @@
 	},
 	"deployments": {
 		"emulator": {
-			"default": [],
-			"inscription": [
+			"emulator-account": [
 				"Inscription",
-				"InscriptionMetadata"
-			],
-			"standards": [
-				"ViewResolver"
+				"InscriptionMetadata",
+				"NFTStorefront",
+				"Marketplace"
 			]
 		},
 		"testnet": {

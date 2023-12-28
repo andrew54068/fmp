@@ -1,5 +1,5 @@
-import FungibleToken from 0xf233dcee88fe0abe
-import NFTStorefront from 0x4eb8a10cb9f87357
+import "FungibleToken"
+import "NFTStorefront"
 
 pub contract Marketplace {
 
@@ -86,6 +86,11 @@ pub contract Marketplace {
     pub fun getListingID(nftType: Type, nftID: UInt64): UInt64? {
         let nftListingIDs = self.collectionNFTListingIDs[nftType.identifier] ?? {}
         return nftListingIDs[nftID]
+    }
+
+    pub fun getNFTIDListingIDMap(nftType: Type): {UInt64: UInt64} {
+        let nftListingIDs = self.collectionNFTListingIDs[nftType.identifier] ?? {}
+        return nftListingIDs
     }
 
     pub fun getAllSaleCutRequirements(): {String: [SaleCutRequirement]} {
