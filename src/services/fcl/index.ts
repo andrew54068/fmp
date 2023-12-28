@@ -14,4 +14,3 @@ fcl.config({
   "discovery.wallet": WALLET_URL
 });
 
-console.log('fcl config!!')

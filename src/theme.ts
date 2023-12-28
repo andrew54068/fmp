@@ -1,5 +1,6 @@
 import boTheme from "@blocto/web-chakra-theme";
 import { extendTheme } from "@chakra-ui/react";
+import { tabsTheme } from './tabTheme'
 import merge from "lodash.merge";
 
 import { tagAnatomy } from "@chakra-ui/anatomy";
@@ -181,6 +182,7 @@ const theme = extendTheme(
           },
         },
       },
+      Tabs: tabsTheme,
     },
   })
 );

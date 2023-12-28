@@ -6,11 +6,17 @@ import Navbar from "./components/Navbar";
 import Mint from "src/components/Mint";
 import "src/services/fcl"
 import NotFound from "src/components/NotFound";
+import Marketplace from "src/components/Marketplace";
 import { initAmplitude } from "./services/Amplitude"
 import { logPageView } from "./services/Amplitude/log"
 import { GlobalProvider } from "./context/globalContextProvider";
 
 initAmplitude()
+const maxWidthSetting = {
+  "/": "100%",
+  "/mint": "520px",
+  "/marketplace": "800px"
+}
 
 function App() {
   const { pathname } = useLocation();
@@ -29,10 +35,11 @@ function App() {
       <ChakraProvider theme={theme}>
         <Box margin="0 auto" width="100%" bg="gray.700" >
           <Navbar />
-          <Box margin="0 auto" maxW={isLanding ? "100%" : `520px`} >
+          <Box margin="0 auto" maxW={maxWidthSetting[pathname]} >
             <Routes>
               <Route path="/" element={<Box>  </Box>} />
               <Route path="/mint" element={<Mint />} />
+              <Route path="/marketplace" element={<Marketplace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>
