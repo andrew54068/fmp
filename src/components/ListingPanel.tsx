@@ -87,12 +87,13 @@ export default function ListingPanel() {
         colorScheme="blue"
         onClick={handleBuyClick}
         width={["100%", "auto"]}
+        ml="auto"
         display="inline-block" minW="200px">
         Buy
       </Button>
     }
     if (hasSelected) {
-      return <Box>
+      return <Box w={["100%", "auto"]}>
         <Button
           colorScheme="blue"
           onClick={handleSendTransaction}
@@ -106,13 +107,14 @@ export default function ListingPanel() {
           Buy {selectedInscriptions?.length} Items
         </Button>
         <Button
-          ml="space.m"
+          ml={["0", 'space.m']}
+          mt={["space.s", "0"]}
           colorScheme="blue"
           onClick={handleCancel}
           width={["100%", "auto"]}
         >
           Cancel
-        </Button></Box>
+        </Button></Box >
     }
 
     return <Button
@@ -128,7 +130,7 @@ export default function ListingPanel() {
 
   return (
     <Box p="16px">
-      <SimpleGrid columns={[1, null, 3, 4]} spacing="space.l">
+      <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l">
         {inscriptions.map((inscription, index) => (
 
           <Box>
@@ -159,20 +161,22 @@ export default function ListingPanel() {
           p="space.m"
           maxWidth="820px"
           margin="0 auto"
-          flexDirection={["column", "row"]}>
-          <Box opacity={isBuying ? "1" : "0"} mb={["16px", "0"]}>
-            <Flex fontSize="size.body.2" mb="space.2xs" color="gray.400" alignItems="center">
-              <InfoOutlineIcon />
-              <Box ml="space.3xs">
-                You can buy up to 50 items at a time.
-              </Box>
-            </Flex>
-            {
-              <Box fontSize="size.body.1">
-                You are buying {selectedInscriptions?.length} items for {priceSummary} Flow
-              </Box>
-            }
-          </Box>
+          flexDirection={["column", "column", "row"]}>
+          {
+            isBuying && <Box mb={["16px", "16px", "0"]}>
+              <Flex fontSize="size.body.2" mb="space.2xs" color="gray.400" alignItems="center">
+                <InfoOutlineIcon />
+                <Box ml="space.3xs">
+                  You can buy up to 50 items at a time.
+                </Box>
+              </Flex>
+              {
+                <Box fontSize="size.body.1">
+                  You are buying {selectedInscriptions?.length} items for {priceSummary} Flow
+                </Box>
+              }
+            </Box>
+          }
           <CallToActionButton />
         </Flex>
       </Box>
