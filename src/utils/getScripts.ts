@@ -1,19 +1,26 @@
-import { NonFungibleToken, Inscription, InscriptionMetadata } from 'src/constants';
+import { NonFungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken } from 'src/constants';
 import mintScript from '../../cadence/transactions/mint.cdc?raw';
 import metaDataListScript from '../../cadence/scripts/get_inscription_metadata_list.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
 
-export const getMintScripts = () => {
-  return mintScript.replace(`import "NonFungibleToken"`, `import NonFungibleToken from ${NonFungibleToken}`)
+const replacement = (script: string) => {
+  script
+    .replace(`import "NonFungibleToken"`, `import NonFungibleToken from ${NonFungibleToken}`)
     .replace(`import "Inscription"`, `import Inscription from ${Inscription}`)
-    .replace(`import "InscriptionMetadata"`, `import InscriptionMetadata from ${InscriptionMetadata}`);
+    .replace(`import "InscriptionMetadata"`, `import InscriptionMetadata from ${InscriptionMetadata}`)
+    .replace(`import "Marketplace"`, `import Marketplace from ${Marketplace}`)
+    .replace(`import "NFTStorefront"`, `import Marketplace from ${NFTStorefront}`)
+    .replace(`import "FlowToken"`, `import Marketplace from ${FlowToken}`);
+}
+
+export const getMintScripts = () => {
+  return replacement(mintScript)
 }
 
 export const getMetaDataListScripts = () => {
-  return metaDataListScript.replace(`import "Inscription"`, `import Inscription from ${Inscription}`)
-    .replace(`import "InscriptionMetadata"`, `import InscriptionMetadata from ${InscriptionMetadata}`);
+  return replacement(metaDataListScript)
 }
 
 export const getProgressScript = () => {
-  return progressScript.replace(`import "Inscription"`, `import Inscription from ${Inscription}`)
+  return replacement(progressScript)
 }
