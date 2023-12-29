@@ -3,8 +3,8 @@ import mintScript from '../../cadence/transactions/mint.cdc?raw';
 import metaDataListScript from '../../cadence/scripts/get_inscription_metadata_list.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
 
-const replacement = (script: string) => {
-  script
+const replacement = (script: string): string => {
+  return script
     .replace(`import "NonFungibleToken"`, `import NonFungibleToken from ${NonFungibleToken}`)
     .replace(`import "Inscription"`, `import Inscription from ${Inscription}`)
     .replace(`import "InscriptionMetadata"`, `import InscriptionMetadata from ${InscriptionMetadata}`)
