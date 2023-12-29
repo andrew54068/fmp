@@ -1,15 +1,24 @@
-import { Tooltip, Box } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 
 export function MarketplaceShowOff() {
-
+  const openInNewTab = (url) => {
+    window.open(url, "_blank");
+  };
   return (
-    <Tooltip bg='gray.300' color="gray.600" label={<Box padding="4px">Coming Soon</Box>}
-      onClick={(e) => e.stopPropagation()} pos="relative">
+    <Button
+      variant="plain"
+      color="white"
+      onClick={() =>
+        openInNewTab("https://bay.blocto.app/collection/inscription")
+      }
+    >
+      <Box position="absolute" color="orange" top="-2px" left="-5px">
+        New
+      </Box>
       <Box padding="space.m" cursor="pointer">
         Marketplace
       </Box>
-
-    </Tooltip>
+    </Button>
   );
 }
 
