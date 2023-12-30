@@ -20,7 +20,7 @@ export class TransactionError extends Error {
 
 export const sendTransaction = async (
   script: string,
-  args?: (arg: any, t: any) => any[],
+  args?: (arg: any, t: fcl.Types) => any[],
   limit = 9999
 ): Promise<Transaction> => {
   let txId

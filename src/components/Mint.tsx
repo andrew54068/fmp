@@ -10,7 +10,7 @@ import { sendScript } from 'src/services/fcl/send-script';
 import { Metadata } from 'src/types'
 import { FLOW_SCAN_URL } from 'src/constants'
 import sortMetaDataById from 'src/utils/sortMetaDataById'
-import { getMintScripts, getMetaDataListScripts } from 'src/utils/getScripts'
+import { getMintScripts, getPurchaseScripts, getBatchPurchaseScripts, getMetaDataListScripts } from 'src/utils/getScripts'
 import JsonDisplay from 'src/components/JsonDisplay'
 import InscriptionsList from 'src/components/InscriptionsList';
 import { getProgressScript } from 'src/utils/getScripts';
@@ -65,6 +65,194 @@ export default function Mint() {
       updateMintedInscriptionList()
     }
   }, [account, updateMintedInscriptionList, updateProgress])
+
+  const onClickBatchBuy = useCallback(async () => {
+    setWaitingForTx(true);
+    try {
+      if (!account) return;
+      const purchaseModel1 = {
+        fields: [
+          {
+            name: "listingResourceID",
+            value: "1423576521",
+          },
+          {
+            name: "storefrontAddress",
+            value: "0xa217c76f53a1a081",
+          },
+          {
+            name: "buyPrice",
+            value: "0.00000001",
+          },
+        ],
+      };
+
+      const purchaseModel2 = {
+        fields: [
+          {
+            name: "listingResourceID",
+            value: "1423576421",
+          },
+          {
+            name: "storefrontAddress",
+            value: "0xa217c76f53a1a081",
+          },
+          {
+            name: "buyPrice",
+            value: "0.00000001",
+          },
+        ],
+      };
+
+      const txData = await sendTransaction(
+        getBatchPurchaseScripts(),
+        (arg, types) => [
+          arg(
+            [
+              purchaseModel1,
+              purchaseModel2
+            ],
+            types.Array(
+              types.Struct("A.88dd257fcf26d3cc.ListingUtils.PurchaseModel", [
+                { value: types.UInt64 },
+                { value: types.Address },
+                { value: types.UFix64 },
+              ])
+            )
+          ),
+        ]
+      );
+
+      console.log("txData :", txData);
+
+      toast({
+        status: "success",
+        position: "top",
+        duration: null,
+        isClosable: true,
+        containerStyle: {
+          marginTop: "20px",
+        },
+        render: () => (
+          <Flex
+            alignItems="center"
+            bg="green.500"
+            color="white"
+            padding="20px"
+            borderRadius="12px"
+          >
+            <Link
+              to={FLOW_SCAN_URL + txData.hash}
+              target="_blank"
+              style={{ textDecoration: "underline" }}
+            >
+              <Icon as={WarningIcon} mr="8px" />
+              Inscription minted successfully!!
+            </Link>
+            <Box
+              onClick={() => toast.closeAll()}
+              ml="8px"
+              cursor="pointer"
+              p="4px"
+            >
+              <SmallCloseIcon />
+            </Box>
+          </Flex>
+        ),
+      });
+    } catch (err: any) {
+      setErrorMessage(err.message);
+      logMintError();
+      throw err
+    }
+    setWaitingForTx(false);
+  }, [account]);
+
+  const onClickBuy = useCallback(async () => {
+    setWaitingForTx(true);
+    try {
+      if (!account) return;
+      const purchaseModel = {
+        type: "Struct",
+        value: {
+          id: "A.88dd257fcf26d3cc.ListingUtils.PurchaseModel",
+          fields: [
+            {
+              name: "listingResourceID",
+              value: "1423520418",
+            },
+            {
+              name: "storefrontAddress",
+              value: "0xa217c76f53a1a081",
+            },
+            {
+              name: "buyPrice",
+              value: "0.00000001",
+            },
+          ],
+        },
+      };
+
+      const txData = await sendTransaction(
+        getPurchaseScripts(),
+        (arg, types) => [
+          arg(
+            {
+              fields: purchaseModel.value.fields,
+            },
+            types.Struct("A.88dd257fcf26d3cc.ListingUtils.PurchaseModel", [
+              { value: types.UInt64 },
+              { value: types.Address },
+              { value: types.UFix64 },
+            ])
+          ),
+        ]
+      );
+
+      console.log("txData :", txData);
+
+      toast({
+        status: "success",
+        position: "top",
+        duration: null,
+        isClosable: true,
+        containerStyle: {
+          marginTop: "20px",
+        },
+        render: () => (
+          <Flex
+            alignItems="center"
+            bg="green.500"
+            color="white"
+            padding="20px"
+            borderRadius="12px"
+          >
+            <Link
+              to={FLOW_SCAN_URL + txData.hash}
+              target="_blank"
+              style={{ textDecoration: "underline" }}
+            >
+              <Icon as={WarningIcon} mr="8px" />
+              Inscription minted successfully!!
+            </Link>
+            <Box
+              onClick={() => toast.closeAll()}
+              ml="8px"
+              cursor="pointer"
+              p="4px"
+            >
+              <SmallCloseIcon />
+            </Box>
+          </Flex>
+        ),
+      });
+    } catch (err: any) {
+      setErrorMessage(err.message);
+      logMintError();
+      throw err
+    }
+    setWaitingForTx(false);
+  }, [account]);
 
   const onClickMint = useCallback(async () => {
     logClickMintButton(account || '')

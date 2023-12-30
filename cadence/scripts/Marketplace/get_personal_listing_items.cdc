@@ -1,5 +1,5 @@
-import Inscription from 0x88dd257fcf26d3cc
-import Marketplace from 0xdc5127882cacf8d9
+import "Inscription"
+import "Marketplace"
 
 pub fun main(address: Address): [Marketplace.Item] {
     let account = getAccount(address)
