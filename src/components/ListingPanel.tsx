@@ -224,7 +224,10 @@ export default function ListingPanel() {
         ml={["0", 'space.m']}
         mt={["space.s", "0"]}
         colorScheme="blue"
-        onClick={handleCancel}
+        onClick={() => {
+          setErrorMessage("");
+          handleCancel();
+        }}
         isLoading={waitingForTx}
         width={["100%", "auto"]}
       >
