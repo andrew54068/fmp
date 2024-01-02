@@ -267,7 +267,7 @@ export default function PersonalPanel() {
             onOpen();
           }}
           isLoading={waitingForTx}
-          isDisabled={(selectedInscriptions.length ?? 0) == 0}
+          isDisabled={!account || (selectedInscriptions.length ?? 0) == 0}
           width={["100%", "auto"]}
           bg="#01ef8b"
           _hover={{
@@ -275,7 +275,7 @@ export default function PersonalPanel() {
             transform: "scale(0.98)",
           }}
         >
-          List {selectedInscriptions.length} Items
+          {account ? `List ${selectedInscriptions.length} Items` : 'Connect Wallet First'}
         </Button>
         {hasSelected && (
           <Button

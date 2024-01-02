@@ -206,7 +206,7 @@ export default function ListingPanel() {
         colorScheme="blue"
         onClick={handleSendTransaction}
         isLoading={waitingForTx}
-        isDisabled={(selectedInscriptions.length ?? 0) == 0}
+        isDisabled={!account || (selectedInscriptions.length ?? 0) == 0}
         width={["100%", "auto"]}
         bg="#01ef8b"
         _hover={{
@@ -214,7 +214,7 @@ export default function ListingPanel() {
           transform: "scale(0.98)"
         }}
       >
-        Buy {selectedInscriptions.length} Items
+        {account ? `Buy ${selectedInscriptions.length} Items` : 'Connect Wallet First' }
       </Button>
       {
         hasSelected && <Button
