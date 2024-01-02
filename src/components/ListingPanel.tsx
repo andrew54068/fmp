@@ -12,7 +12,7 @@ import { sendScript } from 'src/services/fcl/send-script';
 import { getBatchPurchaseScripts, getMarketListingItemScripts } from 'src/utils/getScripts'
 import { FLOW_SCAN_URL } from 'src/constants'
 
-type InscriptionDisplayModel = {
+export type InscriptionDisplayModel = {
   listingId: string;
   nftId: string;
   inscription: string;
@@ -46,7 +46,7 @@ export default function ListingPanel() {
   const [errorMessage, setErrorMessage] = useState('');
   const { account } = useContext(GlobalContext);
   const toast = useToast();
-  const hasSelected: boolean = (selectedInscriptions?.length ?? 0) > 0;
+  const hasSelected: boolean = (selectedInscriptions.length ?? 0) > 0;
 
   useEffect(() => {
     const updateList = async () => {
@@ -196,7 +196,7 @@ export default function ListingPanel() {
         colorScheme="blue"
         onClick={handleSendTransaction}
         isLoading={waitingForTx}
-        isDisabled={(selectedInscriptions?.length ?? 0) == 0}
+        isDisabled={(selectedInscriptions.length ?? 0) == 0}
         width={["100%", "auto"]}
         bg="#01ef8b"
         _hover={{
@@ -204,7 +204,7 @@ export default function ListingPanel() {
           transform: "scale(0.98)"
         }}
       >
-        Buy {selectedInscriptions?.length} Items
+        Buy {selectedInscriptions.length} Items
       </Button>
       {
         hasSelected && <Button
@@ -235,7 +235,7 @@ export default function ListingPanel() {
             <InscriptionsCard
               inscriptionData={JSON.parse(inscription.inscription)}
               selectable
-              isSelected={selectedInscriptions?.includes(inscription.nftId)}
+              isSelected={selectedInscriptions.includes(inscription.nftId)}
               onClick={() => handleCardSelect(inscription)}
               price={inscription.salePrice.toString()}
               cursor="pointer"
@@ -268,7 +268,7 @@ export default function ListingPanel() {
                 </Flex>
                 {
                   <Box fontSize="size.body.1">
-                    You are buying {selectedInscriptions?.length} items for {priceSummary.toString()} Flow
+                    You are buying {selectedInscriptions.length} items for {priceSummary.toString()} Flow
                   </Box>
                 }
             </Box>
