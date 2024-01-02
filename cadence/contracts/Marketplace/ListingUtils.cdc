@@ -16,4 +16,17 @@ pub contract ListingUtils {
         }
     }
 
+    pub struct ListingModel {
+        pub let saleNFTID: UInt64
+        pub let saleItemPrice: UFix64
+
+        init(
+            saleNFTID: UInt64,
+            saleItemPrice: UFix64
+        ) {
+            self.saleNFTID = saleNFTID
+            self.saleItemPrice = saleItemPrice        
+        }
+    }
+
 }

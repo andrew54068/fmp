@@ -1,5 +1,6 @@
 import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import ListingPanel from 'src/components/ListingPanel';
+import PersonalPanel from './PersonalPanel';
 
 
 export default function Marketplace() {
@@ -17,7 +18,7 @@ export default function Marketplace() {
           <ListingPanel />
         </TabPanel>
         <TabPanel>
-          <p>two!</p>
+          <PersonalPanel />
         </TabPanel>
       </TabPanels>
     </Tabs>

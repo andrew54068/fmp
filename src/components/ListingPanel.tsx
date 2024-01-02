@@ -12,7 +12,7 @@ import { sendScript } from 'src/services/fcl/send-script';
 import { getBatchPurchaseScripts, getMarketListingItemScripts } from 'src/utils/getScripts'
 import { FLOW_SCAN_URL } from 'src/constants'
 
-export type InscriptionDisplayModel = {
+type InscriptionDisplayModel = {
   listingId: string;
   nftId: string;
   inscription: string;

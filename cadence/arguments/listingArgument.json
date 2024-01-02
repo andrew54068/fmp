@@ -1,0 +1,24 @@
+[
+    {
+        "type": "Struct",
+        "value": {
+            "id": "A.f8d6e0586b0a20c7.ListingUtils.ListingModel",
+            "fields": [
+                {
+                    "name": "saleNFTID",
+                    "value": {
+                        "type": "UInt64",
+                        "value": ""
+                    }
+                },
+                {
+                    "name": "saleItemPrice",
+                    "value": {
+                        "type": "UFix64",
+                        "value": ""
+                    }
+                }
+            ]
+        }
+    }
+]

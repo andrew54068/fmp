@@ -2,19 +2,18 @@ import { Card, CardProps, Box, Icon } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import JsonDisplay from 'src/components/JsonDisplay';
 import { Metadata } from 'src/types';
+import BigNumber from 'bignumber.js';
 
 interface InscriptionCardProps extends CardProps {
   inscriptionData: Metadata;
   selectable?: boolean;
   isSelected?: boolean;
-  price?: string;
+  price?: BigNumber | null;
 }
 
 export default function InscriptionsCard({ inscriptionData, selectable, price, isSelected, ...rest }: InscriptionCardProps) {
 
-  const handleCardClick = () => {
-
-  };
+  BigNumber.config({ DECIMAL_PLACES: 2, CRYPTO: true });
 
   return (
     <Card
@@ -25,7 +24,6 @@ export default function InscriptionsCard({ inscriptionData, selectable, price, i
       borderColor={selectable && isSelected ? '#01ef8b' : 'transparent'}
       position="relative"
       overflow="hidden"
-      onClick={handleCardClick}
 
       {...rest}
     >
@@ -35,7 +33,8 @@ export default function InscriptionsCard({ inscriptionData, selectable, price, i
         </Box>
       )}
       {inscriptionData && <JsonDisplay data={inscriptionData} />}
-      {price && <Box
+      
+      <Box
         borderTop="solid 1px"
         borderColor={isSelected ? '#01ef8b' : 'gray.800'}
         bg="gray.200"
@@ -45,7 +44,7 @@ export default function InscriptionsCard({ inscriptionData, selectable, price, i
         color="gray.600"
         fontSize="size.heading.4"
         fontWeight="semibold"
-        textAlign="right">{price} Flow</Box>}
+        textAlign="right">{price ? (price.toString() + ' Flow'): 'Not listed'} </Box>
     </Card>
   );
 }

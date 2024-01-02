@@ -2,6 +2,8 @@ import { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Mark
 import mintScript from '../../cadence/transactions/mint.cdc?raw';
 import purchaseScript from '../../cadence/transactions/bay/buySingleInscription.cdc?raw';
 import batchPurchaseScript from '../../cadence/transactions/batchBuyInscription.cdc?raw';
+import batchSellScript from '../../cadence/transactions/batchListInscription.cdc?raw';
+import personalDisplayModel from '../../cadence/scripts/Marketplace/get_personal_display_model.cdc?raw';
 import metaDataListScript from '../../cadence/scripts/get_inscription_metadata_list.cdc?raw';
 import listingItemScript from '../../cadence/scripts/Marketplace/get_all_listing_display_model.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
@@ -28,6 +30,14 @@ export const getPurchaseScripts = () => {
 
 export const getBatchPurchaseScripts = () => {
   return replacement(batchPurchaseScript)
+}
+
+export const getBatchSellScripts = () => {
+  return replacement(batchSellScript)
+}
+
+export const getPersonalDisplayModelScripts = () => {
+  return replacement(personalDisplayModel)
 }
 
 export const getMetaDataListScripts = () => {
