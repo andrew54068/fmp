@@ -204,7 +204,10 @@ export default function ListingPanel() {
     return <Box w={["100%", "auto"]}>
       <Button
         colorScheme="blue"
-        onClick={handleSendTransaction}
+        onClick={() => {
+          setErrorMessage("");
+          handleSendTransaction();
+        }}
         isLoading={waitingForTx}
         isDisabled={!account || (selectedInscriptions.length ?? 0) == 0}
         width={["100%", "auto"]}
