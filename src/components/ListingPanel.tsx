@@ -50,7 +50,17 @@ export default function ListingPanel() {
 
   useEffect(() => {
     const updateList = async () => {
-      const displayModels: InscriptionDisplayModel[] = await sendScript(getMarketListingItemScripts())
+      const results: any[] = await sendScript(getMarketListingItemScripts())
+      const displayModels: InscriptionDisplayModel[] = results.map((value) => {
+        return {
+          listingId: value.listingId,
+          nftId: value.nftId,
+          inscription: value.inscription,
+          seller: value.seller,
+          salePrice: new BigNumber(value.salePrice),
+          timestamp: value.timestamp,
+        }
+      });
       console.log(`💥 displayModels.length: ${JSON.stringify(displayModels.length, null, '  ')}`);
       displayModels.sort((a: InscriptionDisplayModel, b: InscriptionDisplayModel) => {
         const aSalePrice = new BigNumber(a.salePrice)
@@ -237,7 +247,7 @@ export default function ListingPanel() {
               selectable
               isSelected={selectedInscriptions.includes(inscription.nftId)}
               onClick={() => handleCardSelect(inscription)}
-              price={inscription.salePrice.toString()}
+              price={inscription.salePrice}
               cursor="pointer"
             />
 
