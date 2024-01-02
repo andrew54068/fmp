@@ -3,6 +3,7 @@ import mintScript from '../../cadence/transactions/mint.cdc?raw';
 import purchaseScript from '../../cadence/transactions/bay/buySingleInscription.cdc?raw';
 import batchPurchaseScript from '../../cadence/transactions/batchBuyInscription.cdc?raw';
 import metaDataListScript from '../../cadence/scripts/get_inscription_metadata_list.cdc?raw';
+import listingItemScript from '../../cadence/scripts/Marketplace/get_all_listing_display_model.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
 
 const replacement = (script: string): string => {
@@ -31,6 +32,10 @@ export const getBatchPurchaseScripts = () => {
 
 export const getMetaDataListScripts = () => {
   return replacement(metaDataListScript)
+}
+
+export const getMarketListingItemScripts = () => {
+  return replacement(listingItemScript)
 }
 
 export const getProgressScript = () => {
