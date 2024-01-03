@@ -182,7 +182,7 @@ export default function ListingPanel() {
               style={{ textDecoration: "underline" }}
             >
               <Icon as={WarningIcon} mr="8px" />
-              Inscription minted successfully!!
+              Purchased successfully!!
             </Link>
             <Box
               onClick={() => toast.closeAll()}
