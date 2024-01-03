@@ -314,21 +314,27 @@ export default function PersonalPanel() {
       {account ? (
         <>
           <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l">
-            {inscriptions.map((inscription, index) => (
-              <Box key={index}>
-                <InscriptionsCard
-                  inscriptionData={JSON.parse(inscription.inscription)}
-                  selectable={!inscription.salePrice}
-                  isSelected={
-                    !inscription.salePrice &&
-                    selectedInscriptions.includes(inscription.nftId)
-                  }
-                  onClick={() => handleCardSelect(inscription)}
-                  price={inscription.salePrice}
-                  cursor="pointer"
-                />
-              </Box>
-            ))}
+            {inscriptions.length > 0 ? (
+              inscriptions.map((inscription, index) => (
+                <Box key={index}>
+                  <InscriptionsCard
+                    inscriptionData={JSON.parse(inscription.inscription)}
+                    selectable={!inscription.salePrice}
+                    isSelected={
+                      !inscription.salePrice &&
+                      selectedInscriptions.includes(inscription.nftId)
+                    }
+                    onClick={() => handleCardSelect(inscription)}
+                    price={inscription.salePrice}
+                    cursor="pointer"
+                  />
+                </Box>
+              ))
+            ) : (
+              <Text fontSize="size.heading.5" mb="space.l" lineHeight="22px">
+                You don't have Inscription yet!
+              </Text>
+            )}
           </SimpleGrid>
         </>
       ) : (
