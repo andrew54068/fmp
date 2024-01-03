@@ -163,7 +163,7 @@ export default function ListingPanel() {
       }).map((event) => event.data.listingResourceID)
 
       const successAmount = successListingId.length
-      const failedAmount = selectedInscriptions.length
+      const failedAmount = selectedInscriptions.length - successAmount
 
       console.log("txData :", txData);
 
