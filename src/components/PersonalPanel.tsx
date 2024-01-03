@@ -137,9 +137,9 @@ export default function PersonalPanel() {
     }
   };
 
-  const handleCancel = () => {
+  const resetSelectionInfo = () => {
     setSelectedInscriptions([]);
-    setPriceSummary(BigNumber(0));
+    setPriceSummary(new BigNumber(0));
   };
 
   const convertToListingModel = useCallback(
@@ -207,7 +207,7 @@ export default function PersonalPanel() {
         ]
       );
 
-      setSelectedInscriptions([]);
+      resetSelectionInfo();
 
       console.log("txData :", txData);
 
@@ -292,7 +292,7 @@ export default function PersonalPanel() {
             colorScheme="blue"
             onClick={() => {
               setErrorMessage("");
-              handleCancel();
+              resetSelectionInfo();
             }}
             isLoading={waitingForTx}
             width={["100%", "auto"]}

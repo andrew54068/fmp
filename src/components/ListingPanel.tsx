@@ -108,11 +108,6 @@ export default function ListingPanel() {
     }
   };
 
-  const handleCancel = () => {
-    setSelectedInscriptions([]);
-    setPriceSummary(BigNumber(0));
-  };
-
   const convertToPurchaseModel = (displayModels: InscriptionDisplayModel[]): PurchaseModel[] => {
     return displayModels.map((model) => {
       return {
@@ -132,6 +127,11 @@ export default function ListingPanel() {
         ],
       }
     })
+  }
+
+  const resetSelectionInfo = () => {
+    setSelectedInscriptions([]);
+    setPriceSummary(new BigNumber(0));
   }
 
   const handleSendTransaction = useCallback(async () => {
@@ -176,7 +176,7 @@ export default function ListingPanel() {
 
       console.log("txData :", txData);
 
-      setSelectedInscriptions([]);
+      resetSelectionInfo();
 
       toast({
         status: "success",
@@ -249,7 +249,7 @@ export default function ListingPanel() {
         colorScheme="blue"
         onClick={() => {
           setErrorMessage("");
-          handleCancel();
+          resetSelectionInfo();
         }}
         isLoading={waitingForTx}
         width={["100%", "auto"]}
