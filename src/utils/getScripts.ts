@@ -7,6 +7,7 @@ import personalDisplayModel from '../../cadence/scripts/Marketplace/get_personal
 import metaDataListScript from '../../cadence/scripts/get_inscription_metadata_list.cdc?raw';
 import listingItemScript from '../../cadence/scripts/Marketplace/get_all_listing_display_model.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
+import flowBalance from '../../cadence/scripts/get_flow_balance.cdc?raw';
 
 const replacement = (script: string): string => {
   return script
@@ -50,4 +51,8 @@ export const getMarketListingItemScripts = () => {
 
 export const getProgressScript = () => {
   return replacement(progressScript)
+}
+
+export const getBalanceScript = () => {
+  return replacement(flowBalance)
 }

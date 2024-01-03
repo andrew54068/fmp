@@ -10,7 +10,7 @@ import { InfoOutlineIcon } from '@chakra-ui/icons'
 import InscriptionsCard from 'src/components/InscriptionCard';
 import { sendTransaction } from 'src/services/fcl/send-transaction';
 import { sendScript } from 'src/services/fcl/send-script';
-import { getBatchPurchaseScripts, getMarketListingItemScripts } from 'src/utils/getScripts'
+import { getBalanceScript, getBatchPurchaseScripts, getMarketListingItemScripts } from 'src/utils/getScripts'
 import { FLOW_SCAN_URL } from 'src/constants'
 
 type InscriptionDisplayModel = {
@@ -41,6 +41,7 @@ type PurchaseModel = {
 
 export default function ListingPanel() {
   const [waitingForTx, setWaitingForTx] = useState(false);
+  const [flowBalance, setFlowBalance] = useState("");
   const [inscriptions, setInscriptions] = useState<InscriptionDisplayModel[]>([]);
   const [selectedInscriptions, setSelectedInscriptions] = useState<string[]>([]);
   const [priceSummary, setPriceSummary] = useState<BigNumber>(new BigNumber(0));
@@ -75,9 +76,17 @@ export default function ListingPanel() {
         return 0;
       })
       setInscriptions(displayModels);
+
+      if (account) {
+        const balance: string = await sendScript(getBalanceScript(), (arg, t) => [
+          arg(account, t.Address)
+        ])
+        setFlowBalance(balance)
+        console.log(`💥 flowBalance: ${JSON.stringify(flowBalance, null, '  ')}`);
+      }
     };
     updateList();
-  }, [account, waitingForTx, setInscriptions])
+  }, [account, waitingForTx, setInscriptions, flowBalance])
 
   const handleCardSelect = (inscription: InscriptionDisplayModel) => {
     const salePrice: BigNumber = inscription.salePrice;
@@ -296,13 +305,16 @@ export default function ListingPanel() {
                     You can buy up to 100 items at a time.
                   </Box>
                 </Flex>
-                {
-                  <Box fontSize="size.body.1">
-                    You are buying {selectedInscriptions.length} items for {priceSummary.toString()} Flow
-                  </Box>
-                }
+                <Box fontSize="size.body.1">
+                  You are buying {selectedInscriptions.length} items for {priceSummary.toString()} Flow
+                </Box>
             </Box>
-            <CallToActionButton />
+            <Flex direction="column" rowGap="10px" fontSize="size.body.2" mb="space.2xs" alignItems="center">
+              <CallToActionButton />
+              <Box ml="space.3xs">
+                Your Flow balance: {flowBalance}
+              </Box>
+            </Flex>
         </Flex>
       </Box>
     </Box >
