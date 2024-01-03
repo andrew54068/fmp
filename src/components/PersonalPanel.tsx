@@ -1,3 +1,4 @@
+import * as fcl from "@blocto/fcl";
 import BigNumber from "bignumber.js";
 import {
   useState,
@@ -62,9 +63,7 @@ type ListingModel = {
 export default function PersonalPanel() {
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [sellPrice, setSellPrice] = useState(new BigNumber(0));
-  const [inscriptions, setInscriptions] = useState<PersonalDisplayModel[]>(
-    []
-  );
+  const [inscriptions, setInscriptions] = useState<PersonalDisplayModel[]>([]);
   const [selectedInscriptions, setSelectedInscriptions] = useState<string[]>(
     []
   );
@@ -76,19 +75,22 @@ export default function PersonalPanel() {
   const hasSelected: boolean = (selectedInscriptions.length ?? 0) > 0;
 
   useEffect(() => {
-    console.log(`💥 account: ${JSON.stringify(account, null, '  ')}`);
+    console.log(`💥 account: ${JSON.stringify(account, null, "  ")}`);
     const updateList = async () => {
-      if (!account) return;
+      if (!account) {
+        setInscriptions([]);
+        return;
+      }
       const results: any[] = await sendScript(
         getPersonalDisplayModelScripts(),
         (arg, t) => [arg(account, t.Address)]
-      )
+      );
       const displayModels: PersonalDisplayModel[] = results.map((value) => {
         return {
           nftId: value.nftId,
           inscription: value.inscription,
           salePrice: value.salePrice ? new BigNumber(value.salePrice) : null,
-        }
+        };
       });
       console.log(
         `💥 personal displayModels length: ${JSON.stringify(
@@ -97,19 +99,17 @@ export default function PersonalPanel() {
           "  "
         )}`
       );
-      displayModels.sort(
-        (a: PersonalDisplayModel, b: PersonalDisplayModel) => {
-          const aSalePrice = new BigNumber(a.salePrice ?? "0");
-          const bSalePrice = new BigNumber(b.salePrice ?? "0");
-          if (aSalePrice.minus(bSalePrice).isGreaterThan(new BigNumber(0))) {
-            return -1;
-          }
-          if (aSalePrice.minus(bSalePrice).isLessThan(new BigNumber(0))) {
-            return 1;
-          }
-          return 0;
+      displayModels.sort((a: PersonalDisplayModel, b: PersonalDisplayModel) => {
+        const aSalePrice = new BigNumber(a.salePrice ?? "0");
+        const bSalePrice = new BigNumber(b.salePrice ?? "0");
+        if (aSalePrice.minus(bSalePrice).isGreaterThan(new BigNumber(0))) {
+          return -1;
         }
-      );
+        if (aSalePrice.minus(bSalePrice).isLessThan(new BigNumber(0))) {
+          return 1;
+        }
+        return 0;
+      });
       setInscriptions(displayModels);
     };
     updateList();
@@ -131,7 +131,9 @@ export default function PersonalPanel() {
     const bigNumberValue = new BigNumber(inputValue);
     if (inputValue && bigNumberValue) {
       setSellPrice(bigNumberValue);
-      setPriceSummary(bigNumberValue.multipliedBy(new BigNumber(selectedInscriptions.length)))
+      setPriceSummary(
+        bigNumberValue.multipliedBy(new BigNumber(selectedInscriptions.length))
+      );
     }
   };
 
@@ -143,9 +145,9 @@ export default function PersonalPanel() {
   const convertToListingModel = useCallback(
     (displayModels: PersonalDisplayModel[]): ListingModel[] => {
       return displayModels.map((model) => {
-        let finalPriceValue = sellPrice.toString()
-        if (!finalPriceValue.includes('.')) {
-          finalPriceValue = finalPriceValue + ".0"
+        let finalPriceValue = sellPrice.toString();
+        if (!finalPriceValue.includes(".")) {
+          finalPriceValue = finalPriceValue + ".0";
         }
         return {
           fields: [
@@ -264,10 +266,14 @@ export default function PersonalPanel() {
           colorScheme="blue"
           onClick={() => {
             setErrorMessage("");
-            onOpen();
+            if (account) {
+              onOpen();
+            } else {
+              fcl.authenticate();
+            }
           }}
           isLoading={waitingForTx}
-          isDisabled={!account || (selectedInscriptions.length ?? 0) == 0}
+          isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
           width={["100%", "auto"]}
           bg="#01ef8b"
           _hover={{
@@ -275,7 +281,9 @@ export default function PersonalPanel() {
             transform: "scale(0.98)",
           }}
         >
-          {account ? `List ${selectedInscriptions.length} Items` : 'Connect Wallet First'}
+          {account
+            ? `List ${selectedInscriptions.length} Items`
+            : "Connect Wallet"}
         </Button>
         {hasSelected && (
           <Button
@@ -303,21 +311,31 @@ export default function PersonalPanel() {
 
   return (
     <Box p="16px">
-      <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l">
-        {inscriptions.map((inscription, index) => (
-          <Box key={index}>
-            <InscriptionsCard
-              inscriptionData={JSON.parse(inscription.inscription)}
-              selectable={!inscription.salePrice}
-              isSelected={!inscription.salePrice && selectedInscriptions.includes(inscription.nftId)}
-              onClick={() => handleCardSelect(inscription)}
-              price={inscription.salePrice}
-              cursor="pointer"
-            />
-          </Box>
-        ))}
-      </SimpleGrid>
-
+      {account ? (
+        <>
+          <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l">
+            {inscriptions.map((inscription, index) => (
+              <Box key={index}>
+                <InscriptionsCard
+                  inscriptionData={JSON.parse(inscription.inscription)}
+                  selectable={!inscription.salePrice}
+                  isSelected={
+                    !inscription.salePrice &&
+                    selectedInscriptions.includes(inscription.nftId)
+                  }
+                  onClick={() => handleCardSelect(inscription)}
+                  price={inscription.salePrice}
+                  cursor="pointer"
+                />
+              </Box>
+            ))}
+          </SimpleGrid>
+        </>
+      ) : (
+        <Text fontSize="size.heading.5" mb="space.l" lineHeight="22px">
+          Wallet not connected yet!
+        </Text>
+      )}
       <Box pos="fixed" bottom="0" left="0" right="0" width="100%" bg="gray.800">
         <Flex
           alignItems="center"
@@ -344,24 +362,27 @@ export default function PersonalPanel() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent p="10px" bg="gray.700" color="white">
-          <ModalHeader >Batch Listing Inscription</ModalHeader>
-          <ModalCloseButton m="10px"/>
+          <ModalHeader>Batch Listing Inscription</ModalHeader>
+          <ModalCloseButton m="10px" />
           <ModalBody>
-            <Flex 
+            <Flex
               alignItems="center"
               direction="column"
               rowGap="20px"
               padding="20px"
-              borderRadius="12px">
-                <InputGroup>
-                  <Input
-                    placeholder={sellPrice.isEqualTo(new BigNumber(0)) ? "Sell Price" : sellPrice.toString()}
-                    onChange={handleSellPriceChange}
-                  ></Input>
-                  <InputRightAddon bg="gray.700">
-                    Flow
-                  </InputRightAddon>
-                </InputGroup>
+              borderRadius="12px"
+            >
+              <InputGroup>
+                <Input
+                  placeholder={
+                    sellPrice.isEqualTo(new BigNumber(0))
+                      ? "Sell Price"
+                      : sellPrice.toString()
+                  }
+                  onChange={handleSellPriceChange}
+                ></Input>
+                <InputRightAddon bg="gray.700">Flow</InputRightAddon>
+              </InputGroup>
               <Text fontSize="size.heading.5" mb="space.l" lineHeight="22px">
                 The price you typed will apply to all the inscriptions
               </Text>
@@ -377,8 +398,12 @@ export default function PersonalPanel() {
               w="100%"
               alignItems="center"
               columnGap="20px"
-              borderRadius="12px">
-              <Button isDisabled={sellPrice.isEqualTo(new BigNumber(0))} onClick={handleBatchListing}>
+              borderRadius="12px"
+            >
+              <Button
+                isDisabled={sellPrice.isEqualTo(new BigNumber(0))}
+                onClick={handleBatchListing}
+              >
                 List
               </Button>
               <Button variant="plain">Cancel</Button>

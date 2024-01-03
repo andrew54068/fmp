@@ -1,3 +1,4 @@
+import * as fcl from "@blocto/fcl";
 import BigNumber from "bignumber.js";
 import { useState, useContext, useCallback, useEffect } from 'react';
 import { GlobalContext } from 'src/context/global'
@@ -206,10 +207,14 @@ export default function ListingPanel() {
         colorScheme="blue"
         onClick={() => {
           setErrorMessage("");
-          handleSendTransaction();
+          if (account) {
+            handleSendTransaction();
+          } else {
+            fcl.authenticate();
+          }
         }}
         isLoading={waitingForTx}
-        isDisabled={!account || (selectedInscriptions.length ?? 0) == 0}
+        isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
         width={["100%", "auto"]}
         bg="#01ef8b"
         _hover={{
@@ -217,7 +222,7 @@ export default function ListingPanel() {
           transform: "scale(0.98)"
         }}
       >
-        {account ? `Buy ${selectedInscriptions.length} Items` : 'Connect Wallet First' }
+        {account ? `Buy ${selectedInscriptions.length} Items` : 'Connect Wallet' }
       </Button>
       {
         hasSelected && <Button
