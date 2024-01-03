@@ -1,8 +1,8 @@
 import * as fcl from "@blocto/fcl";
 import BigNumber from "bignumber.js";
-import { useState, useContext, useCallback, useEffect } from 'react';
+import { useState, useContext, useCallback, useEffect, ChangeEvent } from 'react';
 import { GlobalContext } from 'src/context/global'
-import { Icon, Card, Text, Flex, Box, SimpleGrid, useToast } from '@chakra-ui/react';
+import { Icon, Card, Text, Flex, Box, SimpleGrid, useToast, Modal, ModalContent, ModalFooter, ModalBody, InputGroup, InputRightAddon, Input, ModalCloseButton, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import { WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import Button from 'src/components/Button'
@@ -47,6 +47,7 @@ export default function ListingPanel() {
   const [priceSummary, setPriceSummary] = useState<BigNumber>(new BigNumber(0));
   const [errorMessage, setErrorMessage] = useState('');
   const { account } = useContext(GlobalContext);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const hasSelected: boolean = (selectedInscriptions.length ?? 0) > 0;
 
@@ -131,8 +132,21 @@ export default function ListingPanel() {
 
   const resetSelectionInfo = () => {
     setSelectedInscriptions([]);
-    setPriceSummary(new BigNumber(0));
+    setPriceSummary(BigNumber(0));
   }
+
+  const handleSweepAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+    const bigNumberValue = BigNumber(inputValue);
+    if (inputValue && bigNumberValue) {
+      const selectedInscriptions = inscriptions.slice(0, bigNumberValue.toNumber())
+      setSelectedInscriptions(selectedInscriptions.map(value => value.nftId))
+      const sum = selectedInscriptions.reduce((pre: BigNumber, current: InscriptionDisplayModel) => {
+        return pre.plus(current.salePrice)
+      }, BigNumber(0))
+      setPriceSummary(sum);
+    }
+  };
 
   const handleSendTransaction = useCallback(async () => {
     try {
@@ -310,6 +324,18 @@ export default function ListingPanel() {
                 </Box>
             </Box>
             <Flex direction="column" rowGap="10px" fontSize="size.body.2" mb="space.2xs" alignItems="center">
+              <Button
+                colorScheme="blue"
+                onClick={onOpen}
+                width={["100%", "auto"]}
+                bg="#01ef8b"
+                _hover={{
+                  bg: "#01ef8b",
+                  transform: "scale(0.98)",
+                }}
+              >
+                Sweep
+              </Button>
               <CallToActionButton />
               <Box ml="space.3xs">
                 Your Flow balance: {flowBalance}
@@ -317,6 +343,65 @@ export default function ListingPanel() {
             </Flex>
         </Flex>
       </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent p="10px" bg="gray.700" color="white">
+          <ModalHeader>Sweep</ModalHeader>
+          <ModalCloseButton m="10px" onClick={resetSelectionInfo}/>
+          <ModalBody>
+            <Flex
+              alignItems="center"
+              direction="column"
+              rowGap="20px"
+              padding="20px"
+              borderRadius="12px"
+            >
+              <InputGroup>
+                <Input
+                  placeholder={"How many do you want?"}
+                  onChange={handleSweepAmountChange}
+                ></Input>
+                <InputRightAddon bg="gray.700">Amount</InputRightAddon>
+              </InputGroup>
+              <Text fontSize="size.heading.5" mb="space.l" lineHeight="22px">
+                
+              </Text>
+              <Box fontSize="size.body.1">
+                You are sweeping {selectedInscriptions.length} items for{" "}
+                {priceSummary.toString()} Flow
+              </Box>
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter>
+            <Flex
+              w="100%"
+              alignItems="center"
+              columnGap="20px"
+              borderRadius="12px"
+            >
+              <Button
+                isDisabled={!account}
+                onClick={() => {
+                  setErrorMessage("");
+                  if (account) {
+                    handleSendTransaction();
+                    onClose();
+                  } else {
+                    fcl.authenticate();
+                  }
+                }}
+              >
+                {account ? "Sweep" : "Connect Wallet"}
+              </Button>
+              <Button variant="plain" onClick={() => {
+                onClose();
+                resetSelectionInfo();
+              }}>Cancel</Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box >
   );
 }
