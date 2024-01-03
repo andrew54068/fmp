@@ -158,7 +158,16 @@ export default function ListingPanel() {
         ]
       );
 
+      const successListingId = txData.events.filter((event) => {
+        return event.type === "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
+      }).map((event) => event.data.listingResourceID)
+
+      const successAmount = successListingId.length
+      const failedAmount = selectedInscriptions.length
+
       console.log("txData :", txData);
+
+      setSelectedInscriptions([]);
 
       toast({
         status: "success",
@@ -182,7 +191,7 @@ export default function ListingPanel() {
               style={{ textDecoration: "underline" }}
             >
               <Icon as={WarningIcon} mr="8px" />
-              Purchased successfully!!
+              {`You successfully bought ${successAmount}, but the other ${failedAmount} were swept by others.`}
             </Link>
             <Box
               onClick={() => toast.closeAll()}
