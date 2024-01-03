@@ -30,7 +30,7 @@ pub fun main(): [DisplayModel] {
     let mapping = Marketplace.getNFTIDListingIDMap(nftType: Type<@Inscription.NFT>())
 
     let items: [DisplayModel] = []
-    for listingID in mapping.values {
+    for listingID in mapping.values.slice(from: 0, upTo: 1000) {
         if let item: Marketplace.Item = Marketplace.getListingIDItem(listingID: listingID) {
             items.append(DisplayModel(
                 listingId: listingID,
