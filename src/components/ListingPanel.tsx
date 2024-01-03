@@ -12,6 +12,7 @@ import { sendTransaction } from 'src/services/fcl/send-transaction';
 import { sendScript } from 'src/services/fcl/send-script';
 import { getBalanceScript, getBatchPurchaseScripts, getMarketListingItemScripts } from 'src/utils/getScripts'
 import { FLOW_SCAN_URL } from 'src/constants'
+import { logSweepingButton, logSweeping } from 'src/services/Amplitude/log'
 
 type InscriptionDisplayModel = {
   listingId: string;
@@ -200,8 +201,18 @@ export default function ListingPanel() {
 
       resetSelectionInfo();
 
+      const status = successAmount > 0 ? "success" : "info"
+      let displayMessage: string = ''
+      if (successAmount == selectedInscriptions.length) {
+        displayMessage = `You successfully bought ${successAmount} items`
+      } else if (successAmount > 0) {
+        displayMessage = `You successfully bought ${successAmount} items, but the other ${failedAmount} were swept by others.`
+      } else {
+        displayMessage = `All the selected items were brought before you. Good luck next time!`
+      }
+
       toast({
-        status: "success",
+        status,
         position: "top",
         duration: null,
         isClosable: true,
@@ -211,7 +222,7 @@ export default function ListingPanel() {
         render: () => (
           <Flex
             alignItems="center"
-            bg="green.500"
+            bg={ successAmount > 0 ? "green.500" : "yellow.500" }
             color="white"
             padding="20px"
             borderRadius="12px"
@@ -222,7 +233,7 @@ export default function ListingPanel() {
               style={{ textDecoration: "underline" }}
             >
               <Icon as={WarningIcon} mr="8px" />
-              {`You successfully bought ${successAmount}, but the other ${failedAmount} were swept by others.`}
+              {displayMessage}
             </Link>
             <Box
               onClick={() => toast.closeAll()}
@@ -334,7 +345,10 @@ export default function ListingPanel() {
             <Flex direction="column" rowGap="10px" fontSize="size.body.2" mb="space.2xs" alignItems="center">
               <Button
                 colorScheme="blue"
-                onClick={onOpen}
+                onClick={() => {
+                  logSweepingButton();
+                  onOpen();
+                }}
                 width={["100%", "auto"]}
                 bg="#01ef8b"
                 _hover={{
@@ -395,6 +409,7 @@ export default function ListingPanel() {
                   if (account) {
                     handleSendTransaction();
                     onClose();
+                    logSweeping(selectedInscriptions.length.toString());
                   } else {
                     fcl.authenticate();
                   }

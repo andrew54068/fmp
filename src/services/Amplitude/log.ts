@@ -37,3 +37,11 @@ export const logFinishMinting = () => {
   logCore("finish_minting");
 };
 
+export const logSweepingButton = () => {
+  logCore("click_sweep_button");
+};
+
+export const logSweeping = (amount: string) => {
+  logCore("sweeping", { amount });
+};
+
