@@ -24,24 +24,33 @@ transaction(purchaseModels: [ListingUtils.PurchaseModel]) {
                 .borrow()
                 ?? panic("Could not borrow Storefront from provided address")
 
+
+
             if let listing = storefront.borrowListing(listingResourceID: purchaseModel.listingResourceID) {
-                let price = listing.getDetails().salePrice
+                if let collectionRef = getAccount(purchaseModel.storefrontAddress)
+                    .getCapability(Inscription.CollectionPublicPath)
+                    .borrow<&{NonFungibleToken.CollectionPublic}>() {
+                    let nft = listing.borrowNFT()
+                    if collectionRef.getIDs().contains(nft.id) {
+                        let price = listing.getDetails().salePrice
 
-                assert(purchaseModel.buyPrice == price, message: "buyPrice is NOT same with salePrice")
+                        assert(purchaseModel.buyPrice == price, message: "buyPrice is NOT same with salePrice")
 
-                let targetTokenVault = signer.borrow<&{FungibleToken.Provider}>(from: /storage/flowTokenVault)
-                    ?? panic("Cannot borrow target token vault from signer storage")
-                let paymentVault <- targetTokenVault.withdraw(amount: price)
+                        let targetTokenVault = signer.borrow<&{FungibleToken.Provider}>(from: /storage/flowTokenVault)
+                            ?? panic("Cannot borrow target token vault from signer storage")
+                        let paymentVault <- targetTokenVault.withdraw(amount: price)
 
-                let nftCollection = signer.borrow<&{NonFungibleToken.Receiver}>(from: Inscription.CollectionStoragePath)
-                            ?? panic("Cannot borrow NFT collection receiver from account")
+                        let nftCollection = signer.borrow<&{NonFungibleToken.Receiver}>(from: Inscription.CollectionStoragePath)
+                                    ?? panic("Cannot borrow NFT collection receiver from account")
 
-                let item <- listing.purchase(payment: <- paymentVault)
-                nftCollection.deposit(token: <-item)
+                        let item <- listing.purchase(payment: <- paymentVault)
+                        nftCollection.deposit(token: <-item)
 
-                // Be kind and recycle
-                storefront.cleanup(listingResourceID: purchaseModel.listingResourceID)
-                Marketplace.removeListing(id: purchaseModel.listingResourceID)
+                        // Be kind and recycle
+                        storefront.cleanup(listingResourceID: purchaseModel.listingResourceID)
+                        Marketplace.removeListing(id: purchaseModel.listingResourceID)
+                    }
+                }
             }
         }
 
