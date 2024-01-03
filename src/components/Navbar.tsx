@@ -89,10 +89,9 @@ export default function Navbar() {
           </Link>
         </Box>
         <Flex flex="1" justifyContent="flex-end" p="12px">
-          <MarketplaceShowOff />
-          {/* <Link to="/marketplace">
+          <Link to="/marketplace">
             Marketplace
-          </Link> */}
+          </Link>
         </Flex>
         <Flex alignItems="center">
           <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />

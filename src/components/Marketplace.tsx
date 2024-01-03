@@ -10,7 +10,9 @@ export default function Marketplace() {
         <Tab>
           Listing
         </Tab>
-        <Tab>My Items</Tab>
+        <Tab>
+          My Items
+        </Tab>
       </TabList>
 
       <TabPanels>
