@@ -6,9 +6,6 @@ const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(tabsAnatomy.keys);
 
 const marketplaceVariant = definePartsStyle((props) => {
-  const { colorScheme: c } = props // extract colorScheme from component props
-  console.log('colorScheme :', c);
-
   return {
     tab: {
       border: '2px solid',
