@@ -53,8 +53,20 @@ export default function ListingPanel() {
 
   useEffect(() => {
     const updateList = async () => {
-      const results: any[] = await sendScript(getMarketListingItemScripts())
-      const displayModels: InscriptionDisplayModel[] = results.map((value) => {
+      const requests: Promise<any | any[]>[] = []
+      const itemRequest = sendScript(getMarketListingItemScripts())
+      requests.push(itemRequest)
+
+      if (account) {
+        const balanceRequest = sendScript(getBalanceScript(), (arg, t) => [
+          arg(account, t.Address)
+        ])
+        requests.push(balanceRequest)
+      }
+
+      const [inscriptionResults, balanceResult] = await Promise.all(requests)
+
+      const displayModels: InscriptionDisplayModel[] = inscriptionResults.map((value) => {
         return {
           listingId: value.listingId,
           nftId: value.nftId,
@@ -78,12 +90,8 @@ export default function ListingPanel() {
       })
       setInscriptions(displayModels);
 
-      if (account) {
-        const balance: string = await sendScript(getBalanceScript(), (arg, t) => [
-          arg(account, t.Address)
-        ])
-        setFlowBalance(balance)
-        console.log(`💥 flowBalance: ${JSON.stringify(flowBalance, null, '  ')}`);
+      if (balanceResult) {
+        setFlowBalance(balanceResult)
       }
     };
     updateList();
