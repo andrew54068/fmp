@@ -284,26 +284,26 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
-"@blocto/fcl@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@blocto/fcl/-/fcl-1.6.1.tgz#1058561938c7a3762682e512ec1259ed7deead78"
-  integrity sha512-h1w83ZhcHty0RLMfzL9tS6oLfHUoJvnYHJ04ZJVAEwtz/yIXBV/d6A0RTu/23pwOYe94/SErKhNz+5nhrLTJ9Q==
+"@blocto/fcl@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@blocto/fcl/-/fcl-1.4.0.tgz#11f191e1d650e282bcc94b76820eacc3cdf5485d"
+  integrity sha512-zjCjuUxxAlE5xqGE2zaC8Z5EHPT8Oh135Ld6o7wJ/7m4uPJX9mte8Reasq5tIYi57eF6Bc7wzMjDYQYEXl4ayA==
   dependencies:
     "@babel/runtime" "^7.18.6"
-    "@blocto/flow-sdk" "^1.2.2"
-    "@onflow/config" "^1.1.2"
+    "@blocto/flow-sdk" "^1.2.0"
+    "@onflow/config" "^1.1.0"
     "@onflow/interaction" "0.0.11"
     "@onflow/rlp" "^1.1.0"
     "@onflow/types" "^1.1.0"
     "@onflow/util-actor" "^1.2.0"
     "@onflow/util-address" "^1.1.0"
     "@onflow/util-invariant" "^1.1.0"
-    "@onflow/util-logger" "^1.2.2"
+    "@onflow/util-logger" "^1.2.0"
     "@onflow/util-template" "^1.1.0"
     "@onflow/util-uid" "^1.1.0"
     cross-fetch "^3.1.6"
 
-"@blocto/flow-sdk@^1.2.2":
+"@blocto/flow-sdk@^1.2.0":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@blocto/flow-sdk/-/flow-sdk-1.2.2.tgz#a9918e42dcc0870f914af8caa23a760b033930d8"
   integrity sha512-4frWTLTfyJmEgNyDWvsLs7ZuT41sSfyp8oulLHP4Li1wdPO9V2jYUWzMFISEyzovZedAwdX7sVmoD99tBPLTcg==
@@ -1541,7 +1541,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@onflow/config@^1.1.1", "@onflow/config@^1.1.2":
+"@onflow/config@^1.1.0", "@onflow/config@^1.1.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@onflow/config/-/config-1.2.1.tgz#35cc94183a12a7d88e42a1aa7c44e1c4515f96d6"
   integrity sha512-V/yV5HcujnI6k1UjCwdh61a6Pun+gayPGR4EWZXqMe5lWQWDhKLZO0q6/sYbHF2kDQFjfBnG4ROyZE/NxYEs3A==
@@ -1609,7 +1609,7 @@
   dependencies:
     "@babel/runtime" "^7.18.6"
 
-"@onflow/util-logger@^1.2.1", "@onflow/util-logger@^1.2.2", "@onflow/util-logger@^1.3.1":
+"@onflow/util-logger@^1.2.0", "@onflow/util-logger@^1.2.1", "@onflow/util-logger@^1.3.1":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@onflow/util-logger/-/util-logger-1.3.1.tgz#32239a93eb889df9d0191832f11c7a90eeb14240"
   integrity sha512-LKsesUsrVFzaXO3K99Ifm8i+T1ofQNWixxiAei9WhbM2GlCBuaVj6OJ6ZF1eCnQOdwNGudYmxAx5mkFqHrOEEw==
