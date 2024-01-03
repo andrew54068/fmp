@@ -199,7 +199,7 @@ export default function ListingPanel() {
       setErrorMessage(err.message);
     }
     setWaitingForTx(false);
-  }, [account]);
+  }, [account, inscriptions, selectedInscriptions, toast]);
 
   const CallToActionButton = () => {
     return <Box w={["100%", "auto"]}>
