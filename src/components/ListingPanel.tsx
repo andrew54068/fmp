@@ -61,7 +61,7 @@ export default function ListingPanel() {
           timestamp: value.timestamp,
         }
       });
-      console.log(`💥 displayModels.length: ${JSON.stringify(displayModels.length, null, '  ')}`);
+      console.log(`💥 listing displayModels length: ${JSON.stringify(displayModels.length, null, '  ')}`);
       displayModels.sort((a: InscriptionDisplayModel, b: InscriptionDisplayModel) => {
         const aSalePrice = new BigNumber(a.salePrice)
         const bSalePrice = new BigNumber(b.salePrice)

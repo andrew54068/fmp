@@ -91,7 +91,7 @@ export default function PersonalPanel() {
         }
       });
       console.log(
-        `💥 displayModels.length: ${JSON.stringify(
+        `💥 personal displayModels length: ${JSON.stringify(
           displayModels.length,
           null,
           "  "
