@@ -27,7 +27,7 @@ pub fun main(address: Address): [PersonalDisplayModel] {
 
         let displays: [PersonalDisplayModel] = []
 
-        for inscriptionId in ids {
+        for inscriptionId in ids.slice(from: 0, upTo: 500) {
             let inscription = collectionRef.borrowInscription(id: inscriptionId)!
 
             if let listingID = Marketplace.getListingID(nftType: inscription.getType(), nftID: inscriptionId) {
