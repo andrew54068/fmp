@@ -8,7 +8,6 @@ import { useState } from "react";
 import * as fcl from "@blocto/fcl";
 import { Link } from "react-router-dom";
 import formatAddress from "src/utils/formatAddress";
-import MarketplaceShowOff from './MarketplaceShowOff';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ListItem = ({ children, ...rest }: any) => (
