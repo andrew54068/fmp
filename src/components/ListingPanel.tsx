@@ -90,6 +90,7 @@ export default function ListingPanel({
   );
   const [priceSummary, setPriceSummary] = useState<BigNumber>(new BigNumber(0));
   const [errorMessage, setErrorMessage] = useState("");
+  const [showSweepErrorMessage, setShowSweepErrorMessage] = useState(false);
   const { account } = useContext(GlobalContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -206,12 +207,18 @@ export default function ListingPanel({
   const resetSelectionInfo = () => {
     setSelectedInscriptions([]);
     setPriceSummary(BigNumber(0));
+    setShowSweepErrorMessage(false);
   };
 
   const handleSweepAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setShowSweepErrorMessage(false);
     const inputValue = event.target.value;
     const bigNumberValue = BigNumber(inputValue);
     if (inputValue && bigNumberValue) {
+      if (bigNumberValue.isGreaterThan(BigNumber(20))) {
+        setShowSweepErrorMessage(true);
+        return
+      }
       const selectedInscriptions = inscriptions.slice(
         0,
         bigNumberValue.toNumber()
@@ -466,6 +473,8 @@ export default function ListingPanel({
             >
               <InputGroup>
                 <Input
+                  isInvalid={showSweepErrorMessage}
+                  errorBorderColor='red.300'
                   placeholder={"How many do you want?"}
                   onChange={handleSweepAmountChange}
                 ></Input>
@@ -480,6 +489,11 @@ export default function ListingPanel({
                 You are sweeping {selectedInscriptions.length} items for{" "}
                 {priceSummary.toString()} Flow
               </Box>
+              {showSweepErrorMessage && (
+                <Box color="red" fontSize="size.body.5">
+                  If you sweep more than 20 items the transaction might exceeds computation limit (9999)
+                </Box>
+              )}
             </Flex>
           </ModalBody>
 
@@ -491,7 +505,7 @@ export default function ListingPanel({
               borderRadius="12px"
             >
               <Button
-                isDisabled={!account}
+                isDisabled={!account || showSweepErrorMessage}
                 onClick={() => {
                   setErrorMessage("");
                   if (account) {
