@@ -21,7 +21,7 @@ export const fetchAllList = mem(
     const requests: Promise<InscriptionDisplayModel[]>[] = [];
     const limit = amountPerReq;
     let startOffset = 0;
-    let endOffset = startOffset + limit - 1;
+    let endOffset = Math.min(startOffset + limit - 1, totalAmount);
     while (startOffset + 1 < totalAmount) {
       const req = fetchList(script,
         (arg, t) => [
