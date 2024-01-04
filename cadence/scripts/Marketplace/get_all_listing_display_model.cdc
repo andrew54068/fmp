@@ -26,11 +26,11 @@ pub struct DisplayModel {
     }
 }
 
-pub fun main(): [DisplayModel] {
+pub fun main(from: Int, upTo: Int): [DisplayModel] {
     let mapping = Marketplace.getNFTIDListingIDMap(nftType: Type<@Inscription.NFT>())
 
     let items: [DisplayModel] = []
-    for listingID in mapping.values.slice(from: 0, upTo: 1000) {
+    for listingID in mapping.values.slice(from: from, upTo: upTo) {
         if let item: Marketplace.Item = Marketplace.getListingIDItem(listingID: listingID) {
             items.append(DisplayModel(
                 listingId: listingID,

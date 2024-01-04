@@ -17,7 +17,7 @@ pub struct PersonalDisplayModel {
     }
 }
 
-pub fun main(address: Address): [PersonalDisplayModel] {
+pub fun main(address: Address, from: Int, upTo: Int): [PersonalDisplayModel] {
     let account = getAccount(address)
 
     if let collectionRef = account
@@ -27,7 +27,7 @@ pub fun main(address: Address): [PersonalDisplayModel] {
 
         let displays: [PersonalDisplayModel] = []
 
-        for inscriptionId in ids.slice(from: 0, upTo: 500) {
+        for inscriptionId in ids.slice(from: from, upTo: upTo) {
             let inscription = collectionRef.borrowInscription(id: inscriptionId)!
 
             if let listingID = Marketplace.getListingID(nftType: inscription.getType(), nftID: inscriptionId) {

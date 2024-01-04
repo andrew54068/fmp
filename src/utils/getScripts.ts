@@ -4,8 +4,10 @@ import purchaseScript from '../../cadence/transactions/bay/buySingleInscription.
 import batchPurchaseScript from '../../cadence/transactions/batchBuyInscription.cdc?raw';
 import batchSellScript from '../../cadence/transactions/batchListInscription.cdc?raw';
 import personalDisplayModel from '../../cadence/scripts/Marketplace/get_personal_display_model.cdc?raw';
+import personalAmount from '../../cadence/scripts/Marketplace/get_personal_amount.cdc?raw';
 import metaDataListScript from '../../cadence/scripts/get_inscription_metadata_list.cdc?raw';
 import listingItemScript from '../../cadence/scripts/Marketplace/get_all_listing_display_model.cdc?raw';
+import listingAmountScript from '../../cadence/scripts/Marketplace/get_all_listing_amount.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
 import flowBalance from '../../cadence/scripts/get_flow_balance.cdc?raw';
 
@@ -41,12 +43,20 @@ export const getPersonalDisplayModelScripts = () => {
   return replacement(personalDisplayModel)
 }
 
+export const getPersonalAmountScripts = () => {
+  return replacement(personalAmount)
+}
+
 export const getMetaDataListScripts = () => {
   return replacement(metaDataListScript)
 }
 
 export const getMarketListingItemScripts = () => {
   return replacement(listingItemScript)
+}
+
+export const getMarketListingAmountScripts = () => {
+  return replacement(listingAmountScript)
 }
 
 export const getProgressScript = () => {

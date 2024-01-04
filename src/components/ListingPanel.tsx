@@ -1,20 +1,51 @@
 import * as fcl from "@blocto/fcl";
 import BigNumber from "bignumber.js";
-import { useState, useContext, useCallback, useEffect, ChangeEvent } from 'react';
-import { GlobalContext } from 'src/context/global'
-import { Icon, Card, Text, Flex, Box, SimpleGrid, useToast, Modal, ModalContent, ModalFooter, ModalBody, InputGroup, InputRightAddon, Input, ModalCloseButton, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react';
+import {
+  useState,
+  useContext,
+  useCallback,
+  useEffect,
+  ChangeEvent,
+} from "react";
+import { GlobalContext } from "src/context/global";
+import {
+  Icon,
+  Card,
+  Text,
+  Flex,
+  Box,
+  SimpleGrid,
+  useToast,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalBody,
+  InputGroup,
+  InputRightAddon,
+  Input,
+  ModalCloseButton,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
-import Button from 'src/components/Button'
-import { InfoOutlineIcon } from '@chakra-ui/icons'
-import InscriptionsCard from 'src/components/InscriptionCard';
-import { sendTransaction } from 'src/services/fcl/send-transaction';
-import { sendScript } from 'src/services/fcl/send-script';
-import { getBalanceScript, getBatchPurchaseScripts, getMarketListingItemScripts } from 'src/utils/getScripts'
-import { FLOW_SCAN_URL } from 'src/constants'
-import { logSweepingButton, logSweeping } from 'src/services/Amplitude/log'
+import Button from "src/components/Button";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
+import InscriptionsCard from "src/components/InscriptionCard";
+import { sendTransaction } from "src/services/fcl/send-transaction";
+import { sendScript } from "src/services/fcl/send-script";
+import {
+  getBalanceScript,
+  getBatchPurchaseScripts,
+  getMarketListingAmountScripts,
+  getMarketListingItemScripts,
+} from "src/utils/getScripts";
+import { FLOW_SCAN_URL } from "src/constants";
+import { logSweepingButton, logSweeping } from "src/services/Amplitude/log";
+import { fetchAllList } from "src/utils/fetchList";
 
-type InscriptionDisplayModel = {
+export type InscriptionDisplayModel = {
   listingId: string;
   nftId: string;
   inscription: string;
@@ -26,48 +57,72 @@ type InscriptionDisplayModel = {
 type PurchaseModel = {
   fields: [
     {
-      name: "listingResourceID",
-      value: string,
+      name: "listingResourceID";
+      value: string;
     },
     {
-      name: "storefrontAddress",
-      value: string,
+      name: "storefrontAddress";
+      value: string;
     },
     {
-      name: "buyPrice",
-      value: string,
-    },
-  ],
+      name: "buyPrice";
+      value: string;
+    }
+  ];
 };
 
-export default function ListingPanel() {
+interface ListingPanelProps {
+  onUpdateAmount: (amount: BigNumber) => void;
+  onLoading: (isLoading: boolean) => void;
+}
+
+export default function ListingPanel({
+  onUpdateAmount,
+  onLoading,
+}: ListingPanelProps) {
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [flowBalance, setFlowBalance] = useState("");
-  const [inscriptions, setInscriptions] = useState<InscriptionDisplayModel[]>([]);
-  const [selectedInscriptions, setSelectedInscriptions] = useState<string[]>([]);
+  const [inscriptions, setInscriptions] = useState<InscriptionDisplayModel[]>(
+    []
+  );
+  const [selectedInscriptions, setSelectedInscriptions] = useState<string[]>(
+    []
+  );
   const [priceSummary, setPriceSummary] = useState<BigNumber>(new BigNumber(0));
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const { account } = useContext(GlobalContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const hasSelected: boolean = (selectedInscriptions.length ?? 0) > 0;
 
-  useEffect(() => {
-    const updateList = async () => {
-      const requests: Promise<any | any[]>[] = []
-      const itemRequest = sendScript(getMarketListingItemScripts())
-      requests.push(itemRequest)
+  const updateFlowBalance = useCallback(async () => {
+    if (account) {
+      const balance: string = await sendScript(getBalanceScript(), (arg, t) => [
+        arg(account, t.Address),
+      ]);
+      setFlowBalance(balance);
+    }
+  }, [account]);
 
-      if (account) {
-        const balanceRequest = sendScript(getBalanceScript(), (arg, t) => [
-          arg(account, t.Address)
-        ])
-        requests.push(balanceRequest)
-      }
+  const updateList = useCallback(async () => {
+    onLoading(true);
+    updateFlowBalance();
+    const totalListingAmount: number = await sendScript(
+      getMarketListingAmountScripts()
+    );
+    onUpdateAmount(BigNumber(totalListingAmount));
+    const itemRequests = await fetchAllList(
+      totalListingAmount,
+      1000,
+      getMarketListingItemScripts(),
+      []
+    );
 
-      const [inscriptionResults, balanceResult] = await Promise.all(requests)
+    const inscriptionReqeuestResults = await Promise.all(itemRequests);
+    const inscriptionResults = inscriptionReqeuestResults.flat();
 
-      const displayModels: InscriptionDisplayModel[] = inscriptionResults.map((value) => {
+    const displayModels: InscriptionDisplayModel[] = inscriptionResults.map(
+      (value) => {
         return {
           listingId: value.listingId,
           nftId: value.nftId,
@@ -75,12 +130,20 @@ export default function ListingPanel() {
           seller: value.seller,
           salePrice: new BigNumber(value.salePrice),
           timestamp: value.timestamp,
-        }
-      });
-      console.log(`💥 listing displayModels length: ${JSON.stringify(displayModels.length, null, '  ')}`);
-      displayModels.sort((a: InscriptionDisplayModel, b: InscriptionDisplayModel) => {
-        const aSalePrice = new BigNumber(a.salePrice)
-        const bSalePrice = new BigNumber(b.salePrice)
+        };
+      }
+    );
+    console.log(
+      `💥 listing displayModels length: ${JSON.stringify(
+        displayModels.length,
+        null,
+        "  "
+      )}`
+    );
+    displayModels.sort(
+      (a: InscriptionDisplayModel, b: InscriptionDisplayModel) => {
+        const aSalePrice = new BigNumber(a.salePrice);
+        const bSalePrice = new BigNumber(b.salePrice);
         if (aSalePrice.minus(bSalePrice).isGreaterThan(new BigNumber(0))) {
           return 1;
         }
@@ -88,29 +151,28 @@ export default function ListingPanel() {
           return -1;
         }
         return 0;
-      })
-      setInscriptions(displayModels);
-
-      if (balanceResult) {
-        setFlowBalance(balanceResult)
       }
-    };
+    );
+    setInscriptions(displayModels.slice(0, 500));
+    onLoading(false);
+  }, [onLoading, account]);
+
+  useEffect(() => {
     updateList();
-  }, [account, waitingForTx, setInscriptions, flowBalance])
+  }, [account, waitingForTx, setInscriptions, flowBalance, updateList]);
 
   const handleCardSelect = (inscription: InscriptionDisplayModel) => {
     const salePrice: BigNumber = inscription.salePrice;
     if (!selectedInscriptions.includes(inscription.nftId)) {
-      setSelectedInscriptions((prev) => [
-        ... prev,
-        inscription.nftId]);
+      setSelectedInscriptions((prev) => [...prev, inscription.nftId]);
       // Add price to summary
       if (inscription.salePrice) {
         setPriceSummary((prev) => prev.plus(salePrice));
       }
     } else {
-      setSelectedInscriptions(
-        (prev) => prev.filter((nftId) => nftId !== inscription.nftId));
+      setSelectedInscriptions((prev) =>
+        prev.filter((nftId) => nftId !== inscription.nftId)
+      );
       // Remove price from summary
       if (inscription.salePrice) {
         setPriceSummary((prev) => prev.minus(salePrice));
@@ -118,7 +180,9 @@ export default function ListingPanel() {
     }
   };
 
-  const convertToPurchaseModel = (displayModels: InscriptionDisplayModel[]): PurchaseModel[] => {
+  const convertToPurchaseModel = (
+    displayModels: InscriptionDisplayModel[]
+  ): PurchaseModel[] => {
     return displayModels.map((model) => {
       return {
         fields: [
@@ -135,44 +199,57 @@ export default function ListingPanel() {
             value: model.salePrice.toString(),
           },
         ],
-      }
-    })
-  }
+      };
+    });
+  };
 
   const resetSelectionInfo = () => {
     setSelectedInscriptions([]);
     setPriceSummary(BigNumber(0));
-  }
+  };
 
   const handleSweepAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
     const bigNumberValue = BigNumber(inputValue);
     if (inputValue && bigNumberValue) {
-      const selectedInscriptions = inscriptions.slice(0, bigNumberValue.toNumber())
-      setSelectedInscriptions(selectedInscriptions.map(value => value.nftId))
-      const sum = selectedInscriptions.reduce((pre: BigNumber, current: InscriptionDisplayModel) => {
-        return pre.plus(current.salePrice)
-      }, BigNumber(0))
+      const selectedInscriptions = inscriptions.slice(
+        0,
+        bigNumberValue.toNumber()
+      );
+      setSelectedInscriptions(selectedInscriptions.map((value) => value.nftId));
+      const sum = selectedInscriptions.reduce(
+        (pre: BigNumber, current: InscriptionDisplayModel) => {
+          return pre.plus(current.salePrice);
+        },
+        BigNumber(0)
+      );
       setPriceSummary(sum);
     }
   };
 
   const handleSendTransaction = useCallback(async () => {
     try {
-      console.log(`💥 account: ${JSON.stringify(account, null, '  ')}`);
       if (!account) return;
       setWaitingForTx(true);
-      const selectedDisplayModels: InscriptionDisplayModel[] = selectedInscriptions.reduce((pre: InscriptionDisplayModel[], currentNFTId: string) => {
-        const inscription = inscriptions.find((inscription) => inscription.nftId == currentNFTId)
-        if (inscription) {
-          return [...pre, inscription]
-        } else {
-          return [...pre]
-        }
-      }, [])
-      const purchaseModels = convertToPurchaseModel(selectedDisplayModels)
+      const selectedDisplayModels: InscriptionDisplayModel[] =
+        selectedInscriptions.reduce(
+          (pre: InscriptionDisplayModel[], currentNFTId: string) => {
+            const inscription = inscriptions.find(
+              (inscription) => inscription.nftId == currentNFTId
+            );
+            if (inscription) {
+              return [...pre, inscription];
+            } else {
+              return [...pre];
+            }
+          },
+          []
+        );
+      const purchaseModels = convertToPurchaseModel(selectedDisplayModels);
 
-      console.log(`💥 purchaseModels: ${JSON.stringify(purchaseModels, null, '  ')}`);
+      console.log(
+        `💥 purchaseModels: ${JSON.stringify(purchaseModels, null, "  ")}`
+      );
 
       const txData = await sendTransaction(
         getBatchPurchaseScripts(),
@@ -190,25 +267,29 @@ export default function ListingPanel() {
         ]
       );
 
-      const successListingId = txData.events.filter((event) => {
-        return event.type === "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
-      }).map((event) => event.data.listingResourceID)
+      const successListingId = txData.events
+        .filter((event) => {
+          return (
+            event.type === "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
+          );
+        })
+        .map((event) => event.data.listingResourceID);
 
-      const successAmount = successListingId.length
-      const failedAmount = selectedInscriptions.length - successAmount
+      const successAmount = successListingId.length;
+      const failedAmount = selectedInscriptions.length - successAmount;
 
       console.log("txData :", txData);
 
       resetSelectionInfo();
 
-      const status = successAmount > 0 ? "success" : "info"
-      let displayMessage: string = ''
+      const status = successAmount > 0 ? "success" : "info";
+      let displayMessage: string = "";
       if (successAmount == selectedInscriptions.length) {
-        displayMessage = `You successfully bought ${successAmount} items`
+        displayMessage = `You successfully bought ${successAmount} items`;
       } else if (successAmount > 0) {
-        displayMessage = `You successfully bought ${successAmount} items, but the other ${failedAmount} were swept by others.`
+        displayMessage = `You successfully bought ${successAmount} items, but the other ${failedAmount} were swept by others.`;
       } else {
-        displayMessage = `All the selected items were brought before you. Good luck next time!`
+        displayMessage = `All the selected items were brought before you. Good luck next time!`;
       }
 
       toast({
@@ -222,7 +303,7 @@ export default function ListingPanel() {
         render: () => (
           <Flex
             alignItems="center"
-            bg={ successAmount > 0 ? "green.500" : "yellow.500" }
+            bg={successAmount > 0 ? "green.500" : "yellow.500"}
             color="white"
             padding="20px"
             borderRadius="12px"
@@ -253,56 +334,59 @@ export default function ListingPanel() {
   }, [account, inscriptions, selectedInscriptions, toast]);
 
   const CallToActionButton = () => {
-    return <Box w={["100%", "auto"]}>
-      <Button
-        colorScheme="blue"
-        onClick={() => {
-          setErrorMessage("");
-          if (account) {
-            handleSendTransaction();
-          } else {
-            fcl.authenticate();
-          }
-        }}
-        isLoading={waitingForTx}
-        isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
-        width={["100%", "auto"]}
-        bg="#01ef8b"
-        _hover={{
-          bg: "#01ef8b",
-          transform: "scale(0.98)"
-        }}
-      >
-        {account ? `Buy ${selectedInscriptions.length} Items` : 'Connect Wallet' }
-      </Button>
-      {
-        hasSelected && <Button
-        ml={["0", 'space.m']}
-        mt={["space.s", "0"]}
-        colorScheme="blue"
-        onClick={() => {
-          setErrorMessage("");
-          resetSelectionInfo();
-        }}
-        isLoading={waitingForTx}
-        width={["100%", "auto"]}
-      >
-        Cancel
-      </Button>
-      }
-      {
-        errorMessage && <Card p="16px" bg="red.200" mt="space.l">
-          <Text color="red.500">{errorMessage}</Text>
-        </Card>
-      }
-    </Box >
-  }
+    return (
+      <Box w={["100%", "auto"]}>
+        <Button
+          colorScheme="blue"
+          onClick={() => {
+            setErrorMessage("");
+            if (account) {
+              handleSendTransaction();
+            } else {
+              fcl.authenticate();
+            }
+          }}
+          isLoading={waitingForTx}
+          isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
+          width={["100%", "auto"]}
+          bg="#01ef8b"
+          _hover={{
+            bg: "#01ef8b",
+            transform: "scale(0.98)",
+          }}
+        >
+          {account
+            ? `Buy ${selectedInscriptions.length} Items`
+            : "Connect Wallet"}
+        </Button>
+        {hasSelected && (
+          <Button
+            ml={["0", "space.m"]}
+            mt={["space.s", "0"]}
+            colorScheme="blue"
+            onClick={() => {
+              setErrorMessage("");
+              resetSelectionInfo();
+            }}
+            isLoading={waitingForTx}
+            width={["100%", "auto"]}
+          >
+            Cancel
+          </Button>
+        )}
+        {errorMessage && (
+          <Card p="16px" bg="red.200" mt="space.l">
+            <Text color="red.500">{errorMessage}</Text>
+          </Card>
+        )}
+      </Box>
+    );
+  };
 
   return (
     <Box p="16px">
       <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l">
         {inscriptions.map((inscription, index) => (
-
           <Box key={index}>
             <InscriptionsCard
               inscriptionData={JSON.parse(inscription.inscription)}
@@ -312,64 +396,66 @@ export default function ListingPanel() {
               price={inscription.salePrice}
               cursor="pointer"
             />
-
           </Box>
         ))}
       </SimpleGrid>
 
-      <Box pos="fixed"
-        bottom="0"
-        left="0"
-        right="0"
-        width="100%"
-        bg="gray.800"
-      >
+      <Box pos="fixed" bottom="0" left="0" right="0" width="100%" bg="gray.800">
         <Flex
           alignItems="center"
           justifyContent="space-between"
           p="space.m"
           maxWidth="820px"
           margin="0 auto"
-          flexDirection={["column", "column", "row"]}>
-            <Box mb={["16px", "16px", "0"]}>
-                <Flex fontSize="size.body.2" mb="space.2xs" color="gray.400" alignItems="center">
-                  <InfoOutlineIcon />
-                  <Box ml="space.3xs">
-                    You can buy up to 100 items at a time.
-                  </Box>
-                </Flex>
-                <Box fontSize="size.body.1">
-                  You are buying {selectedInscriptions.length} items for {priceSummary.toString()} Flow
-                </Box>
-            </Box>
-            <Flex direction="column" rowGap="10px" fontSize="size.body.2" mb="space.2xs" alignItems="center">
-              <Button
-                colorScheme="blue"
-                onClick={() => {
-                  logSweepingButton();
-                  onOpen();
-                }}
-                width={["100%", "auto"]}
-                bg="#01ef8b"
-                _hover={{
-                  bg: "#01ef8b",
-                  transform: "scale(0.98)",
-                }}
-              >
-                Sweep
-              </Button>
-              <CallToActionButton />
-              <Box ml="space.3xs">
-                Your Flow balance: {flowBalance}
-              </Box>
+          flexDirection={["column", "column", "row"]}
+        >
+          <Box mb={["16px", "16px", "0"]}>
+            <Flex
+              fontSize="size.body.2"
+              mb="space.2xs"
+              color="gray.400"
+              alignItems="center"
+            >
+              <InfoOutlineIcon />
+              <Box ml="space.3xs">You can buy up to 100 items at a time.</Box>
             </Flex>
+            <Box fontSize="size.body.1">
+              You are buying {selectedInscriptions.length} items for{" "}
+              {priceSummary.toString()} Flow
+            </Box>
+          </Box>
+          <Flex
+            direction="column"
+            rowGap="10px"
+            fontSize="size.body.2"
+            mb="space.2xs"
+            alignItems="center"
+          >
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                logSweepingButton();
+                onOpen();
+              }}
+              width={["100%", "auto"]}
+              bg="#01ef8b"
+              _hover={{
+                bg: "#01ef8b",
+                transform: "scale(0.98)",
+              }}
+            >
+              Sweep
+            </Button>
+            <CallToActionButton />
+            <Box ml="space.3xs">Your Flow balance: {flowBalance}</Box>
+          </Flex>
         </Flex>
       </Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent p="10px" bg="gray.700" color="white">
           <ModalHeader>Sweep</ModalHeader>
-          <ModalCloseButton m="10px" onClick={resetSelectionInfo}/>
+          <ModalCloseButton m="10px" onClick={resetSelectionInfo} />
           <ModalBody>
             <Flex
               alignItems="center"
@@ -385,9 +471,11 @@ export default function ListingPanel() {
                 ></Input>
                 <InputRightAddon bg="gray.700">Amount</InputRightAddon>
               </InputGroup>
-              <Text fontSize="size.heading.5" mb="space.l" lineHeight="22px">
-                
-              </Text>
+              <Text
+                fontSize="size.heading.5"
+                mb="space.l"
+                lineHeight="22px"
+              ></Text>
               <Box fontSize="size.body.1">
                 You are sweeping {selectedInscriptions.length} items for{" "}
                 {priceSummary.toString()} Flow
@@ -417,14 +505,19 @@ export default function ListingPanel() {
               >
                 {account ? "Sweep" : "Connect Wallet"}
               </Button>
-              <Button variant="plain" onClick={() => {
-                onClose();
-                resetSelectionInfo();
-              }}>Cancel</Button>
+              <Button
+                variant="plain"
+                onClick={() => {
+                  onClose();
+                  resetSelectionInfo();
+                }}
+              >
+                Cancel
+              </Button>
             </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Box >
+    </Box>
   );
 }

@@ -37,9 +37,11 @@ import { sendTransaction } from "src/services/fcl/send-transaction";
 import { sendScript } from "src/services/fcl/send-script";
 import {
   getBatchSellScripts,
+  getPersonalAmountScripts,
   getPersonalDisplayModelScripts,
 } from "src/utils/getScripts";
 import { FLOW_SCAN_URL } from "src/constants";
+import { fetchAllList } from "src/utils/fetchList";
 
 type PersonalDisplayModel = {
   nftId: string;
@@ -60,7 +62,12 @@ type ListingModel = {
   ];
 };
 
-export default function PersonalPanel() {
+interface PersonalPanelProps {
+  onUpdateAmount: (amount: BigNumber) => void;
+  onLoading: (isLoading: boolean) => void;
+}
+
+export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPanelProps) {
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [sellPrice, setSellPrice] = useState(new BigNumber(0));
   const [inscriptions, setInscriptions] = useState<PersonalDisplayModel[]>([]);
@@ -81,11 +88,29 @@ export default function PersonalPanel() {
         setInscriptions([]);
         return;
       }
-      const results: any[] = await sendScript(
-        getPersonalDisplayModelScripts(),
+      onLoading(true);
+
+      const totalAmount: number = await sendScript(
+        getPersonalAmountScripts(),
         (arg, t) => [arg(account, t.Address)]
       );
-      const displayModels: PersonalDisplayModel[] = results.map((value) => {
+      onUpdateAmount(BigNumber(totalAmount))
+
+      const itemRequests = await fetchAllList(
+        totalAmount,
+        300,
+        getPersonalDisplayModelScripts(),
+        [
+          {
+            arg: account,
+            getType: (t) => t.Address
+          }
+        ]
+      );
+      const inscriptionReqeuestResults = await Promise.all(itemRequests);
+      const inscriptionResults = inscriptionReqeuestResults.flat();
+
+      const displayModels: PersonalDisplayModel[] = inscriptionResults.map((value) => {
         return {
           nftId: value.nftId,
           inscription: value.inscription,
@@ -110,10 +135,11 @@ export default function PersonalPanel() {
         }
         return 0;
       });
-      setInscriptions(displayModels);
+      setInscriptions(displayModels.slice(0, 200));
+      onLoading(false);
     };
     updateList();
-  }, [account, waitingForTx, setInscriptions]);
+  }, [account, onLoading]);
 
   const handleCardSelect = (inscription: PersonalDisplayModel) => {
     if (inscription.salePrice) return;
