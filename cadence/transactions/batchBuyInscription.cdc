@@ -28,8 +28,9 @@ transaction(purchaseModels: [ListingUtils.PurchaseModel]) {
                 if let collectionRef = getAccount(purchaseModel.storefrontAddress)
                     .getCapability(Inscription.CollectionPublicPath)
                     .borrow<&{Inscription.InscriptionCollectionPublic}>() {
-                    let nft = listing.borrowNFT()
-                    if collectionRef.borrowInscription(id: nft.id) != nil {
+                    let nftId = listing.getDetails().nftID
+                    if collectionRef.borrowInscription(id: nftId) != nil {
+                        let nft = listing.borrowNFT()
                         let price = listing.getDetails().salePrice
 
                         assert(purchaseModel.buyPrice == price, message: "buyPrice is NOT same with salePrice")
