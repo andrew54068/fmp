@@ -89,7 +89,7 @@ export default function Marketplace() {
                 ? ` ${personalInsccriptionAmount}`
                 : ""}
             </Text>
-            {personalItemLoading ?? (
+            {personalItemLoading && (
               <Spinner m="0px 10px" size="md" color="#01ef8b" thickness='3px'/>
             )}
           </Tab>
