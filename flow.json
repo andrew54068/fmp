@@ -42,6 +42,20 @@
 				"testnet": "e1aa310cfe7750c4"
 			}
 		},
+		"MarketplaceBlacklistV2": {
+			"source": "cadence/contracts/Marketplace/MarketplaceBlacklistV2.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "564b229bd8380848"
+			}
+		},
+		"MarketplaceCleaner": {
+			"source": "cadence/contracts/Marketplace/MarketplaceCleaner.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "564b229bd8380848"
+			}
+		},
 		"MetadataViews": {
 			"source": "cadence/contracts/standards/MetadataViews.cdc",
 			"aliases": {
@@ -115,7 +129,8 @@
 				"InscriptionMetadata",
 				"NFTStorefront",
 				"Marketplace",
-				"ListingUtils"
+				"ListingUtils",
+				"MarketplaceBlacklistV2"
 			]
 		},
 		"testnet": {
@@ -123,7 +138,11 @@
 				"Inscription",
 				"InscriptionMetadata",
 				"Marketplace",
-				"ListingUtils"
+				"ListingUtils",
+				"MarketplaceBlacklistV2"
+			],
+			"testnet-user": [
+				"MarketplaceBlacklistV2"
 			]
 		}
 	}

@@ -5,7 +5,7 @@ import "Marketplace"
 import "FlowToken"
 import "Inscription"
 import "ListingUtils"
-import "MarketplaceBlacklist"
+import "MarketplaceBlacklistV2"
 
 transaction(listingIDs: [UInt64]) {
 
@@ -23,7 +23,12 @@ transaction(listingIDs: [UInt64]) {
                     .borrow<&{Inscription.InscriptionCollectionPublic}>() {
                     if collectionRef.borrowInscription(id: nftId) == nil {
                         Marketplace.removeListing(id: listingID)
-                        MarketplaceBlacklist.add(listingId: listingID, nftId: nftId)
+
+                        if let blacklistAdmin = signer.borrow<&MarketplaceBlacklistV2.Administrator>(from: MarketplaceBlacklistV2.AdminStoragePath) {
+                            blacklistAdmin.add(listingId: listingID, nftId: nftId)
+                        } else {
+                            panic("You are not admin! Fuck you!")
+                        }
                     }
                 }
             }

@@ -1,6 +1,6 @@
 import "Inscription"
 import "Marketplace"
-import "MarketplaceBlacklist"
+import "MarketplaceBlacklistV2"
 
 pub struct DisplayModel {
     pub let listingId: UInt64
@@ -32,7 +32,7 @@ pub fun main(from: Int, upTo: Int): [DisplayModel] {
 
     let items: [DisplayModel] = []
     for listingID in mapping.values.slice(from: from, upTo: upTo) {
-        // if MarketplaceBlacklist.exist(listingId: listingID) == false {
+        if MarketplaceBlacklistV2.exist(listingId: listingID) == false {
             if let item: Marketplace.Item = Marketplace.getListingIDItem(listingID: listingID) {
                 items.append(DisplayModel(
                     listingId: listingID,
@@ -42,7 +42,7 @@ pub fun main(from: Int, upTo: Int): [DisplayModel] {
                     salePrice: item.listingDetails.salePrice,
                     timestamp: item.timestamp))
             }
-        // }
+        }
     }
 
     return items

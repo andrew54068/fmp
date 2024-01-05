@@ -5,7 +5,7 @@ import "Marketplace"
 import "FlowToken"
 import "Inscription"
 import "ListingUtils"
-import "MarketplaceBlacklist"
+import "MarketplaceBlacklistV2"
 
 transaction(purchaseModels: [ListingUtils.PurchaseModel]) {
 
@@ -62,8 +62,6 @@ transaction(purchaseModels: [ListingUtils.PurchaseModel]) {
                         storefront.cleanup(listingResourceID: purchaseModel.listingResourceID)
                         Marketplace.removeListing(id: purchaseModel.listingResourceID)
                         // Gas Used: 72
-                    } else {
-                        MarketplaceBlacklist.add(listingId: purchaseModel.listingResourceID, nftId: nftId)
                     }
                 }
             }

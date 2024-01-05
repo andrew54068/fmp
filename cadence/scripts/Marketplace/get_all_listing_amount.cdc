@@ -1,7 +1,7 @@
 import "Inscription"
 import "Marketplace"
-import "MarketplaceBlacklist"
+import "MarketplaceBlacklistV2"
 
 pub fun main(): Int {
-    return Marketplace.getNFTIDListingIDMap(nftType: Type<@Inscription.NFT>()).values.length
+    return Marketplace.getNFTIDListingIDMap(nftType: Type<@Inscription.NFT>()).values.length - MarketplaceBlacklistV2.getKeysAmount()
 }

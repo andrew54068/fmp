@@ -1,4 +1,4 @@
-import { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklist } from 'src/constants';
+import { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklistV2 } from 'src/constants';
 import mintScript from '../../cadence/transactions/mint.cdc?raw';
 import purchaseScript from '../../cadence/transactions/bay/buySingleInscription.cdc?raw';
 import batchPurchaseScript from '../../cadence/transactions/batchBuyInscription.cdc?raw';
@@ -24,7 +24,7 @@ const replacement = (script: string): string => {
     .replace(`import "FlowToken"`, `import FlowToken from ${FlowToken}`)
     .replace(`import "ListingUtils"`, `import ListingUtils from ${ListingUtils}`)
     .replace(`import "MarketplaceCleaner"`, `import MarketplaceCleaner from ${MarketplaceCleaner}`)
-    .replace(`import "MarketplaceBlacklist"`, `import MarketplaceBlacklist from ${MarketplaceBlacklist}`);
+    .replace(`import "MarketplaceBlacklistV2"`, `import MarketplaceBlacklistV2 from ${MarketplaceBlacklistV2}`);
 }
 
 export const getMintScripts = () => {
