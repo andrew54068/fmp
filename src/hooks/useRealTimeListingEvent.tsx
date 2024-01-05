@@ -66,7 +66,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
           position: 'bottom-left',
           duration: 10 * 1000,
           containerStyle: {
-            position: 'fixed',
+            position: 'relative',
             bottom: `${footerPosition.bottom + 50 * index}px`,
             left: `${footerPosition.left}px`,
           },
