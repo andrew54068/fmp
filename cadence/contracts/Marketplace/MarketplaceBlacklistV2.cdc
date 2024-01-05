@@ -41,8 +41,8 @@ pub contract MarketplaceBlacklistV2 {
         return self.blacklist.containsKey(listingId)
     }
 
-    pub fun getKeysAmount(): Int {
-        return self.blacklist.keys.length
+    pub fun getAmount(): Int {
+        return self.blacklist.length
     }
 
 }
