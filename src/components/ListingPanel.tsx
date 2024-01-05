@@ -427,7 +427,7 @@ export default function ListingPanel({
               alignItems="center"
             >
               <InfoOutlineIcon />
-              <Box ml="space.3xs">You can buy up to 100 items at a time.</Box>
+              <Box ml="space.3xs">You can buy up to 20 items at a time.</Box>
             </Flex>
             <Box fontSize="size.body.1">
               You are buying {selectedInscriptions.length} items for{" "}
