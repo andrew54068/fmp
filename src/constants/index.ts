@@ -9,6 +9,8 @@ const testnetAddress = {
   FlowToken: "0x7e60df042a9c0868",
   FungibleToken: "0x9a0766d93b6608b7",
   ListingUtils: "0x564b229bd8380848",
+  MarketplaceCleaner: "",
+  MarketplaceBlacklist: "",
 }
 
 const mainnetAddress = {
@@ -20,6 +22,8 @@ const mainnetAddress = {
   FlowToken: "0x1654653399040a61",
   FungibleToken: "0xf233dcee88fe0abe",
   ListingUtils: "0x88dd257fcf26d3cc",
+  MarketplaceCleaner: "0x88dd257fcf26d3cc",
+  MarketplaceBlacklist: "0x88dd257fcf26d3cc",
 }
 
 //testnet
@@ -36,4 +40,4 @@ const mainnetAddress = {
 // export const FLOW_SCAN_URL = 'https://testnet.flowdiver.io/tx/'
 
 export const FLOW_SCAN_URL = isMainnet ? 'https://flowdiver.io/tx/' : 'https://testnet.flowdiver.io/tx/'
-export const { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils } = isMainnet ? mainnetAddress : testnetAddress
+export const { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklist } = isMainnet ? mainnetAddress : testnetAddress

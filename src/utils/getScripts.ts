@@ -1,4 +1,4 @@
-import { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils } from 'src/constants';
+import { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklist } from 'src/constants';
 import mintScript from '../../cadence/transactions/mint.cdc?raw';
 import purchaseScript from '../../cadence/transactions/bay/buySingleInscription.cdc?raw';
 import batchPurchaseScript from '../../cadence/transactions/batchBuyInscription.cdc?raw';
@@ -8,6 +8,8 @@ import personalAmount from '../../cadence/scripts/Marketplace/get_personal_amoun
 import metaDataListScript from '../../cadence/scripts/get_inscription_metadata_list.cdc?raw';
 import listingItemScript from '../../cadence/scripts/Marketplace/get_all_listing_display_model.cdc?raw';
 import listingAmountScript from '../../cadence/scripts/Marketplace/get_all_listing_amount.cdc?raw';
+import cleanNotListedItemsScript from '../../cadence/transactions/cleanNotListedItems.cdc?raw';
+import checkListingIdExistScript from '../../cadence/scripts/checkListingIdExist.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
 import flowBalance from '../../cadence/scripts/get_flow_balance.cdc?raw';
 
@@ -20,7 +22,9 @@ const replacement = (script: string): string => {
     .replace(`import "Marketplace"`, `import Marketplace from ${Marketplace}`)
     .replace(`import "NFTStorefront"`, `import NFTStorefront from ${NFTStorefront}`)
     .replace(`import "FlowToken"`, `import FlowToken from ${FlowToken}`)
-    .replace(`import "ListingUtils"`, `import ListingUtils from ${ListingUtils}`);
+    .replace(`import "ListingUtils"`, `import ListingUtils from ${ListingUtils}`)
+    .replace(`import "MarketplaceCleaner"`, `import MarketplaceCleaner from ${MarketplaceCleaner}`)
+    .replace(`import "MarketplaceBlacklist"`, `import MarketplaceBlacklist from ${MarketplaceBlacklist}`);
 }
 
 export const getMintScripts = () => {
@@ -65,4 +69,12 @@ export const getProgressScript = () => {
 
 export const getBalanceScript = () => {
   return replacement(flowBalance)
+}
+
+export const getCleanNotListedItemsScript = () => {
+  return replacement(cleanNotListedItemsScript)
+}
+
+export const getCheckListingIdExistScript = () => {
+  return replacement(checkListingIdExistScript)
 }

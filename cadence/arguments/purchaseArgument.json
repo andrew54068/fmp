@@ -1,31 +1,36 @@
 [
     {
-        "type": "Struct",
-        "value": {
-            "id": "A.f8d6e0586b0a20c7.ListingUtils.PurchaseModel",
-            "fields": [
-                {
-                    "name": "listingResourceID",
-                    "value": {
-                        "type": "UInt64",
-                        "value": "3530822107858468865"
-                    }
-                },
-                {
-                    "name": "storefrontAddress",
-                    "value": {
-                        "type": "Address",
-                        "value": "0xf8d6e0586b0a20c7"
-                    }
-                },
-                {
-                    "name": "buyPrice",
-                    "value": {
-                        "type": "UFix64",
-                        "value": "12.34000000"
-                    }
+        "type": "Array",
+        "value": [
+            {
+                "type": "Struct",
+                "value": {
+                    "id": "A.88dd257fcf26d3cc.ListingUtils.PurchaseModel",
+                    "fields": [
+                        {
+                            "name": "listingResourceID",
+                            "value": {
+                                "type": "UInt64",
+                                "value": "1427562371"
+                            }
+                        },
+                        {
+                            "name": "storefrontAddress",
+                            "value": {
+                                "type": "Address",
+                                "value": "0x6bedc751e0766e48"
+                            }
+                        },
+                        {
+                            "name": "buyPrice",
+                            "value": {
+                                "type": "UFix64",
+                                "value": "0.0242"
+                            }
+                        }
+                    ]
                 }
-            ]
-        }
+            }
+        ]
     }
 ]
