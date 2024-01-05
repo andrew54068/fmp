@@ -16,6 +16,8 @@ import { sendScript } from "src/services/fcl/send-script";
 import { getBalanceScript } from "src/utils/getScripts";
 import BigNumber from "bignumber.js";
 import InfoBlock from "./InfoBlock";
+import useRealTimeListingEvent from 'src/hooks/useRealTimeListingEvent';
+import { FooterContext } from 'src/context/marketplaceContext';
 
 export default function Marketplace() {
   const [flowBalance, setFlowBalance] = useState("");
@@ -24,6 +26,15 @@ export default function Marketplace() {
   const [personalInsccriptionAmount, setPersonalInsccriptionAmount] =
     useState<BigNumber | null>(null);
   const [listingAmount, setListingAmount] = useState<BigNumber | null>(null);
+  const [footerPosition, setFooterPosition] = useState<{
+    bottom: number;
+    left: number;
+  }>({
+    bottom: 0,
+    left: 0,
+  });
+
+  useRealTimeListingEvent({ footerPosition });
 
   useEffect(() => {
     const fetchRoyaltyFeeBalance = async () => {
@@ -41,75 +52,77 @@ export default function Marketplace() {
   }, []);
 
   return (
-    <Box
-      bg="gray.700"
-      mt="75px"
-      minH="calc(100vh - 75px)"
-      padding="16px"
-      pb="172px"
-      pt="60px"
-    >
-      <Flex
-        p="20px"
-        borderRadius="md"
-        margin="20px 0px"
-        fontSize="size.heading.3"
-        color="gray.700"
+    <FooterContext.Provider value={{ setFooterPosition }}>
+      <Box
+        bg="gray.700"
+        mt="75px"
+        minH="calc(100vh - 75px)"
+        padding="16px"
+        pb="172px"
+        pt="60px"
       >
         <Flex
           p="20px"
-          w="100%"
           borderRadius="md"
           margin="20px 0px"
           fontSize="size.heading.3"
           color="gray.700"
-          columnGap="20px"
         >
-          <InfoBlock
-            statistic={`${flowBalance} Flow`}
-            desc="Total Trading Volume"
-          ></InfoBlock>
-          <InfoBlock statistic={`21892`} desc="Total Holders"></InfoBlock>
+          <Flex
+            p="20px"
+            w="100%"
+            borderRadius="md"
+            margin="20px 0px"
+            fontSize="size.heading.3"
+            color="gray.700"
+            columnGap="20px"
+          >
+            <InfoBlock
+              statistic={`${flowBalance} Flow`}
+              desc="Total Trading Volume"
+            ></InfoBlock>
+            <InfoBlock statistic={`21892`} desc="Total Holders"></InfoBlock>
+          </Flex>
         </Flex>
-      </Flex>
-      <Tabs colorScheme="whiteAlpha" variant="marketplace">
-        <TabList>
-          <Tab pr="5px">
-            <Text m="10px">
-              Listing Items{listingAmount ? ` ${listingAmount}` : ""}
-            </Text>
-            {listingLoading && (
-              <Spinner m="0px 10px" size="md" color="#01ef8b" thickness='3px'/>
-            )}
-          </Tab>
-          <Tab>
-            <Text m="10px">
-              My Items
-              {personalInsccriptionAmount
-                ? ` ${personalInsccriptionAmount}`
-                : ""}
-            </Text>
-            {personalItemLoading && (
-              <Spinner m="0px 10px" size="md" color="#01ef8b" thickness='3px'/>
-            )}
-          </Tab>
-        </TabList>
+        <Tabs colorScheme="whiteAlpha" variant="marketplace">
+          <TabList>
+            <Tab pr="5px">
+              <Text m="10px">
+                Listing Items{listingAmount ? ` ${listingAmount}` : ""}
+              </Text>
+              {listingLoading && (
+                <Spinner m="0px 10px" size="md" color="#01ef8b" thickness='3px' />
+              )}
+            </Tab>
+            <Tab>
+              <Text m="10px">
+                My Items
+                {personalInsccriptionAmount
+                  ? ` ${personalInsccriptionAmount}`
+                  : ""}
+              </Text>
+              {personalItemLoading && (
+                <Spinner m="0px 10px" size="md" color="#01ef8b" thickness='3px' />
+              )}
+            </Tab>
+          </TabList>
 
-        <TabPanels>
-          <TabPanel>
-            <ListingPanel
-              onUpdateAmount={setListingAmount}
-              onLoading={setListingLoading}
-            />
-          </TabPanel>
-          <TabPanel>
-            <PersonalPanel
-              onUpdateAmount={setPersonalInsccriptionAmount}
-              onLoading={setPersonalItemLoading}
-            />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </Box>
+          <TabPanels>
+            <TabPanel>
+              <ListingPanel
+                onUpdateAmount={setListingAmount}
+                onLoading={setListingLoading}
+              />
+            </TabPanel>
+            <TabPanel>
+              <PersonalPanel
+                onUpdateAmount={setPersonalInsccriptionAmount}
+                onLoading={setPersonalItemLoading}
+              />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
+    </FooterContext.Provider>
   );
 }

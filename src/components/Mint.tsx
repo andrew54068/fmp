@@ -10,7 +10,7 @@ import { getMetaDataListScripts } from 'src/utils/getScripts'
 import JsonDisplay from 'src/components/JsonDisplay'
 import InscriptionsList from 'src/components/InscriptionsList';
 import { getProgressScript } from 'src/utils/getScripts';
-import Progress from 'src/components/Progress';
+import Progress from 'src/components/Progress'
 
 const MINT_AMOUNT = 1000
 

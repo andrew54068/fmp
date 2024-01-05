@@ -25,7 +25,8 @@ const mainnetAddress = {
   MarketplaceCleaner: "0x88dd257fcf26d3cc",
   MarketplaceBlacklistV2: "0x4219a16943bb0993",
 }
-
+export const LISTING_EVENT_NAME = "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
+export const LATEST_BLOCK_HEIGHT_KEY = 'LATEST_BLOCK_HEIGHT_KEY'
 //testnet
 // export const NonFungibleToken = "0x631e88ae7f1d7c20"
 // export const Inscription = "0x564b229bd8380848"

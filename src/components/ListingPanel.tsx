@@ -5,6 +5,7 @@ import {
   useContext,
   useCallback,
   useEffect,
+  useRef,
   ChangeEvent,
 } from "react";
 import { GlobalContext } from "src/context/global";
@@ -44,6 +45,7 @@ import {
 import { FLOW_SCAN_URL } from "src/constants";
 import { logSweepingButton, logSweeping } from "src/services/Amplitude/log";
 import { fetchAllList } from "src/utils/fetchList";
+import { FooterContext } from "src/context/marketplaceContext";
 
 export type InscriptionDisplayModel = {
   listingId: string;
@@ -80,6 +82,9 @@ export default function ListingPanel({
   onUpdateAmount,
   onLoading,
 }: ListingPanelProps) {
+  const footerRef = useRef<HTMLDivElement>(null);
+  const { setFooterPosition } = useContext(FooterContext);
+
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [flowBalance, setFlowBalance] = useState("");
   const [inscriptions, setInscriptions] = useState<InscriptionDisplayModel[]>(
@@ -158,11 +163,19 @@ export default function ListingPanel({
     );
     setInscriptions(displayModels.slice(0, 500));
     onLoading(false);
-  }, [onLoading, account]);
+  }, [onLoading, updateFlowBalance, onUpdateAmount]);
 
   useEffect(() => {
     updateList();
   }, [account, waitingForTx, setInscriptions, flowBalance, updateList]);
+
+  // get footer position for showing toast
+  useEffect(() => {
+    if (footerRef.current) {
+      const rect = footerRef.current.getBoundingClientRect();
+      setFooterPosition({ bottom: window.innerHeight - rect.top, left: rect.left });
+    }
+  }, [setFooterPosition]);
 
   const handleCardSelect = (inscription: InscriptionDisplayModel) => {
     const salePrice: BigNumber = inscription.salePrice;
@@ -410,7 +423,7 @@ export default function ListingPanel({
         ))}
       </SimpleGrid>
 
-      <Box pos="fixed" bottom="0" left="0" right="0" width="100%" bg="gray.800">
+      <Box ref={footerRef} pos="fixed" bottom="0" left="0" right="0" width="100%" bg="gray.800">
         <Flex
           alignItems="center"
           justifyContent="space-between"

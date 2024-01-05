@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   ChangeEvent,
+  useRef
 } from "react";
 import { GlobalContext } from "src/context/global";
 import {
@@ -42,6 +43,8 @@ import {
 } from "src/utils/getScripts";
 import { FLOW_SCAN_URL } from "src/constants";
 import { fetchAllList } from "src/utils/fetchList";
+import { FooterContext } from "src/context/marketplaceContext";
+
 
 type PersonalDisplayModel = {
   nftId: string;
@@ -68,6 +71,9 @@ interface PersonalPanelProps {
 }
 
 export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPanelProps) {
+  const footerRef = useRef<HTMLDivElement>(null);
+  const { setFooterPosition } = useContext(FooterContext);
+
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [sellPrice, setSellPrice] = useState(new BigNumber(0));
   const [inscriptions, setInscriptions] = useState<PersonalDisplayModel[]>([]);
@@ -140,6 +146,13 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
     };
     updateList();
   }, [account, onLoading]);
+
+  useEffect(() => {
+    if (footerRef.current) {
+      const rect = footerRef.current.getBoundingClientRect();
+      setFooterPosition({ bottom: window.innerHeight - rect.top, left: rect.left });
+    }
+  }, [setFooterPosition]);
 
   const handleCardSelect = (inscription: PersonalDisplayModel) => {
     if (inscription.salePrice) return;
