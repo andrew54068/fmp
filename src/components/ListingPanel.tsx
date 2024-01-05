@@ -218,7 +218,7 @@ export default function ListingPanel({
     const inputValue = event.target.value;
     const bigNumberValue = BigNumber(inputValue);
     if (inputValue && bigNumberValue) {
-      if (bigNumberValue.isGreaterThan(BigNumber(20))) {
+      if (bigNumberValue.isGreaterThan(BigNumber(100))) {
         setShowSweepErrorMessage(true);
         return
       }
