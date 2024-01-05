@@ -122,7 +122,9 @@ export default function ListingPanel({
     const inscriptionReqeuestResults = await Promise.all(itemRequests);
     const inscriptionResults = inscriptionReqeuestResults.flat();
 
-    const displayModels: InscriptionDisplayModel[] = inscriptionResults.map(
+    const displayModels: InscriptionDisplayModel[] = inscriptionResults
+    .filter(value => value.seller != "0x6bedc751e0766e48")
+    .map(
       (value) => {
         return {
           listingId: value.listingId,
@@ -164,6 +166,7 @@ export default function ListingPanel({
 
   const handleCardSelect = (inscription: InscriptionDisplayModel) => {
     const salePrice: BigNumber = inscription.salePrice;
+    console.log(`💥 selected inscription: ${JSON.stringify(inscription, null, '  ')}`);
     if (!selectedInscriptions.includes(inscription.nftId)) {
       setSelectedInscriptions((prev) => [...prev, inscription.nftId]);
       // Add price to summary
