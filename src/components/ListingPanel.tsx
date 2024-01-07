@@ -46,6 +46,7 @@ import { FLOW_SCAN_URL } from "src/constants";
 import { logSweepingButton, logSweeping } from "src/services/Amplitude/log";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
+import { convertToPurchaseModel } from "src/utils/convertToPurchaseModel";
 
 export type InscriptionDisplayModel = {
   listingId: string;
@@ -56,7 +57,7 @@ export type InscriptionDisplayModel = {
   timestamp: string;
 };
 
-type PurchaseModel = {
+export type PurchaseModel = {
   fields: [
     {
       name: "listingResourceID";
@@ -127,9 +128,7 @@ export default function ListingPanel({
     const inscriptionReqeuestResults = await Promise.all(itemRequests);
     const inscriptionResults = inscriptionReqeuestResults.flat();
 
-    const displayModels: InscriptionDisplayModel[] = inscriptionResults
-    .filter(value => value.seller != "0x6bedc751e0766e48")
-    .map(
+    const displayModels: InscriptionDisplayModel[] = inscriptionResults.map(
       (value) => {
         return {
           listingId: value.listingId,
@@ -197,29 +196,6 @@ export default function ListingPanel({
     }
   };
 
-  const convertToPurchaseModel = (
-    displayModels: InscriptionDisplayModel[]
-  ): PurchaseModel[] => {
-    return displayModels.map((model) => {
-      return {
-        fields: [
-          {
-            name: "listingResourceID",
-            value: model.listingId,
-          },
-          {
-            name: "storefrontAddress",
-            value: model.seller,
-          },
-          {
-            name: "buyPrice",
-            value: model.salePrice.toString(),
-          },
-        ],
-      };
-    });
-  };
-
   const resetSelectionInfo = () => {
     setSelectedInscriptions([]);
     setPriceSummary(BigNumber(0));
@@ -233,7 +209,7 @@ export default function ListingPanel({
     if (inputValue && bigNumberValue) {
       if (bigNumberValue.isGreaterThan(BigNumber(100))) {
         setShowSweepErrorMessage(true);
-        return
+        return;
       }
       const selectedInscriptions = inscriptions.slice(
         0,
