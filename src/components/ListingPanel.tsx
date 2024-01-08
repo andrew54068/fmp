@@ -91,6 +91,7 @@ export default function ListingPanel({
   const [inscriptions, setInscriptions] = useState<InscriptionDisplayModel[]>(
     []
   );
+  const [skipAmount, setSkipAmount] = useState<number>(0);
   const [selectedInscriptions, setSelectedInscriptions] = useState<string[]>(
     []
   );
@@ -172,13 +173,18 @@ export default function ListingPanel({
   useEffect(() => {
     if (footerRef.current) {
       const rect = footerRef.current.getBoundingClientRect();
-      setFooterPosition({ bottom: window.innerHeight - rect.top, left: rect.left });
+      setFooterPosition({
+        bottom: window.innerHeight - rect.top,
+        left: rect.left,
+      });
     }
   }, [setFooterPosition]);
 
   const handleCardSelect = (inscription: InscriptionDisplayModel) => {
     const salePrice: BigNumber = inscription.salePrice;
-    console.log(`💥 selected inscription: ${JSON.stringify(inscription, null, '  ')}`);
+    console.log(
+      `💥 selected inscription: ${JSON.stringify(inscription, null, "  ")}`
+    );
     if (!selectedInscriptions.includes(inscription.nftId)) {
       setSelectedInscriptions((prev) => [...prev, inscription.nftId]);
       // Add price to summary
@@ -199,10 +205,20 @@ export default function ListingPanel({
   const resetSelectionInfo = () => {
     setSelectedInscriptions([]);
     setPriceSummary(BigNumber(0));
+    setSkipAmount(0);
     setShowSweepErrorMessage(false);
   };
 
-  const handleSweepAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSkipAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setShowSweepErrorMessage(false);
+    const inputValue = event.target.value;
+    const bigNumberValue = BigNumber(inputValue);
+    if (inputValue && bigNumberValue) {
+      setSkipAmount(Math.floor(bigNumberValue.toNumber()))
+    }
+  }
+
+  const handleSweepAmountChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setShowSweepErrorMessage(false);
     const inputValue = event.target.value;
     const bigNumberValue = BigNumber(inputValue);
@@ -212,7 +228,7 @@ export default function ListingPanel({
         return;
       }
       const selectedInscriptions = inscriptions.slice(
-        0,
+        skipAmount || 0,
         bigNumberValue.toNumber()
       );
       setSelectedInscriptions(selectedInscriptions.map((value) => value.nftId));
@@ -224,7 +240,7 @@ export default function ListingPanel({
       );
       setPriceSummary(sum);
     }
-  };
+  }, [skipAmount]);
 
   const handleSendTransaction = useCallback(async () => {
     try {
@@ -399,7 +415,15 @@ export default function ListingPanel({
         ))}
       </SimpleGrid>
 
-      <Box ref={footerRef} pos="fixed" bottom="0" left="0" right="0" width="100%" bg="gray.800">
+      <Box
+        ref={footerRef}
+        pos="fixed"
+        bottom="0"
+        left="0"
+        right="0"
+        width="100%"
+        bg="gray.800"
+      >
         <Flex
           alignItems="center"
           justifyContent="space-between"
@@ -466,24 +490,29 @@ export default function ListingPanel({
               <InputGroup>
                 <Input
                   isInvalid={showSweepErrorMessage}
-                  errorBorderColor='red.300'
+                  errorBorderColor="red.300"
+                  placeholder={"Skip how many?"}
+                  onChange={handleSkipAmountChange}
+                ></Input>
+                <InputRightAddon bg="gray.700">Skipped</InputRightAddon>
+              </InputGroup>
+              <InputGroup>
+                <Input
+                  isInvalid={showSweepErrorMessage}
+                  errorBorderColor="red.300"
                   placeholder={"How many do you want?"}
                   onChange={handleSweepAmountChange}
                 ></Input>
                 <InputRightAddon bg="gray.700">Amount</InputRightAddon>
               </InputGroup>
-              <Text
-                fontSize="size.heading.5"
-                mb="space.l"
-                lineHeight="22px"
-              ></Text>
               <Box fontSize="size.body.1">
                 You are sweeping {selectedInscriptions.length} items for{" "}
                 {priceSummary.toString()} Flow
               </Box>
               {showSweepErrorMessage && (
                 <Box color="red" fontSize="size.body.5">
-                  If you sweep more than 20 items the transaction might exceeds computation limit (9999)
+                  If you sweep more than 20 items the transaction might exceeds
+                  computation limit (9999)
                 </Box>
               )}
             </Flex>
