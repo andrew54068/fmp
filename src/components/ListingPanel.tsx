@@ -117,7 +117,6 @@ export default function ListingPanel({
     const totalListingAmount: number = await sendScript(
       getMarketListingAmountScripts()
     );
-    onUpdateAmount(BigNumber(totalListingAmount));
     const itemRequests = await fetchAllList(
       totalListingAmount,
       1000,
@@ -127,6 +126,7 @@ export default function ListingPanel({
 
     const inscriptionReqeuestResults = await Promise.all(itemRequests);
     const inscriptionResults = inscriptionReqeuestResults.flat();
+    onUpdateAmount(BigNumber(inscriptionResults.length));
 
     const displayModels: InscriptionDisplayModel[] = inscriptionResults.map(
       (value) => {
