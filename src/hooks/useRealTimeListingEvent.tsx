@@ -1,9 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import useInterval from './useInterval';
 import * as fcl from "@blocto/fcl";
+import convertTimestampToLocalHHmm from 'src/utils/convertTimestampToLocalHHmm';
 import { LISTING_EVENT_NAME, FLOW_SCAN_URL } from 'src/constants'
 import { useToast, Box, Flex } from '@chakra-ui/react'
 import { Link } from "react-router-dom";
+
+type Event = any;
+
 
 export default function useRealTimeListingEvent({ footerPosition }: {
   footerPosition: {
@@ -14,10 +18,13 @@ export default function useRealTimeListingEvent({ footerPosition }: {
 
   const [prevBlockHeight, setPrevBlockHeight] = useState<number>(0)
   const [realTimeListingEvent, setRealTimeListingEvent] = useState<any[]>([])
+
+  console.log('realTimeListingEvent :', realTimeListingEvent);
   const toast = useToast()
 
-  const getListingEventByRange = useCallback(async (fromBlockHeight: number, toBlockHeight: number) => {
 
+
+  const getListingEventByRange = useCallback(async (fromBlockHeight: number, toBlockHeight: number) => {
     const listingEvents = await fcl
       .send([
         fcl.getEventsAtBlockHeightRange(
@@ -42,6 +49,18 @@ export default function useRealTimeListingEvent({ footerPosition }: {
     }
   }, [])
 
+
+  const getLatestEvent = useCallback(async (latestBlockHeight: number) => {
+    if (!latestBlockHeight) return
+    const latestListingEvent = await getListingEventByRange(latestBlockHeight - 249, latestBlockHeight);
+    if (Array.isArray(latestListingEvent) && latestListingEvent.length > 0) {
+      return latestListingEvent
+    }
+
+  }, [getListingEventByRange])
+
+
+
   const getLatestTenEvent = useCallback(async () => {
     const { height: latestBlockHeight } = await fcl
       .send([
@@ -49,37 +68,47 @@ export default function useRealTimeListingEvent({ footerPosition }: {
       ])
       .then(fcl.decode);
 
-
     if (!latestBlockHeight) return
-    if (`${prevBlockHeight}` === `${latestBlockHeight}`) return
-
     setPrevBlockHeight(latestBlockHeight)
 
-    const fromBlock = latestBlockHeight
-    const toBlock = latestBlockHeight - 250
+    let fromBlock = latestBlockHeight - 249;
+    let toBlock = latestBlockHeight;
+    let attempt = 0
+    const recentEvents: Event[] = [];
+    const maxAttempt = 30;
 
-    // while (realTimeListingEvent.length < 10) {
-    const latestListingEvent = await getListingEventByRange(fromBlock, toBlock)
-    if (Array.isArray(latestListingEvent) && latestListingEvent.length > 0) {
-      setRealTimeListingEvent(latestListingEvent)
+    while (recentEvents.length < 10 && attempt < maxAttempt) {
+      const latestListingEvent = await getListingEventByRange(fromBlock, toBlock);
+      if (Array.isArray(latestListingEvent) && latestListingEvent.length > 0) {
+        recentEvents.push(...latestListingEvent);
+      }
+      if (recentEvents.length >= 10) {
+        break;
+      }
+      fromBlock -= 249;
+      toBlock = fromBlock;
+      attempt += 1
     }
-    // }
-  }, [getListingEventByRange, prevBlockHeight])
+
+    const latestEvents = await getLatestEvent(latestBlockHeight)
+
+    setRealTimeListingEvent(latestEvents ? [...recentEvents.slice(0, 10), ...latestEvents] :
+      recentEvents.slice(0, 10));
+  }, [getLatestEvent, getListingEventByRange])
+
 
   useEffect(() => {
     getLatestTenEvent()
   }, [getLatestTenEvent])
 
-  // useInterval(() => {
-  // getLatestTenEvent()
-  // }, 3000)
-
-
-
 
   useEffect(() => {
     if (realTimeListingEvent.length > 0) {
-      for (const [index, events] of realTimeListingEvent.entries()) {
+      for (const [, events] of realTimeListingEvent.entries()) {
+        console.log('events :', events);
+        const blockTimeStamp = events[0].blockTimestamp
+        console.log('blockTimeStamp :', blockTimeStamp);
+
         // show toast  
         toast({
           position: 'bottom-left',
@@ -97,13 +126,16 @@ export default function useRealTimeListingEvent({ footerPosition }: {
                   target="_blank"
                   style={{ textDecoration: "underline" }}
                 >
-                  Someone just bought {events.length} FF inscription!
+                  Someone just bought {Array.isArray(events) ? events.length : 1} FF inscription
+                  <br /> at {" "}
+                  {convertTimestampToLocalHHmm(blockTimeStamp)}{" "}!
                 </Link>
               </Box>
             </Flex>
           ),
         })
       }
+      setRealTimeListingEvent([])
     }
   }, [footerPosition.bottom, footerPosition.left, realTimeListingEvent, toast])
 }
