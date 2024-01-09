@@ -5,6 +5,7 @@ import {
   useCallback,
   ChangeEvent,
   useEffect,
+  useRef,
 } from "react";
 import { GlobalContext } from "src/context/global";
 import {
@@ -69,7 +70,15 @@ export default function AutoSweepBot() {
   const [errorMessage, setErrorMessage] = useState("");
   const [targetSweepAmount, setTargetSweepAmount] = useState(0);
   const [message, setMessage] = useState("");
+  const messageList = useRef<HTMLDivElement>(null);
+
   const { account } = useContext(GlobalContext);
+
+  useEffect(() => {
+    console.log(`here`);
+    
+    messageList?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [message]);
 
   useEffect(() => {
     const getList = async () => {
@@ -642,7 +651,7 @@ export default function AutoSweepBot() {
           mt="space.l"
           overflowY="auto"
         >
-          <Text color="blue.500" whiteSpace="pre-line">
+          <Text color="blue.500" whiteSpace="pre-line" ref={messageList}>
             {message}
           </Text>
         </Card>
