@@ -27,6 +27,7 @@ const mainnetAddress = {
 }
 export const LISTING_EVENT_NAME = "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
 export const LATEST_BLOCK_HEIGHT_KEY = 'LATEST_BLOCK_HEIGHT_KEY'
+export const SWEEP_BOT_INFO = 'SWEEP_BOT_INFO'
 //testnet
 // export const NonFungibleToken = "0x631e88ae7f1d7c20"
 // export const Inscription = "0x564b229bd8380848"

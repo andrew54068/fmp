@@ -10,6 +10,7 @@ import Marketplace from "src/components/Marketplace";
 import { initAmplitude } from "./services/Amplitude"
 import { logPageView } from "./services/Amplitude/log"
 import { GlobalProvider } from "./context/globalContextProvider";
+import AutoSweepBot from "./components/AutoSweepBot";
 
 initAmplitude()
 const maxWidthSetting = {
@@ -40,6 +41,7 @@ function App() {
               <Route path="/" element={<Box>  </Box>} />
               <Route path="/mint" element={<Mint />} />
               <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/autoSweep" element={<AutoSweepBot />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>

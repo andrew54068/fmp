@@ -1,4 +1,5 @@
 import * as fcl from '@blocto/fcl'
+import { getAuthorization } from '../flow-local-wallet/local-wallet'
 
 export class TransactionError extends Error {
   name = 'TransactionError'
@@ -15,6 +16,26 @@ export class TransactionError extends Error {
     } else if (origin instanceof Error || (typeof origin === 'object' && 'message' in (origin as any))) {
       this.message = (origin as any).message
     }
+  }
+}
+
+export const sendTransactionWithLocalWallet = async (
+  address: string,
+  privateKey: string,
+  script: string,
+  args?: (arg: any, t: any) => any[],
+  limit: number = 9999
+) => {
+  const transactionId = await fcl.mutate({
+    cadence: script,
+    args,
+    limit,
+    authz: getAuthorization(address, privateKey)
+  })
+  const transaction = await fcl.tx(transactionId).onceSealed()
+  return {
+    hash: transactionId,
+    ...transaction,
   }
 }
 

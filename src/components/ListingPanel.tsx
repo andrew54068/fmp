@@ -161,7 +161,7 @@ export default function ListingPanel({
         return 0;
       }
     );
-    setInscriptions(displayModels.slice(0, 500));
+    setInscriptions(displayModels.slice(0, 1000));
     onLoading(false);
   }, [onLoading, updateFlowBalance, onUpdateAmount]);
 

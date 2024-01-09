@@ -12,6 +12,9 @@ import cleanNotListedItemsScript from '../../cadence/transactions/cleanNotListed
 import checkListingIdExistScript from '../../cadence/scripts/checkListingIdExist.cdc?raw';
 import progressScript from '../../cadence/scripts/get_progress.cdc?raw';
 import flowBalance from '../../cadence/scripts/get_flow_balance.cdc?raw';
+import createAccountScript from '../../cadence/transactions/createAccount.cdc?raw';
+import createAccountAndDepositScript from '../../cadence/transactions/createAccountAndDeposit.cdc?raw';
+import transferInscriptionAndFlowScript from '../../cadence/transactions/transferInscriptionAndFlow.cdc?raw';
 
 const replacement = (script: string): string => {
   return script
@@ -77,4 +80,16 @@ export const getCleanNotListedItemsScript = () => {
 
 export const getCheckListingIdExistScript = () => {
   return replacement(checkListingIdExistScript)
+}
+
+export const getCreateAccountScript = () => {
+  return replacement(createAccountScript)
+}
+
+export const getCreateAccountAndDepositScript = () => {
+  return replacement(createAccountAndDepositScript)
+}
+
+export const getTransferInscriptionAndFlowScript = () => {
+  return replacement(transferInscriptionAndFlowScript)
 }
