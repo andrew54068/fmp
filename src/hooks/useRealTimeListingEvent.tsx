@@ -6,8 +6,24 @@ import { LISTING_EVENT_NAME, FLOW_SCAN_URL } from 'src/constants'
 import { useToast, Box, Flex } from '@chakra-ui/react'
 import { Link } from "react-router-dom";
 
-type Event = any;
+type EventData = {
+  listingResourceID: string;
+  storefrontResourceID: string;
+  purchased: boolean;
+  nftType: any; // Replace 'any' with a more specific type if you have the structure
+  nftID: string;
+};
 
+type BlockEvent = {
+  blockHeight: number;
+  blockId: string;
+  blockTimestamp: string;
+  data: EventData;
+  eventIndex: number;
+  transactionId: string;
+  transactionIndex: number;
+  type: string;
+};
 
 export default function useRealTimeListingEvent({ footerPosition }: {
   footerPosition: {
@@ -17,7 +33,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
 }) {
 
   const [prevBlockHeight, setPrevBlockHeight] = useState<number>(0)
-  const [realTimeListingEvent, setRealTimeListingEvent] = useState<any[]>([])
+  const [realTimeListingEvent, setRealTimeListingEvent] = useState<BlockEvent[][]>([])
 
   const toast = useToast()
 
@@ -33,7 +49,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
         ),
       ]).then(fcl.decode)
 
-    const blockEventMap: Record<string, any[]> = {}
+    const blockEventMap: Record<string, BlockEvent[]> = {}
 
     console.log(`💥 listingEvents: ${JSON.stringify(listingEvents, null, '  ')}`);
     if (Array.isArray(listingEvents) && listingEvents.length > 0) {
@@ -82,7 +98,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
     let fromBlock = latestBlockHeight - 249;
     let toBlock = latestBlockHeight;
     let attempt = 0
-    const recentEvents: Event[] = [];
+    const recentEvents: BlockEvent[][] = [];
     const maxAttempt = 10;
 
     while (recentEvents.length < 10 && attempt < maxAttempt) {
