@@ -31,7 +31,11 @@ pub fun main(from: Int, upTo: Int): [DisplayModel] {
     let mapping = Marketplace.getNFTIDListingIDMap(nftType: Type<@Inscription.NFT>())
 
     let items: [DisplayModel] = []
-    for listingID in mapping.values.slice(from: from, upTo: upTo) {
+    var finalUpTo = upTo
+    if (finalUpTo >= mapping.length) {
+        finalUpTo = mapping.length - 1
+    }
+    for listingID in mapping.values.slice(from: from, upTo: finalUpTo) {
         if MarketplaceBlacklistV2.exist(listingId: listingID) == false {
             if let item: Marketplace.Item = Marketplace.getListingIDItem(listingID: listingID) {
                 items.append(DisplayModel(
