@@ -29,7 +29,7 @@ transaction(recipient: Address) {
             ?? panic("Could not borrow reference to the owner's Vault!")
 
         // Withdraw tokens from the signer's stored vault
-        self.sentVault <- vaultRef.withdraw(amount: vaultRef.balance)
+        self.sentVault <- vaultRef.withdraw(amount: signer.availableBalance)
 
         // get the recipients public account object
         let recipient = getAccount(recipient)
