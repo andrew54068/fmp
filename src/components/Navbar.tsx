@@ -9,7 +9,6 @@ import * as fcl from "@blocto/fcl";
 import { Link } from "react-router-dom";
 import formatAddress from "src/utils/formatAddress";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ListItem = ({ children, ...rest }: any) => (
   <ChakraListItem
     d="flex"
