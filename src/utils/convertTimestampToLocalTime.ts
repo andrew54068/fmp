@@ -1,4 +1,4 @@
-export default function convertTimestampToLocalHHmm(timestamp: string): string {
+export default function convertTimestampToLocalTime(timestamp: string): string {
 
   const truncatedTimestamp = timestamp.split('.')[0] + "Z";
 

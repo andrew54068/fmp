@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import useInterval from './useInterval';
 import * as fcl from "@blocto/fcl";
-import convertTimestampToLocalHHmm from 'src/utils/convertTimestampToLocalHHmm';
+import convertTimestampToLocalTime from 'src/utils/convertTimestampToLocalTime';
 import { LISTING_EVENT_NAME, FLOW_SCAN_URL } from 'src/constants'
 import { useToast, Box, Flex } from '@chakra-ui/react'
 import { Link } from "react-router-dom";
@@ -159,7 +159,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
                 >
                   Someone just bought {Array.isArray(events) ? events.length : 1} FF inscription
                   <br /> at {" "}
-                  {convertTimestampToLocalHHmm(blockTimeStamp)}{" "}!
+                  {convertTimestampToLocalTime(blockTimeStamp)}{" "}!
                 </Link>
               </Box>
             </Flex>
