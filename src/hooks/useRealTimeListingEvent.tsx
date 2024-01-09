@@ -19,7 +19,6 @@ export default function useRealTimeListingEvent({ footerPosition }: {
   const [prevBlockHeight, setPrevBlockHeight] = useState<number>(0)
   const [realTimeListingEvent, setRealTimeListingEvent] = useState<any[]>([])
 
-  console.log('realTimeListingEvent :', realTimeListingEvent);
   const toast = useToast()
 
 
@@ -50,12 +49,22 @@ export default function useRealTimeListingEvent({ footerPosition }: {
   }, [])
 
 
-  const getLatestEvent = useCallback(async (latestBlockHeight: number) => {
-    if (!latestBlockHeight) return
-    const latestListingEvent = await getListingEventByRange(latestBlockHeight - 249, latestBlockHeight);
+  const getLatestEvent = useCallback(async (prevBlockHeight: number) => {
+
+    const { height: latestBlockHeight } = await fcl
+      .send([
+        fcl.getBlock(true), // isSealed = true
+      ])
+      .then(fcl.decode);
+
+    if (!prevBlockHeight || !latestBlockHeight) return
+
+    const latestListingEvent = await getListingEventByRange(prevBlockHeight, latestBlockHeight);
     if (Array.isArray(latestListingEvent) && latestListingEvent.length > 0) {
       return latestListingEvent
     }
+
+    setPrevBlockHeight(latestBlockHeight)
 
   }, [getListingEventByRange])
 
@@ -69,7 +78,6 @@ export default function useRealTimeListingEvent({ footerPosition }: {
       .then(fcl.decode);
 
     if (!latestBlockHeight) return
-    setPrevBlockHeight(latestBlockHeight)
 
     let fromBlock = latestBlockHeight - 249;
     let toBlock = latestBlockHeight;
@@ -90,9 +98,10 @@ export default function useRealTimeListingEvent({ footerPosition }: {
       attempt += 1
     }
 
-    const latestEvents = await getLatestEvent(latestBlockHeight)
+    const latestEventsAfterInitChecking = await getLatestEvent(latestBlockHeight)
 
-    setRealTimeListingEvent(latestEvents ? [...recentEvents.slice(0, 10), ...latestEvents] :
+    setRealTimeListingEvent(latestEventsAfterInitChecking ?
+      [...recentEvents.slice(0, 10), ...latestEventsAfterInitChecking] :
       recentEvents.slice(0, 10));
   }, [getLatestEvent, getListingEventByRange])
 
@@ -102,12 +111,18 @@ export default function useRealTimeListingEvent({ footerPosition }: {
   }, [getLatestTenEvent])
 
 
+  useInterval(() => {
+    if (!prevBlockHeight) return
+    const latestEvent = getLatestEvent(prevBlockHeight)
+    if (Array.isArray(latestEvent) && latestEvent.length > 0) {
+      setRealTimeListingEvent(latestEvent)
+    }
+  }, 3000)
+
   useEffect(() => {
     if (realTimeListingEvent.length > 0) {
       for (const [, events] of realTimeListingEvent.entries()) {
-        console.log('events :', events);
         const blockTimeStamp = events[0].blockTimestamp
-        console.log('blockTimeStamp :', blockTimeStamp);
 
         // show toast  
         toast({
