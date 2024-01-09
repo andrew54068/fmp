@@ -284,80 +284,83 @@ export default function AutoSweepBot() {
   }, [displayModels, botAccount, targetSweepAmount]);
 
   const handleWithdrawAssets = useCallback(async () => {
-    const storedSweepBotInfo = getStoredSweepBotInfo();
-    if (!storedSweepBotInfo) {
-      appendMessage(`Bot account not found! Please create one first!`);
-      return;
-    }
-    if (!account) {
-      appendMessage(`Please connect wallet first!`);
-      return;
-    }
-    setWaitingForTx(true);
-
-    const inscriptionIds: [] = await sendScript(
-      getInscriptionIdsScript(),
-      (arg, types) => [arg(storedSweepBotInfo.account, types.Address)]
-    );
-
-    const totalDepositItems: string[] = [];
-    const limit = 60;
-    const maxIndex = inscriptionIds.length - 1;
-    let startIndex = 0;
-    let endIndex = Math.min(startIndex + limit - 1, maxIndex);
-    let lastTxData;
-    while (startIndex < inscriptionIds.length) {
-      const selectedIds = inscriptionIds.splice(
-        startIndex,
-        Math.max(endIndex, maxIndex + 1)
+    try {
+      const storedSweepBotInfo = getStoredSweepBotInfo();
+      if (!storedSweepBotInfo) {
+        appendMessage(`Bot account not found! Please create one first!`);
+        return;
+      }
+      if (!account) {
+        appendMessage(`Please connect wallet first!`);
+        return;
+      }
+      setWaitingForTx(true);
+  
+      const inscriptionIds: [] = await sendScript(
+        getInscriptionIdsScript(),
+        (arg, types) => [arg(storedSweepBotInfo.account, types.Address)]
       );
-
-      const txData = await sendTransactionWithLocalWallet(
-        storedSweepBotInfo.account,
-        storedSweepBotInfo.privateKey,
-        getTransferInscriptionAndFlowScript(),
-        (arg, types) => [
-          arg(account, types.Address),
-          arg(selectedIds, types.Array(types.UInt64)),
-        ]
-      );
-      lastTxData = txData;
-      console.log("txData :", txData);
-      appendMessage(`tx id: ${txData.hash}`);
-      const depositItems: string[] = txData.events
+  
+      const totalDepositItems: string[] = [];
+      const limit = 60;
+      const maxIndex = inscriptionIds.length - 1;
+      let startIndex = 0;
+      let endIndex = Math.min(startIndex + limit - 1, maxIndex);
+      let lastTxData;
+      while (startIndex < inscriptionIds.length) {
+        const selectedIds = inscriptionIds.splice(
+          startIndex,
+          Math.max(endIndex, maxIndex + 1)
+        );
+  
+        const txData = await sendTransactionWithLocalWallet(
+          storedSweepBotInfo.account,
+          storedSweepBotInfo.privateKey,
+          getTransferInscriptionAndFlowScript(),
+          (arg, types) => [
+            arg(account, types.Address),
+            arg(selectedIds, types.Array(types.UInt64)),
+          ]
+        );
+        lastTxData = txData;
+        console.log("txData :", txData);
+        appendMessage(`tx id: ${txData.hash}`);
+        const depositItems: string[] = txData.events
+          .filter((event) => {
+            return (
+              event.type === "A.88dd257fcf26d3cc.Inscription.Deposit" &&
+              event.data.to === account
+            );
+          })
+          .map((event) => event.data.listingResourceID);
+        appendMessage(
+          `👍 Successfully deposited ${depositItems.length} in this tx`
+        );
+        totalDepositItems.push(...depositItems);
+        startIndex = endIndex + 1;
+        endIndex = Math.min(startIndex + limit - 1, maxIndex);
+      }
+      const depositFlowAmount: BigNumber = lastTxData.events
         .filter((event) => {
           return (
-            event.type === "A.88dd257fcf26d3cc.Inscription.Deposit" &&
+            event.type === "A.1654653399040a61.FlowToken.TokensDeposited" &&
             event.data.to === account
           );
         })
-        .map((event) => event.data.listingResourceID);
+        .reduce((pre: BigNumber, current) => {
+          return pre.plus(BigNumber(current.amount));
+        }, BigNumber(0));
+  
       appendMessage(
-        `👍 Successfully deposited ${depositItems.length} in this tx`
+        `✅ Total deposited ${totalDepositItems.length} inscriptions back to your account ${account}`
       );
-      totalDepositItems.push(...depositItems);
-      startIndex = endIndex + 1;
-      endIndex = Math.min(startIndex + limit - 1, maxIndex);
+      appendMessage(
+        `✅ Total deposited ${depositFlowAmount.toString} Flow back to your account ${account}`
+      );
+      appendMessage(`✅ All finished!`);
+    } catch (err: any) {
+      setErrorMessage(err.message)
     }
-    const depositFlowAmount: BigNumber = lastTxData.events
-      .filter((event) => {
-        return (
-          event.type === "A.1654653399040a61.FlowToken.TokensDeposited" &&
-          event.data.to === account
-        );
-      })
-      .reduce((pre: BigNumber, current) => {
-        return pre.plus(BigNumber(current.amount));
-      }, BigNumber(0));
-
-    appendMessage(
-      `✅ Total deposited ${totalDepositItems.length} inscriptions back to your account ${account}`
-    );
-    appendMessage(
-      `✅ Total deposited ${depositFlowAmount.toString} Flow back to your account ${account}`
-    );
-    appendMessage(`✅ All finished!`);
-
     setWaitingForTx(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
