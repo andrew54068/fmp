@@ -37,31 +37,36 @@ export default function useRealTimeListingEvent({ footerPosition }: {
 
   const toast = useToast()
 
-
-
   const getListingEventByRange = useCallback(async (fromBlockHeight: number, toBlockHeight: number) => {
-    const listingEvents = await fcl
-      .send([
-        fcl.getEventsAtBlockHeightRange(
-          LISTING_EVENT_NAME,
-          fromBlockHeight,
-          toBlockHeight
-        ),
-      ]).then(fcl.decode)
-
     const blockEventMap: Record<string, BlockEvent[]> = {}
+    let startBlockHeight = fromBlockHeight
+    let endBlockHeight = Math.min(startBlockHeight + 250, toBlockHeight)
 
-    console.log(`💥 listingEvents: ${JSON.stringify(listingEvents, null, '  ')}`);
-    if (Array.isArray(listingEvents) && listingEvents.length > 0) {
-      const filteredEvents = listingEvents
-        .filter(event => event.data.nftType.typeID === "A.88dd257fcf26d3cc.Inscription.NFT" && event.data.purchased)
-      filteredEvents.forEach(event => {
-        blockEventMap[event.transactionId] = blockEventMap[event.transactionId] ? [...blockEventMap[event.transactionId], event] : [event]
-      })
-      if (filteredEvents.length > 0) {
-        return Object.values(blockEventMap)
+    while (startBlockHeight < toBlockHeight) {
+      const listingEvents = await fcl
+        .send([
+          fcl.getEventsAtBlockHeightRange(
+            LISTING_EVENT_NAME,
+            startBlockHeight,
+            endBlockHeight
+          ),
+        ]).then(fcl.decode)
+      if (Array.isArray(listingEvents) && listingEvents.length > 0) {
+        const filteredEvents = listingEvents
+          .filter(event => event.data.nftType.typeID === "A.88dd257fcf26d3cc.Inscription.NFT" && event.data.purchased)
+        filteredEvents.forEach(event => {
+          blockEventMap[event.transactionId] = blockEventMap[event.transactionId] ? [...blockEventMap[event.transactionId], event] : [event]
+        })
       }
+
+      startBlockHeight = endBlockHeight + 1
+      endBlockHeight = Math.min(startBlockHeight + 250, toBlockHeight)
     }
+
+    if (Object.keys(blockEventMap).length > 0) {
+      return Object.values(blockEventMap)
+    }
+
   }, [])
 
 
@@ -74,13 +79,13 @@ export default function useRealTimeListingEvent({ footerPosition }: {
       .then(fcl.decode);
 
     if (!prevBlockHeight || !latestBlockHeight) return
-
+    
+    setPrevBlockHeight(latestBlockHeight)
     const latestListingEvent = await getListingEventByRange(prevBlockHeight, latestBlockHeight);
     if (Array.isArray(latestListingEvent) && latestListingEvent.length > 0) {
       return latestListingEvent
     }
 
-    setPrevBlockHeight(latestBlockHeight)
 
   }, [getListingEventByRange])
 
