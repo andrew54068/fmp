@@ -116,13 +116,6 @@ export default function AutoSweepBot() {
     };
     getList();
 
-    // localStorage.removeItem(SWEEP_BOT_INFO);
-
-    // setStoredSweepBotInfo(
-    //   "0xf68e4a3487fe1cd0",
-    //   "f39ac1d16761cb2d735b6c8a59f3c3e9886a50519d000ee59e952cec0d5c60d3"
-    // );
-
     const storedSweepBotInfo = getStoredSweepBotInfo();
     if (storedSweepBotInfo) {
       setBotAccount(storedSweepBotInfo.account);
