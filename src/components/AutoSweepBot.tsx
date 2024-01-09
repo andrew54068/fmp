@@ -295,6 +295,9 @@ export default function AutoSweepBot() {
         return;
       }
       setWaitingForTx(true);
+      appendMessage(
+        `⌛️ Withdrawing all purchased inscriptions and Flow back to your account...`
+      );
   
       const inscriptionIds: [] = await sendScript(
         getInscriptionIdsScript(),
@@ -355,7 +358,7 @@ export default function AutoSweepBot() {
         `✅ Total deposited ${totalDepositItems.length} inscriptions back to your account ${account}`
       );
       appendMessage(
-        `✅ Total deposited ${depositFlowAmount.toString} Flow back to your account ${account}`
+        `✅ Total deposited ${depositFlowAmount.toString()} Flow back to your account ${account}`
       );
       appendMessage(`✅ All finished!`);
     } catch (err: any) {
