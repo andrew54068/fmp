@@ -25,6 +25,7 @@ import {
   getInscriptionIdsScript,
   getMarketListingAmountScripts,
   getMarketListingItemScripts,
+  getTransferFlowScript,
   getTransferInscriptionAndFlowScript,
 } from "src/utils/getScripts";
 import { fetchAllList } from "src/utils/fetchList";
@@ -60,6 +61,7 @@ export default function AutoSweepBot() {
     BigNumber(0)
   );
   const [isFlowBalanceEnough, setIsFlowBalanceEnough] = useState(false);
+  const [isBotFlowBalanceEnough, setIsBotFlowBalanceEnough] = useState(false);
   const [priceSummary, setPriceSummary] = useState<BigNumber>(BigNumber(0));
   const [displayModels, setDisplayModels] = useState<InscriptionDisplayModel[]>(
     []
@@ -133,6 +135,7 @@ export default function AutoSweepBot() {
   }, []);
 
   useEffect(() => {
+    if (waitingForTx) return;
     const updateBotFlowBalance = async () => {
       if (!botAccount) return;
       const newAccountFlowBalance: string = await sendScript(
@@ -142,13 +145,13 @@ export default function AutoSweepBot() {
       setBotAccountFlowBalance(BigNumber(newAccountFlowBalance));
     };
     updateBotFlowBalance();
-  }, [botAccount]);
+  }, [botAccount, waitingForTx]);
 
   const createBotAccountAndDeposit = useCallback(async () => {
     try {
       if (!account) return;
-      const isEnough = await checkBalance(account, priceSummary);
-      if (!isEnough) {
+      const checkResult = await checkBalance(account, priceSummary);
+      if (!checkResult.enough) {
         return;
       }
       setWaitingForCreate(true);
@@ -184,8 +187,49 @@ export default function AutoSweepBot() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, priceSummary]);
 
+  const depositFlow = useCallback(
+    async (amount: BigNumber, address: string): Promise<boolean> => {
+      try {
+        if (!account) return false;
+        setWaitingForTx(true);
+        const txData = await sendTransaction(
+          getTransferFlowScript(),
+          (arg, types) => [
+            arg(amount.toString(), types.UFix64),
+            arg(address, types.Address),
+          ]
+        );
+        console.log(`💥 txData: ${JSON.stringify(txData, null, "  ")}`);
+        const depositEvent = txData.events.find(
+          (event) =>
+            event.type === "A.1654653399040a61.FlowToken.TokensDeposited" &&
+            event.data.to === address
+        );
+        setWaitingForTx(false);
+        if (depositEvent && BigNumber(depositEvent.data.amount).isEqualTo(amount)) {
+          appendMessage(
+            `✅ Successfully deposit ${amount.toString()} Flow to ${address}`
+          );
+          return true
+        } else {
+          setErrorMessage(`deposit failed`);
+          return false
+        }
+      } catch (error: any) {
+        setErrorMessage(error.message);
+        setWaitingForTx(false);
+        return false
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [account]
+  );
+
   const checkBalance = useCallback(
-    async (address: string, amount: BigNumber) => {
+    async (
+      address: string,
+      amount: BigNumber
+    ): Promise<{ flowBalance: BigNumber; enough: boolean }> => {
       const accountFlowBalance: string = await sendScript(
         getBalanceScript(),
         (arg, t) => [arg(address, t.Address)]
@@ -193,11 +237,18 @@ export default function AutoSweepBot() {
       const balance = BigNumber(accountFlowBalance);
       const enough = balance.isGreaterThanOrEqualTo(amount);
       setIsFlowBalanceEnough(enough);
-      appendMessage(`💰 Your balance is ${balance.toString()}`);
-      return balance.isGreaterThanOrEqualTo(amount);
+      if (address === account) {
+        appendMessage(`💰 Your account balance is ${balance.toString()}`);
+      } else {
+        appendMessage(`💰 Your bot account balance is ${balance.toString()}`);
+      }
+      return {
+        flowBalance: balance,
+        enough: balance.isGreaterThanOrEqualTo(amount),
+      };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [account]
   );
 
   const handleAutoPurchase = useCallback(async () => {
@@ -277,7 +328,6 @@ export default function AutoSweepBot() {
       handleWithdrawAssets();
     } catch (err: any) {
       setErrorMessage(err.message);
-      throw err;
     }
     setWaitingForTx(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -298,24 +348,26 @@ export default function AutoSweepBot() {
       appendMessage(
         `⌛️ Withdrawing all purchased inscriptions and Flow back to your account...`
       );
-  
-      const inscriptionIds: [] = await sendScript(
+
+      const inscriptionIds: string[] = await sendScript(
         getInscriptionIdsScript(),
         (arg, types) => [arg(storedSweepBotInfo.account, types.Address)]
       );
-  
       const totalDepositItems: string[] = [];
       const limit = 60;
-      const maxIndex = inscriptionIds.length - 1;
+      const maxIndex = Math.max(inscriptionIds.length - 1, 0);
       let startIndex = 0;
       let endIndex = Math.min(startIndex + limit - 1, maxIndex);
       let lastTxData;
-      while (startIndex < inscriptionIds.length) {
-        const selectedIds = inscriptionIds.splice(
+      while (
+        startIndex < inscriptionIds.length ||
+        (startIndex === inscriptionIds.length && inscriptionIds.length === 0)
+      ) {
+        const selectedIds = inscriptionIds.slice(
           startIndex,
           Math.max(endIndex, maxIndex + 1)
         );
-  
+
         const txData = await sendTransactionWithLocalWallet(
           storedSweepBotInfo.account,
           storedSweepBotInfo.privateKey,
@@ -350,10 +402,10 @@ export default function AutoSweepBot() {
             event.data.to === account
           );
         })
-        .reduce((pre: BigNumber, current) => {
-          return pre.plus(BigNumber(current.amount));
+        .reduce((pre: BigNumber, currentEvent) => {
+          return pre.plus(BigNumber(currentEvent.data.amount));
         }, BigNumber(0));
-  
+
       appendMessage(
         `✅ Total deposited ${totalDepositItems.length} inscriptions back to your account ${account}`
       );
@@ -362,7 +414,7 @@ export default function AutoSweepBot() {
       );
       appendMessage(`✅ All finished!`);
     } catch (err: any) {
-      setErrorMessage(err.message)
+      setErrorMessage(err.message);
     }
     setWaitingForTx(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -390,27 +442,36 @@ export default function AutoSweepBot() {
         BigNumber(0)
       );
       setPriceSummary(sum);
+      const recommendedAmount = sum.multipliedBy(BigNumber(1.1));
       if (botAccount) {
-        const isBotAccountEnough = await checkBalance(
-          botAccount,
-          sum.multipliedBy(BigNumber(1.1))
-        );
-        if (isBotAccountEnough) {
+        const checkedResult = await checkBalance(botAccount, recommendedAmount);
+        if (checkedResult.enough) {
           appendMessage(`✅ Your bot account's Flow is enough.`);
         } else {
-          appendMessage(`🥵 Your bot account's Flow is not enough.`);
+          appendMessage(
+            `🥵 Your bot account's Flow is not enough. Please deposit ${recommendedAmount.minus(
+              checkedResult.flowBalance
+            )} more flow to your bot account.`
+          );
         }
+        setBotAccountFlowBalance(checkedResult.flowBalance);
+        setIsBotFlowBalanceEnough(checkedResult.enough);
       } else {
         if (account) {
-          const isBotAccountEnough = await checkBalance(
+          const checkedResult = await checkBalance(
             account,
             sum.multipliedBy(BigNumber(1.1))
           );
-          if (isBotAccountEnough) {
-            appendMessage(`✅ Your account's Flow is enough.`);
+          if (checkedResult.enough) {
+            appendMessage(
+              `✅ Your account has ${checkedResult.flowBalance.toString()} Flow, and it's enough.`
+            );
           } else {
-            appendMessage(`🥵 Your account's Flow is not enough.`);
+            appendMessage(
+              `🥵 Your account has ${checkedResult.flowBalance.toString()} Flow, and it's not enough.`
+            );
           }
+          setIsFlowBalanceEnough(checkedResult.enough);
         }
       }
     }
@@ -461,10 +522,31 @@ export default function AutoSweepBot() {
             </Text>
           )}
           {botAccount ? (
-            <Text fontSize="size.body.4" mb="space.l" lineHeight="22px">
-              You bot account is {botAccount}, and it has{" "}
-              {botAccountFlowBalance.toString()} Flow right now.
-            </Text>
+            <>
+              <Text fontSize="size.body.4" mb="space.l" lineHeight="22px">
+                You bot account is {botAccount}, and it has{" "}
+                {botAccountFlowBalance.toString()} Flow right now.
+              </Text>
+              {!isBotFlowBalanceEnough && (
+                <Button
+                  m="20px"
+                  colorScheme="blue"
+                  onClick={async () => {
+                    setErrorMessage("");
+                    const success = await depositFlow(
+                      priceSummary.multipliedBy(1.1).minus(botAccountFlowBalance),
+                      botAccount
+                    );
+                    setIsBotFlowBalanceEnough(success);
+                  }}
+                  isDisabled={!account || isLoadingList || !targetSweepAmount}
+                  isLoading={waitingForTx}
+                  width={["100%", "auto"]}
+                >
+                  {account ? `Deposit to bot account` : `Connect Wallet First`}
+                </Button>
+              )}
+            </>
           ) : (
             <Button
               m="20px"
@@ -512,7 +594,7 @@ export default function AutoSweepBot() {
               <InfoOutlineIcon m="space.s" />
               <Text fontSize="size.body.5" lineHeight="22px">
                 use your bot account to sweep til amount matchs unless error
-                occur.
+                occurred.
               </Text>
             </Box>
           </Box>
