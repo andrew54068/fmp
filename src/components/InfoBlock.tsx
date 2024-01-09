@@ -8,7 +8,7 @@ interface InfoBlockProp {
 export default function InfoBlock({ statistic, desc }: InfoBlockProp) {
   return (
     <Flex
-      p="20px"
+      p="space.s"
       w="50%"
       direction="column"
       borderRadius="md"
@@ -16,10 +16,13 @@ export default function InfoBlock({ statistic, desc }: InfoBlockProp) {
       rowGap="0px"
       bg="#01ef8b"
     >
-      <Text m="5px" fontSize="size.heading.3">
+      <Text
+        m="5px"
+        fontSize={window.innerWidth > 500 ? "size.heading.3" : "size.body.4"}
+      >
         {statistic}
       </Text>
-      <Text m="5px" fontSize="size.body.3">
+      <Text m="5px" fontSize={window.innerWidth > 500 ? "size.body.4" : "size.body.3"}>
         {desc}
       </Text>
     </Flex>

@@ -62,18 +62,14 @@ export default function Marketplace() {
         pt="60px"
       >
         <Flex
-          p="20px"
           borderRadius="md"
           margin="20px 0px"
           fontSize="size.heading.3"
           color="gray.700"
         >
           <Flex
-            p="20px"
             w="100%"
             borderRadius="md"
-            margin="20px 0px"
-            fontSize="size.heading.3"
             color="gray.700"
             columnGap="20px"
           >

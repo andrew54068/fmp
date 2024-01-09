@@ -214,33 +214,38 @@ export default function ListingPanel({
     const inputValue = event.target.value;
     const bigNumberValue = BigNumber(inputValue);
     if (inputValue && bigNumberValue) {
-      setSkipAmount(Math.floor(bigNumberValue.toNumber()))
+      setSkipAmount(Math.floor(bigNumberValue.toNumber()));
     }
-  }
+  };
 
-  const handleSweepAmountChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setShowSweepErrorMessage(false);
-    const inputValue = event.target.value;
-    const bigNumberValue = BigNumber(inputValue);
-    if (inputValue && bigNumberValue) {
-      if (bigNumberValue.isGreaterThan(BigNumber(20))) {
-        setShowSweepErrorMessage(true);
-        return;
+  const handleSweepAmountChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setShowSweepErrorMessage(false);
+      const inputValue = event.target.value;
+      const bigNumberValue = BigNumber(inputValue);
+      if (inputValue && bigNumberValue) {
+        if (bigNumberValue.isGreaterThan(BigNumber(20))) {
+          setShowSweepErrorMessage(true);
+          return;
+        }
+        const selectedInscriptions = inscriptions.slice(
+          skipAmount || 0,
+          bigNumberValue.toNumber()
+        );
+        setSelectedInscriptions(
+          selectedInscriptions.map((value) => value.nftId)
+        );
+        const sum = selectedInscriptions.reduce(
+          (pre: BigNumber, current: InscriptionDisplayModel) => {
+            return pre.plus(current.salePrice);
+          },
+          BigNumber(0)
+        );
+        setPriceSummary(sum);
       }
-      const selectedInscriptions = inscriptions.slice(
-        skipAmount || 0,
-        bigNumberValue.toNumber()
-      );
-      setSelectedInscriptions(selectedInscriptions.map((value) => value.nftId));
-      const sum = selectedInscriptions.reduce(
-        (pre: BigNumber, current: InscriptionDisplayModel) => {
-          return pre.plus(current.salePrice);
-        },
-        BigNumber(0)
-      );
-      setPriceSummary(sum);
-    }
-  }, [skipAmount, inscriptions]);
+    },
+    [skipAmount, inscriptions]
+  );
 
   const handleSendTransaction = useCallback(async () => {
     try {
@@ -350,9 +355,23 @@ export default function ListingPanel({
 
   const CallToActionButton = () => {
     return (
-      <Box w={["100%", "auto"]}>
+      <Box display="flex" columnGap="10px" w={["100%", "auto"]}>
         <Button
-          colorScheme="blue"
+          onClick={() => {
+            logSweepingButton();
+            onOpen();
+          }}
+          width="auto"
+          bg="#01ef8b"
+          _hover={{
+            bg: "#01ef8b",
+            transform: "scale(0.98)",
+          }}
+          fontSize={window.innerWidth > 500 ? "size.heading.5" : "size.body.3"}
+        >
+          Sweep
+        </Button>
+        <Button
           onClick={() => {
             setErrorMessage("");
             if (account) {
@@ -363,28 +382,29 @@ export default function ListingPanel({
           }}
           isLoading={waitingForTx}
           isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
-          width={["100%", "auto"]}
+          width="auto"
           bg="#01ef8b"
           _hover={{
             bg: "#01ef8b",
             transform: "scale(0.98)",
           }}
+          fontSize={window.innerWidth > 500 ? "size.heading.5" : "size.body.3"}
         >
-          {account
-            ? `Buy ${selectedInscriptions.length} Items`
-            : "Connect Wallet"}
+          <Text>
+            {account
+              ? `Buy ${selectedInscriptions.length} Items`
+              : "Connect Wallet"}
+          </Text>
         </Button>
         {hasSelected && (
           <Button
-            ml={["0", "space.m"]}
-            mt={["space.s", "0"]}
-            colorScheme="blue"
             onClick={() => {
               setErrorMessage("");
               resetSelectionInfo();
             }}
             isLoading={waitingForTx}
-            width={["100%", "auto"]}
+            width="auto"
+            fontSize={window.innerWidth > 500 ? "size.heading.5" : "size.body.3"}
           >
             Cancel
           </Button>
@@ -454,21 +474,6 @@ export default function ListingPanel({
             mb="space.2xs"
             alignItems="center"
           >
-            <Button
-              colorScheme="blue"
-              onClick={() => {
-                logSweepingButton();
-                onOpen();
-              }}
-              width={["100%", "auto"]}
-              bg="#01ef8b"
-              _hover={{
-                bg: "#01ef8b",
-                transform: "scale(0.98)",
-              }}
-            >
-              Sweep
-            </Button>
             <CallToActionButton />
             <Box ml="space.3xs">Your Flow balance: {flowBalance}</Box>
           </Flex>
