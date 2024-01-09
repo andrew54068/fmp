@@ -1,6 +1,5 @@
 import BigNumber from "bignumber.js";
-import { useState, useContext, useCallback } from "react";
-import { GlobalContext } from "src/context/global";
+import { useState, useCallback } from "react";
 import { Card, Text, Flex, Box } from "@chakra-ui/react";
 import Button from "src/components/Button";
 import { sendScript } from "src/services/fcl/send-script";
@@ -26,7 +25,6 @@ export default function Cleaner() {
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [message, setMessage] = useState("");
-  const { account } = useContext(GlobalContext);
 
   const handleClean = useCallback(async () => {
     setWaitingForTx(true);
@@ -139,7 +137,7 @@ export default function Cleaner() {
       throw err;
     }
     setWaitingForTx(false);
-  }, [account]);
+  }, []);
 
   return (
     <Box bg="gray.700" mt="75px" minH="calc(100vh - 75px)" p="16px">

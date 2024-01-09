@@ -145,6 +145,7 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
       onLoading(false);
     };
     updateList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, onLoading]);
 
   useEffect(() => {

@@ -127,6 +127,7 @@ export default function AutoSweepBot() {
     if (storedSweepBotInfo) {
       setBotAccount(storedSweepBotInfo.account);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getStoredSweepBotInfo = useCallback((): BotInfo | null => {
@@ -185,6 +186,7 @@ export default function AutoSweepBot() {
       setErrorMessage(error.message);
       setWaitingForCreate(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, priceSummary]);
 
   const checkBalance = useCallback(
@@ -204,6 +206,7 @@ export default function AutoSweepBot() {
       );
       return balance.isGreaterThanOrEqualTo(amount);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -286,6 +289,7 @@ export default function AutoSweepBot() {
       throw err;
     }
     setWaitingForTx(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayModels, botAccount, targetSweepAmount]);
 
   const handleWithdrawAssets = useCallback(async () => {
@@ -312,6 +316,7 @@ export default function AutoSweepBot() {
     appendMessage(`✅ All finished!`);
 
     setWaitingForTx(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   const handleSweepAmountChange = async (
