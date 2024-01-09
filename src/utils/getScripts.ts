@@ -15,6 +15,7 @@ import flowBalance from '../../cadence/scripts/get_flow_balance.cdc?raw';
 import createAccountScript from '../../cadence/transactions/createAccount.cdc?raw';
 import createAccountAndDepositScript from '../../cadence/transactions/createAccountAndDeposit.cdc?raw';
 import transferInscriptionAndFlowScript from '../../cadence/transactions/transferInscriptionAndFlow.cdc?raw';
+import inscriptionIdsScript from '../../cadence/scripts/get_inscription_ids.cdc?raw';
 
 const replacement = (script: string): string => {
   return script
@@ -92,4 +93,8 @@ export const getCreateAccountAndDepositScript = () => {
 
 export const getTransferInscriptionAndFlowScript = () => {
   return replacement(transferInscriptionAndFlowScript)
+}
+
+export const getInscriptionIdsScript = () => {
+  return replacement(inscriptionIdsScript)
 }

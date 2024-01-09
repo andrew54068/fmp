@@ -22,6 +22,7 @@ import {
   getBalanceScript,
   getBatchPurchaseScripts,
   getCreateAccountAndDepositScript,
+  getInscriptionIdsScript,
   getMarketListingAmountScripts,
   getMarketListingItemScripts,
   getTransferInscriptionAndFlowScript,
@@ -74,7 +75,7 @@ export default function AutoSweepBot() {
       const totalListingAmount: number = await sendScript(
         getMarketListingAmountScripts()
       );
-      appendMessage(`Loading List for you...`);
+      appendMessage(`⌛️ Loading List for you...`);
       const itemRequests = await fetchAllList(
         totalListingAmount,
         1000,
@@ -169,9 +170,10 @@ export default function AutoSweepBot() {
         const newAccount = createdEvent.data.address;
         setStoredSweepBotInfo(newAccount, keyPair.privateKey);
         setBotAccount(newAccount);
+        appendMessage(`✅ Your bot account has been created successfully!`);
         appendMessage(`👉 address: ${newAccount}`);
-        appendMessage(`🙈 private key: ${newAccount}`);
-        appendMessage(`Please keep this info safely!`);
+        appendMessage(`🙈 private key: ${keyPair.privateKey}`);
+        appendMessage(`📝 Please keep this info somewhere else safely!`);
       } else {
         throw new Error(`Can't find create account event!`);
       }
@@ -191,12 +193,7 @@ export default function AutoSweepBot() {
       const balance = BigNumber(accountFlowBalance);
       const enough = balance.isGreaterThanOrEqualTo(amount);
       setIsFlowBalanceEnough(enough);
-      appendMessage(
-        `Your balance is ${balance.toString()} and it's ` +
-          (enough
-            ? `enough ✅, proceeding...`
-            : `not enough ❌, please deposit more flow to this account ${address}`)
-      );
+      appendMessage(`💰 Your balance is ${balance.toString()}`);
       return balance.isGreaterThanOrEqualTo(amount);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -276,7 +273,8 @@ export default function AutoSweepBot() {
         endOffset = Math.min(startOffset + limit - 1, maxOffset);
       }
 
-      appendMessage(`✅ All finished!`);
+      appendMessage(`✅ Purchase finished!`);
+      handleWithdrawAssets();
     } catch (err: any) {
       setErrorMessage(err.message);
       throw err;
@@ -297,15 +295,67 @@ export default function AutoSweepBot() {
     }
     setWaitingForTx(true);
 
-    const txData = await sendTransactionWithLocalWallet(
-      storedSweepBotInfo.account,
-      storedSweepBotInfo.privateKey,
-      getTransferInscriptionAndFlowScript(),
-      (arg, types) => [arg(account, types.Address)]
+    const inscriptionIds: [] = await sendScript(
+      getInscriptionIdsScript(),
+      (arg, types) => [arg(storedSweepBotInfo.account, types.Address)]
     );
 
-    console.log("txData :", txData);
-    appendMessage(`tx id: ${txData.hash}`);
+    const totalDepositItems: string[] = [];
+    const limit = 60;
+    const maxIndex = inscriptionIds.length - 1;
+    let startIndex = 0;
+    let endIndex = Math.min(startIndex + limit - 1, maxIndex);
+    let lastTxData;
+    while (startIndex < inscriptionIds.length) {
+      const selectedIds = inscriptionIds.splice(
+        startIndex,
+        Math.max(endIndex, maxIndex + 1)
+      );
+
+      const txData = await sendTransactionWithLocalWallet(
+        storedSweepBotInfo.account,
+        storedSweepBotInfo.privateKey,
+        getTransferInscriptionAndFlowScript(),
+        (arg, types) => [
+          arg(account, types.Address),
+          arg(selectedIds, types.Array(types.UInt64)),
+        ]
+      );
+      lastTxData = txData;
+      console.log("txData :", txData);
+      appendMessage(`tx id: ${txData.hash}`);
+      const depositItems: string[] = txData.events
+        .filter((event) => {
+          return (
+            event.type === "A.88dd257fcf26d3cc.Inscription.Deposit" &&
+            event.data.to === account
+          );
+        })
+        .map((event) => event.data.listingResourceID);
+      appendMessage(
+        `👍 Successfully deposited ${depositItems.length} in this tx`
+      );
+      totalDepositItems.push(...depositItems);
+      startIndex = endIndex + 1;
+      endIndex = Math.min(startIndex + limit - 1, maxIndex);
+    }
+    const depositFlowAmount: BigNumber = lastTxData.events
+      .filter((event) => {
+        return (
+          event.type === "A.1654653399040a61.FlowToken.TokensDeposited" &&
+          event.data.to === account
+        );
+      })
+      .reduce((pre: BigNumber, current) => {
+        return pre.plus(BigNumber(current.amount));
+      }, BigNumber(0));
+
+    appendMessage(
+      `✅ Total deposited ${totalDepositItems.length} inscriptions back to your account ${account}`
+    );
+    appendMessage(
+      `✅ Total deposited ${depositFlowAmount.toString} Flow back to your account ${account}`
+    );
     appendMessage(`✅ All finished!`);
 
     setWaitingForTx(false);
@@ -325,7 +375,7 @@ export default function AutoSweepBot() {
       setTargetSweepAmount(bigNumberValue.toNumber());
       const selectedInscriptions = displayModels.slice(
         0,
-        bigNumberValue.toNumber() - 1
+        bigNumberValue.toNumber()
       );
       const sum = selectedInscriptions.reduce(
         (pre: BigNumber, current: InscriptionDisplayModel) => {

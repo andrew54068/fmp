@@ -5,7 +5,7 @@ import "FlowToken"
 
 /// This transaction is for transferring and Inscription from
 /// one account to another
-transaction(recipient: Address) {
+transaction(recipient: Address, withdrawIds: [UInt64]) {
 
     /// Reference to the withdrawer's collection
     let withdrawRef: &Inscription.Collection
@@ -17,6 +17,8 @@ transaction(recipient: Address) {
     let sentVault: @FungibleToken.Vault
 
     let receiverRef: &{FungibleToken.Receiver}
+
+    let senderAddress: Address
 
     prepare(signer: AuthAccount) {
         // borrow a reference to the signer's Inscription collection
@@ -45,11 +47,12 @@ transaction(recipient: Address) {
             .borrow<&{FungibleToken.Receiver}>()
             ?? panic("Could not borrow receiver reference to the recipient's Vault")
 
+        self.senderAddress = signer.address
     }
 
     execute {
         let ids = self.withdrawRef.getIDs()
-        for id in ids {
+        for id in withdrawIds {
             // withdraw the Inscription from the owner's collection
             let nft <- self.withdrawRef.withdraw(withdrawID: id)
 
@@ -57,12 +60,19 @@ transaction(recipient: Address) {
             self.depositRef.deposit(token: <-nft)
         }
 
-        // Get a reference to the recipient's Receiver
-        let receiverRef = getAccount(recipient).getCapability(/public/flowTokenReceiver)
-            .borrow<&{FungibleToken.Receiver}>()
-            ?? panic("Could not borrow receiver reference to the recipient's Vault")
+        if (self.withdrawRef.getIDs().length == 0) {
+            // Get a reference to the recipient's Receiver
+            let receiverRef = getAccount(recipient).getCapability(/public/flowTokenReceiver)
+                .borrow<&{FungibleToken.Receiver}>()
+                ?? panic("Could not borrow receiver reference to the recipient's Vault")
 
-        // Deposit the withdrawn tokens in the recipient's receiver
-        receiverRef.deposit(from: <-self.sentVault)
+            // Deposit the withdrawn tokens in the recipient's receiver
+            receiverRef.deposit(from: <-self.sentVault)
+        } else {
+            let senderReceiverRef = getAccount(self.senderAddress).getCapability(/public/flowTokenReceiver)
+                .borrow<&{FungibleToken.Receiver}>() ?? panic("Could not borrow receiver reference to the sender's Vault")
+            senderReceiverRef.deposit(from: <-self.sentVault)
+        }
+
     }
 }
