@@ -28,4 +28,3 @@ dist-ssr
 .env.*
 !.env.example
 **/flow-mainnet.json
-src/services/flow-local-wallet/*
