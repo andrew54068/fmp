@@ -83,7 +83,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
     let toBlock = latestBlockHeight;
     let attempt = 0
     const recentEvents: Event[] = [];
-    const maxAttempt = 30;
+    const maxAttempt = 10;
 
     while (recentEvents.length < 10 && attempt < maxAttempt) {
       const latestListingEvent = await getListingEventByRange(fromBlock, toBlock);
