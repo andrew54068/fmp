@@ -240,7 +240,7 @@ export default function ListingPanel({
       );
       setPriceSummary(sum);
     }
-  }, [skipAmount]);
+  }, [skipAmount, inscriptions]);
 
   const handleSendTransaction = useCallback(async () => {
     try {
