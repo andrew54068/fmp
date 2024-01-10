@@ -56,7 +56,7 @@ const setStoredSweepBotInfo = (account: string, privateKey: string) => {
 export default function AutoSweepBot() {
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [waitingForTx, setWaitingForTx] = useState(false);
-  const [isWithdraw, setIsWithdraw] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [waitingForCreate, setWaitingForCreate] = useState(false);
   const [botAccount, setBotAccount] = useState<string | null>(null);
   const [botAccountFlowBalance, setBotAccountFlowBalance] = useState(
@@ -153,7 +153,7 @@ export default function AutoSweepBot() {
       setBotAccountFlowBalance(BigNumber(newAccountFlowBalance));
     };
     updateBotFlowBalance();
-  }, [botAccount, waitingForTx]);
+  }, [botAccount, waitingForTx, isWithdrawing]);
 
   const createBotAccountAndDeposit = useCallback(async () => {
     try {
@@ -356,7 +356,7 @@ export default function AutoSweepBot() {
         return;
       }
       setWaitingForTx(true);
-      setIsWithdraw(true);
+      setIsWithdrawing(true);
       appendMessage(
         `⌛️ Withdrawing all purchased inscriptions and Flow back to your account...`
       );
@@ -429,7 +429,7 @@ export default function AutoSweepBot() {
       setErrorMessage(err.message);
     }
     setWaitingForTx(false);
-    setIsWithdraw(false);
+    setIsWithdrawing(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -620,7 +620,7 @@ export default function AutoSweepBot() {
                   setErrorMessage("");
                   handleWithdrawAssets();
                 }}
-                isLoading={waitingForTx || isWithdraw}
+                isLoading={waitingForTx || isWithdrawing}
                 width={["100%", "auto"]}
               >
                 Withdraw
