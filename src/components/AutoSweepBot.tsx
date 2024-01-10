@@ -273,13 +273,12 @@ export default function AutoSweepBot() {
       if (targetSweepAmount == 0) return;
       setWaitingForTx(true);
       let currentBoughtAmount = 0;
-      let limit = 15;
+      const baseLimit = 15;
+      let limit = Math.min(targetAmount - currentBoughtAmount, baseLimit);
       let startOffset = 0;
-      const maxOffset = targetAmount - 1;
-      let endOffset = Math.min(startOffset + limit - 1, maxOffset);
+      let endOffset = Math.min(startOffset + limit - 1, targetSweepAmount - 1);
 
-      while (startOffset <= maxOffset) {
-        limit = Math.min(targetAmount - currentBoughtAmount, limit);
+      while (currentBoughtAmount < targetSweepAmount) {
         appendMessage(`Sending transactions...`);
         console.log(
           `💥 startOffset: ${JSON.stringify(startOffset, null, "  ")}`
@@ -331,8 +330,9 @@ export default function AutoSweepBot() {
           `Purchase ${successAmount} successfully and ${failedAmount} failed`
         );
         appendMessage(`Current purchased amount: ${currentBoughtAmount}`);
+        limit = Math.min(targetAmount - currentBoughtAmount, baseLimit);
         startOffset = endOffset + 1;
-        endOffset = Math.min(startOffset + limit - 1, maxOffset);
+        endOffset = startOffset + limit - 1;
       }
 
       appendMessage(`✅ Purchase finished!`);
