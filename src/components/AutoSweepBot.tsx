@@ -39,6 +39,7 @@ import { InscriptionDisplayModel } from "./ListingPanel";
 import { generateKeyPair } from "src/services/flow-local-wallet/local-wallet";
 import { ACCOUNT_CREATED_EVENT, FLOW_DEPOSIT_EVENT, INSCRIPTION_DEPOSIT_EVENT, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT, SWEEP_BOT_INFO } from "src/constants";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { logAutoSweepDeposit, logAutoSweepWithdraw, logAutoSweeping, logAutoSweepingPurchase, logCreateBot } from "src/services/Amplitude";
 
 type BotInfo = {
   account: string;
@@ -551,6 +552,7 @@ export default function AutoSweepBot() {
                       botAccount
                     );
                     setIsBotFlowBalanceEnough(success);
+                    logAutoSweepDeposit(targetSweepAmount);
                   }}
                   isDisabled={!account || isLoadingList || !targetSweepAmount}
                   isLoading={waitingForTx}
@@ -566,6 +568,7 @@ export default function AutoSweepBot() {
               colorScheme="blue"
               onClick={() => {
                 setErrorMessage("");
+                logCreateBot(targetSweepAmount);
                 createBotAccountAndDeposit();
               }}
               isDisabled={
@@ -594,6 +597,7 @@ export default function AutoSweepBot() {
               onClick={() => {
                 setErrorMessage("");
                 handleAutoPurchase();
+                logAutoSweepingPurchase(targetSweepAmount);
               }}
               isDisabled={
                 isLoadingList || !targetSweepAmount || !isBotFlowBalanceEnough
@@ -619,6 +623,7 @@ export default function AutoSweepBot() {
                 onClick={() => {
                   setErrorMessage("");
                   handleWithdrawAssets();
+                  logAutoSweepWithdraw();
                 }}
                 isLoading={waitingForTx || isWithdrawing}
                 width={["100%", "auto"]}
