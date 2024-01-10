@@ -18,6 +18,7 @@ import BigNumber from "bignumber.js";
 import InfoBlock from "./InfoBlock";
 import useRealTimeListingEvent from 'src/hooks/useRealTimeListingEvent';
 import { FooterContext } from 'src/context/marketplaceContext';
+import { ROYALTY_ADDRESS } from "src/constants";
 
 export default function Marketplace() {
   const [flowBalance, setFlowBalance] = useState("");
@@ -39,7 +40,7 @@ export default function Marketplace() {
   useEffect(() => {
     const fetchRoyaltyFeeBalance = async () => {
       const balance: string = await sendScript(getBalanceScript(), (arg, t) => [
-        arg("0x81bfc5cc7d1e0c74", t.Address),
+        arg(ROYALTY_ADDRESS, t.Address),
       ]);
       const value = new BigNumber(balance).multipliedBy(BigNumber(40));
       setFlowBalance(value.toString());
