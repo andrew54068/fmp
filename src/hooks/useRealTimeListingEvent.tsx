@@ -25,6 +25,7 @@ type BlockEvent = {
   type: string;
 };
 
+
 export default function useRealTimeListingEvent({ footerPosition }: {
   footerPosition: {
     bottom: number;
@@ -40,7 +41,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
   const getListingEventByRange = useCallback(async (fromBlockHeight: number, toBlockHeight: number) => {
     const blockEventMap: Record<string, BlockEvent[]> = {}
     let startBlockHeight = fromBlockHeight
-    let endBlockHeight = Math.min(startBlockHeight + 250, toBlockHeight)
+    let endBlockHeight = Math.min(startBlockHeight + 249, toBlockHeight)
 
     while (startBlockHeight < toBlockHeight) {
       const listingEvents = await fcl
@@ -60,7 +61,7 @@ export default function useRealTimeListingEvent({ footerPosition }: {
       }
 
       startBlockHeight = endBlockHeight + 1
-      endBlockHeight = Math.min(startBlockHeight + 250, toBlockHeight)
+      endBlockHeight = Math.min(startBlockHeight + 249, toBlockHeight)
     }
 
     if (Object.keys(blockEventMap).length > 0) {
@@ -79,10 +80,11 @@ export default function useRealTimeListingEvent({ footerPosition }: {
       .then(fcl.decode);
 
     if (!prevBlockHeight || !latestBlockHeight) return
-    
+
     setPrevBlockHeight(latestBlockHeight)
-    const latestListingEvent = await getListingEventByRange(prevBlockHeight, latestBlockHeight);
-    if (Array.isArray(latestListingEvent) && latestListingEvent.length > 0) {
+
+    const latestListingEvent: undefined | BlockEvent[][] = await getListingEventByRange(prevBlockHeight, latestBlockHeight);
+    if (latestListingEvent && latestListingEvent.length > 0) {
       return latestListingEvent
     }
 
