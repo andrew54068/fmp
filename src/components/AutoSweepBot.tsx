@@ -218,6 +218,9 @@ export default function AutoSweepBot() {
           appendMessage(
             `✅ Successfully deposit ${amount.toString()} Flow to ${address}`
           );
+          appendMessage(
+            `Now you can hit the Purchase button to continue.`
+          );
           return true
         } else {
           setErrorMessage(`deposit failed`);
