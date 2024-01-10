@@ -86,7 +86,13 @@ export default function Navbar() {
             Freeflow
           </Link>
         </Box>
-        <Flex flex="1" justifyContent="flex-end" p="12px">
+        <Flex flex="1" justifyContent="flex-end" columnGap="space.l" p="12px">
+          <Link to="/autoSweep">
+            <Box position="absolute" color="orange" top="10px" ml="-10px">
+              New
+            </Box>
+            AutoSweep
+          </Link>
           <Link to="/marketplace">
             Marketplace
           </Link>
