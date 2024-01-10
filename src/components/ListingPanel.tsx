@@ -42,7 +42,7 @@ import {
   getMarketListingAmountScripts,
   getMarketListingItemScripts,
 } from "src/utils/getScripts";
-import { FLOW_SCAN_URL } from "src/constants";
+import { FLOW_SCAN_URL, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT } from "src/constants";
 import { logSweepingButton, logSweeping } from "src/services/Amplitude/log";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
@@ -277,7 +277,7 @@ export default function ListingPanel({
           arg(
             purchaseModels,
             types.Array(
-              types.Struct("A.88dd257fcf26d3cc.ListingUtils.PurchaseModel", [
+              types.Struct(PURCHASE_MODEL_TYPE, [
                 { value: types.UInt64 },
                 { value: types.Address },
                 { value: types.UFix64 },
@@ -290,7 +290,7 @@ export default function ListingPanel({
       const successListingId = txData.events
         .filter((event) => {
           return (
-            event.type === "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
+            event.type === PURCHASE_SUCCEED_EVENT
           );
         })
         .map((event) => event.data.listingResourceID);

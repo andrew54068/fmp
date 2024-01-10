@@ -43,3 +43,13 @@ export const SWEEP_BOT_INFO = 'SWEEP_BOT_INFO'
 
 export const FLOW_SCAN_URL = isMainnet ? 'https://flowdiver.io/tx/' : 'https://testnet.flowdiver.io/tx/'
 export const { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklistV2 } = isMainnet ? mainnetAddress : testnetAddress
+
+// Events
+export const FLOW_DEPOSIT_EVENT = 'A.1654653399040a61.FlowToken.TokensDeposited'
+export const INSCRIPTION_DEPOSIT_EVENT = 'A.88dd257fcf26d3cc.Inscription.Deposit'
+export const ACCOUNT_CREATED_EVENT = 'flow.AccountCreated'
+export const PURCHASE_SUCCEED_EVENT = 'A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted'
+export const MARKETPLACE_BLACKLIST_ADD_EVENT = 'A.4219a16943bb0993.MarketplaceBlacklistV2.MarketplaceBlacklistAdd'
+
+// Type
+export const PURCHASE_MODEL_TYPE = 'A.88dd257fcf26d3cc.ListingUtils.PurchaseModel'

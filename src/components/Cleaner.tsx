@@ -11,6 +11,7 @@ import {
 } from "src/utils/getScripts";
 import { fetchAllList } from "src/utils/fetchList";
 import { sendTransactionWithLocalWallet } from "src/services/fcl/send-transaction";
+import { MARKETPLACE_BLACKLIST_ADD_EVENT } from "src/constants";
 
 type InscriptionDisplayModel = {
   listingId: string;
@@ -101,8 +102,7 @@ export default function Cleaner() {
         const successRemovedListingIds = txData.events
           .filter((event) => {
             return (
-              event.type ===
-              "A.4219a16943bb0993.MarketplaceBlacklistV2.MarketplaceBlacklistAdd"
+              event.type === MARKETPLACE_BLACKLIST_ADD_EVENT
             );
           })
           .map((event) => event.data.listingId);

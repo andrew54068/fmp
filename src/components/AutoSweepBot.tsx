@@ -37,7 +37,7 @@ import {
 import { convertToPurchaseModel } from "src/utils/convertToPurchaseModel";
 import { InscriptionDisplayModel } from "./ListingPanel";
 import { generateKeyPair } from "src/services/flow-local-wallet/local-wallet";
-import { SWEEP_BOT_INFO } from "src/constants";
+import { ACCOUNT_CREATED_EVENT, FLOW_DEPOSIT_EVENT, INSCRIPTION_DEPOSIT_EVENT, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT, SWEEP_BOT_INFO } from "src/constants";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 
 type BotInfo = {
@@ -173,7 +173,7 @@ export default function AutoSweepBot() {
       );
       console.log(`💥 txData: ${JSON.stringify(txData, null, "  ")}`);
       const createdEvent = txData.events.find(
-        (event) => event.type === "flow.AccountCreated"
+        (event) => event.type === ACCOUNT_CREATED_EVENT
       );
       setWaitingForCreate(false);
       if (createdEvent) {
@@ -209,7 +209,7 @@ export default function AutoSweepBot() {
         console.log(`💥 txData: ${JSON.stringify(txData, null, "  ")}`);
         const depositEvent = txData.events.find(
           (event) =>
-            event.type === "A.1654653399040a61.FlowToken.TokensDeposited" &&
+            event.type === FLOW_DEPOSIT_EVENT &&
             event.data.to === address
         );
         setWaitingForTx(false);
@@ -299,7 +299,7 @@ export default function AutoSweepBot() {
             arg(
               purchaseModels,
               types.Array(
-                types.Struct("A.88dd257fcf26d3cc.ListingUtils.PurchaseModel", [
+                types.Struct(PURCHASE_MODEL_TYPE, [
                   { value: types.UInt64 },
                   { value: types.Address },
                   { value: types.UFix64 },
@@ -312,7 +312,7 @@ export default function AutoSweepBot() {
         const successListingId = txData.events
           .filter((event) => {
             return (
-              event.type === "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
+              event.type === PURCHASE_SUCCEED_EVENT
             );
           })
           .map((event) => event.data.listingResourceID);
@@ -390,7 +390,7 @@ export default function AutoSweepBot() {
         const depositItems: string[] = txData.events
           .filter((event) => {
             return (
-              event.type === "A.88dd257fcf26d3cc.Inscription.Deposit" &&
+              event.type === INSCRIPTION_DEPOSIT_EVENT &&
               event.data.to === account
             );
           })
@@ -405,7 +405,7 @@ export default function AutoSweepBot() {
       const depositFlowAmount: BigNumber = lastTxData.events
         .filter((event) => {
           return (
-            event.type === "A.1654653399040a61.FlowToken.TokensDeposited" &&
+            event.type === FLOW_DEPOSIT_EVENT &&
             event.data.to === account
           );
         })
