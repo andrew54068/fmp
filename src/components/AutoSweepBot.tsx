@@ -361,7 +361,7 @@ export default function AutoSweepBot() {
         (arg, types) => [arg(storedSweepBotInfo.account, types.Address)]
       );
       const totalDepositItems: string[] = [];
-      const limit = 60;
+      const limit = 100;
       const maxIndex = Math.max(inscriptionIds.length - 1, 0);
       let startIndex = 0;
       let endIndex = Math.min(startIndex + limit - 1, maxIndex);
@@ -372,7 +372,7 @@ export default function AutoSweepBot() {
       ) {
         const selectedIds = inscriptionIds.slice(
           startIndex,
-          Math.max(endIndex, maxIndex + 1)
+          endIndex + 1
         );
 
         const txData = await sendTransactionWithLocalWallet(
