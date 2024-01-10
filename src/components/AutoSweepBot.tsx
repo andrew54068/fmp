@@ -39,7 +39,7 @@ import { InscriptionDisplayModel } from "./ListingPanel";
 import { generateKeyPair } from "src/services/flow-local-wallet/local-wallet";
 import { ACCOUNT_CREATED_EVENT, FLOW_DEPOSIT_EVENT, INSCRIPTION_DEPOSIT_EVENT, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT, SWEEP_BOT_INFO } from "src/constants";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { logAutoSweepDeposit, logAutoSweepWithdraw, logAutoSweeping, logAutoSweepingPurchase, logCreateBot } from "src/services/Amplitude";
+import { logAutoSweepDeposit, logAutoSweepWithdraw, logAutoSweepingPurchase, logCreateBot } from "src/services/Amplitude";
 
 type BotInfo = {
   account: string;

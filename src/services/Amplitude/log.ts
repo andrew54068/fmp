@@ -45,10 +45,6 @@ export const logSweeping = (amount: string) => {
   logCore("sweeping", { amount });
 };
 
-export const logOpenAutoSweep = (amount: string) => {
-  logCore("open_auto_sweep_tab", { amount });
-};
-
 export const logAutoSweepingPurchase = (amount: number) => {
   logCore("click_auto_sweeping_purchase", { amount });
 };
