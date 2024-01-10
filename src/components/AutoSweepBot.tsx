@@ -75,8 +75,6 @@ export default function AutoSweepBot() {
   const { account } = useContext(GlobalContext);
 
   useEffect(() => {
-    console.log(`here`);
-    
     messageList?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [message]);
 
