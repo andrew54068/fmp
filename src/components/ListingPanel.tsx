@@ -79,6 +79,8 @@ interface ListingPanelProps {
   onLoading: (isLoading: boolean) => void;
 }
 
+const purchaseLimit = 15
+
 export default function ListingPanel({
   onUpdateAmount,
   onLoading,
@@ -224,7 +226,7 @@ export default function ListingPanel({
       const inputValue = event.target.value;
       const bigNumberValue = BigNumber(inputValue);
       if (inputValue && bigNumberValue) {
-        if (bigNumberValue.isGreaterThan(BigNumber(20))) {
+        if (bigNumberValue.isGreaterThan(BigNumber(purchaseLimit))) {
           setShowSweepErrorMessage(true);
           return;
         }
@@ -460,7 +462,7 @@ export default function ListingPanel({
               alignItems="center"
             >
               <InfoOutlineIcon />
-              <Box ml="space.3xs">You can buy up to 20 items at a time.</Box>
+              <Box ml="space.3xs">You can buy up to {purchaseLimit} items at a time.</Box>
             </Flex>
             <Box fontSize="size.body.1">
               You are buying {selectedInscriptions.length} items for{" "}
