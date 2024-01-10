@@ -53,3 +53,4 @@ export const MARKETPLACE_BLACKLIST_ADD_EVENT = 'A.4219a16943bb0993.MarketplaceBl
 
 // Type
 export const PURCHASE_MODEL_TYPE = 'A.88dd257fcf26d3cc.ListingUtils.PurchaseModel'
+export const LISTING_MODEL_TYPE = 'A.88dd257fcf26d3cc.ListingUtils.ListingModel'

@@ -41,7 +41,7 @@ import {
   getPersonalAmountScripts,
   getPersonalDisplayModelScripts,
 } from "src/utils/getScripts";
-import { FLOW_SCAN_URL } from "src/constants";
+import { FLOW_SCAN_URL, LISTING_MODEL_TYPE } from "src/constants";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
 
@@ -238,7 +238,7 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
           arg(
             listingModels,
             types.Array(
-              types.Struct("A.88dd257fcf26d3cc.ListingUtils.ListingModel", [
+              types.Struct(LISTING_MODEL_TYPE, [
                 { value: types.UInt64 },
                 { value: types.UFix64 },
               ])
