@@ -31,7 +31,6 @@ export default function InfoBlock({ statistic, desc }: InfoBlockProp) {
         fontWeight="400"
         lineHeight="18px"
         fontSize="size.heading.5"
-
       >
         {desc}
       </Text>

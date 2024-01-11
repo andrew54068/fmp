@@ -9,33 +9,37 @@ const marketplaceVariant = definePartsStyle((props) => {
   return {
     tab: {
       border: '2px solid',
+      color: 'black',
       borderColor: 'transparent',
       bg: 'transparent',
       borderTopRadius: 'md',
       borderBottom: 'none',
       _selected: {
-        color: 'gray.800',
+        color: 'black',
         bg: mode('#fff', 'gray.800')(props),
-        borderColor: 'inherit',
         borderBottom: 'none',
         mb: '-2px',
       },
       _focus: {
+        border: '2px solid black',
         outline: 'none',
         outlineWidth: '0',
         boxShadow: 'none',
       },
       _active: {
+        border: '2px solid black',
         outline: 'none',
         outlineWidth: '0',
         boxShadow: 'none',
       },
       _focusVisible: {
+        border: '2px solid black',
         outline: 'none',
         outlineWidth: '0',
         boxShadow: 'none',
       },
       _focusWithin: {
+        border: '2px solid black',
         outline: 'none',
         outlineWidth: '0',
         boxShadow: 'none',

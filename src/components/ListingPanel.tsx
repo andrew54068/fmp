@@ -33,7 +33,7 @@ import { WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import Button from "src/components/Button";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
-import InscriptionsCard from "src/components/InscriptionCard";
+import InscriptionCard from "src/components/InscriptionCard";
 import { sendTransaction } from "src/services/fcl/send-transaction";
 import { sendScript } from "src/services/fcl/send-script";
 import {
@@ -364,9 +364,7 @@ export default function ListingPanel({
             onOpen();
           }}
           width="auto"
-          bg="#01ef8b"
           _hover={{
-            bg: "#01ef8b",
             transform: "scale(0.98)",
           }}
           fontSize={window.innerWidth > 500 ? "size.heading.5" : "size.body.3"}
@@ -386,9 +384,7 @@ export default function ListingPanel({
           isLoading={waitingForTx}
           isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
           width="auto"
-          bg="#01ef8b"
           _hover={{
-            bg: "#01ef8b",
             transform: "scale(0.98)",
           }}
           fontSize={window.innerWidth > 500 ? "size.heading.5" : "size.body.3"}
@@ -426,7 +422,7 @@ export default function ListingPanel({
       <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l">
         {inscriptions.map((inscription, index) => (
           <Box key={index}>
-            <InscriptionsCard
+            <InscriptionCard
               inscriptionData={JSON.parse(inscription.inscription)}
               selectable
               isSelected={selectedInscriptions.includes(inscription.nftId)}

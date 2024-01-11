@@ -9,6 +9,7 @@ import {
   Flex,
   Spinner,
 } from "@chakra-ui/react";
+import CustomTab from "./Tab";
 import ListingPanel from "src/components/ListingPanel";
 import PersonalPanel from "./PersonalPanel";
 import { useEffect, useState } from "react";
@@ -19,16 +20,19 @@ import InfoBlock from "./InfoBlock";
 import { ROYALTY_ADDRESS } from "src/constants";
 import PurchaseBoard from './PurchaseBoard';
 
+enum TabName {
+  Listing = 0,
+  Personal = 1,
+}
+
 export default function Marketplace() {
   const [flowBalance, setFlowBalance] = useState("");
   const [listingLoading, setListingLoading] = useState(true);
   const [personalItemLoading, setPersonalItemLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabName>(TabName.Listing);
   const [personalInsccriptionAmount, setPersonalInsccriptionAmount] =
     useState<BigNumber | null>(null);
   const [listingAmount, setListingAmount] = useState<BigNumber | null>(null);
-
-
-
 
   useEffect(() => {
     const fetchRoyaltyFeeBalance = async () => {
@@ -44,6 +48,10 @@ export default function Marketplace() {
     }, 5000);
     return () => clearInterval(refreshTradingVolume);
   }, []);
+
+  const onTabChange = (index: number) => {
+    setActiveTab(index);
+  }
 
   return (
     <Box
@@ -77,17 +85,17 @@ export default function Marketplace() {
         </Flex>
       </Flex>
       <Flex flexDir={["column-reverse", "column-reverse", "row"]} mx="auto">
-        <Tabs colorScheme="whiteAlpha" variant="marketplace" flex="1">
-          <TabList>
-            <Tab pr="5px">
+        <Tabs colorScheme="whiteAlpha" variant="marketplace" flex="1" onChange={onTabChange}>
+          <TabList gap="24px" mb="24px">
+            <CustomTab>
               <Text m="10px">
                 Listing Items{listingAmount ? ` ${listingAmount}` : ""}
               </Text>
               {listingLoading && (
-                <Spinner m="0px 10px" size="md" color="#01ef8b" thickness='3px' />
+                <Spinner m="0px 10px" size="md" color="primary" thickness='3px' />
               )}
-            </Tab>
-            <Tab>
+            </CustomTab>
+            <CustomTab >
               <Text m="10px">
                 My Items
                 {personalInsccriptionAmount
@@ -95,19 +103,19 @@ export default function Marketplace() {
                   : ""}
               </Text>
               {personalItemLoading && (
-                <Spinner m="0px 10px" size="md" color="#01ef8b" thickness='3px' />
+                <Spinner m="0px 10px" size="md" color="primary" thickness='3px' />
               )}
-            </Tab>
+            </CustomTab>
           </TabList>
 
-          <TabPanels >
-            <TabPanel>
+          <TabPanels borderRadius="20px" borderColor="primary" >
+            <TabPanel borderRadius="20px" >
               <ListingPanel
                 onUpdateAmount={setListingAmount}
                 onLoading={setListingLoading}
               />
             </TabPanel>
-            <TabPanel>
+            <TabPanel borderRadius="20px" >
               <PersonalPanel
                 onUpdateAmount={setPersonalInsccriptionAmount}
                 onLoading={setPersonalItemLoading}
