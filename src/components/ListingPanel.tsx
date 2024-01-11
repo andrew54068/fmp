@@ -29,7 +29,7 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
-import { WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { CopyIcon, WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import Button from "src/components/Button";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
@@ -43,7 +43,7 @@ import {
   getMarketListingItemScripts,
 } from "src/utils/getScripts";
 import { FLOW_SCAN_URL, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT } from "src/constants";
-import { logSweepingButton, logSweeping, logBatchBuyButton } from "src/services/Amplitude/log";
+import { logSweepingButton, logSweeping, logCopyErrorMessage, logBatchBuyButton } from "src/services/Amplitude/log";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
 import { convertToPurchaseModel } from "src/utils/convertToPurchaseModel";
@@ -357,7 +357,7 @@ export default function ListingPanel({
 
   const CallToActionButton = () => {
     return (
-      <Box display="flex" columnGap="10px" w={["100%", "auto"]}>
+      <Flex columnGap="10px" w={["100%", "auto"]} flexWrap="wrap">
         <Button
           onClick={() => {
             logSweepingButton(selectedInscriptions.length.toString());
@@ -409,17 +409,36 @@ export default function ListingPanel({
           </Button>
         )}
         {errorMessage && (
-          <Card p="16px" bg="red.200" mt="space.l">
-            <Text color="red.500">{errorMessage}</Text>
+          <Card p="16px" bg="red.200" mt="space.l" width="100%"
+            maxHeight="100px"
+            overflow="scroll"
+            position="relative">
+            <Box
+              right="8px"
+              top="8px"
+              position="absolute">
+              <CopyIcon
+                color="red.400"
+                cursor="pointer"
+                width="16px"
+                height="16px"
+                onClick={() => {
+                  navigator.clipboard.writeText(errorMessage || "");
+                  logCopyErrorMessage(errorMessage);
+                }}
+              />
+            </Box>
+            <Text color="red.500">{errorMessage} </Text>
           </Card>
         )}
-      </Box>
+        <Box ml="space.3xs" mt="space.xs">Your Flow balance: {flowBalance}</Box>
+      </Flex>
     );
   };
 
   return (
     <Box p="16px">
-      <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l">
+      <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l" gap="16px">
         {inscriptions.map((inscription, index) => (
           <Box key={index}>
             <InscriptionCard
@@ -452,7 +471,7 @@ export default function ListingPanel({
           margin="0 auto"
           flexDirection={["column", "column", "row"]}
         >
-          <Box mb={["16px", "16px", "0"]}>
+          <Box mb={["16px", "16px", "0"]} flex="1">
             <Flex
               fontSize="size.body.2"
               mb="space.2xs"
@@ -468,14 +487,16 @@ export default function ListingPanel({
             </Box>
           </Box>
           <Flex
+            flex="1"
             direction="column"
             rowGap="10px"
             fontSize="size.body.2"
             mb="space.2xs"
+            ml="space.l"
             alignItems="center"
           >
             <CallToActionButton />
-            <Box ml="space.3xs">Your Flow balance: {flowBalance}</Box>
+
           </Flex>
         </Flex>
       </Box>

@@ -72,3 +72,8 @@ export const logAutoSweepWithdraw = () => {
 export const logAutoSweepDeposit = (amount: string) => {
   logCore("click_auto_sweep_deposit", { amount });
 };
+
+
+export const logCopyErrorMessage = (errMessage: string) => {
+  logCore("click_copy_error_message", { errMessage });
+};
