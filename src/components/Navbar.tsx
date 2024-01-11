@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { useMediaQuery } from "@chakra-ui/react";
+import { useMediaQuery, MenuButton, MenuItem, MenuList, Menu } from "@chakra-ui/react";
 import { GlobalContext } from "src/context/global";
 import { Divider, Box, ListItem as ChakraListItem, Collapse, Flex, IconButton, List } from "@chakra-ui/react";
 import Button from "src/components/Button";
@@ -120,7 +120,17 @@ export default function Navbar() {
                 !account ? <Button onClick={onClickConnect} >
                   Connect Wallet
                 </Button> : <Box>
-                  {formatAddress(account)}
+
+                  <Menu>
+                    <>
+                      <MenuButton>
+                        {formatAddress(account)}
+                      </MenuButton>
+                      <MenuList color="#00001E" onClick={disconnect}>
+                        <MenuItem> Disconnect</MenuItem>
+                      </MenuList>
+                    </>
+                  </Menu>
                 </Box>
               }
             </Box>

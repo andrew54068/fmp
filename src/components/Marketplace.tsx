@@ -11,7 +11,8 @@ import {
 import CustomTab from "./Tab";
 import ListingPanel from "src/components/ListingPanel";
 import PersonalPanel from "./PersonalPanel";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { GlobalContext } from "src/context/global";
 import { sendScript } from "src/services/fcl/send-script";
 import { getBalanceScript } from "src/utils/getScripts";
 import BigNumber from "bignumber.js";
@@ -20,10 +21,11 @@ import { ROYALTY_ADDRESS } from "src/constants";
 import PurchaseBoard from './PurchaseBoard';
 
 export default function Marketplace() {
+  const { account } = useContext(GlobalContext);
   const [flowBalance, setFlowBalance] = useState("");
   const [listingLoading, setListingLoading] = useState(true);
   const [personalItemLoading, setPersonalItemLoading] = useState(false);
-  const [personalInsccriptionAmount, setPersonalInsccriptionAmount] =
+  const [personalInsccriptionAmount, setPersonalInscriptionAmount] =
     useState<BigNumber | null>(null);
   const [listingAmount, setListingAmount] = useState<BigNumber | null>(null);
 
@@ -41,6 +43,12 @@ export default function Marketplace() {
     }, 5000);
     return () => clearInterval(refreshTradingVolume);
   }, []);
+
+  useEffect(() => {
+    if (!account) {
+      setPersonalInscriptionAmount(null);
+    }
+  }, [setPersonalInscriptionAmount, account]);
 
 
   return (
@@ -106,7 +114,7 @@ export default function Marketplace() {
             </TabPanel>
             <TabPanel borderRadius="20px" >
               <PersonalPanel
-                onUpdateAmount={setPersonalInsccriptionAmount}
+                onUpdateAmount={setPersonalInscriptionAmount}
                 onLoading={setPersonalItemLoading}
               />
             </TabPanel>
