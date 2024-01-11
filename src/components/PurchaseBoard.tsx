@@ -37,7 +37,7 @@ export default function PurchaseBoard() {
     overflow="scroll"
     borderRadius="8px"
     width={["100%", "100%", "200px"]}
-    maxHeight={["400px", "500px"]}
+    maxHeight={["300px", "500px"]}
     boxShadow="inset 10px -8px 102px -40px rgba(0,0,0,0.7)" >
     {
       Object.values(displayedEventsMap).sort((a, b) => {
