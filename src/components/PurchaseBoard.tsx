@@ -11,10 +11,6 @@ import BigNumber from 'bignumber.js';
 export default function PurchaseBoard() {
   const { realTimeListingEvent } = useRealTimeListingEvent();
   const [displayedEventsMap, setDisplayedEventsMap] = useState<Record<string, BlockEvent[]>>({})
-  console.log('displayedEventsMap :', displayedEventsMap);
-
-
-  console.log('realTimeListingEvent :', realTimeListingEvent);
 
   useEffect(() => {
     realTimeListingEvent.forEach((events: BlockEvent[]) => {
