@@ -43,6 +43,7 @@ import {
   getMarketListingItemScripts,
 } from "src/utils/getScripts";
 import { FLOW_SCAN_URL, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT } from "src/constants";
+
 import { logSweepingButton, logSweeping, logCopyErrorMessage, logBatchBuyButton } from "src/services/Amplitude/log";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
