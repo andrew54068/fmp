@@ -89,26 +89,29 @@ export default function Navbar() {
             <Logo />
           </Link>
         </Box>
-        <Box>
-          <Link to="/autoSweep">
-            <Box position="absolute" color="orange" top="10px" ml="-10px">
-              New
-            </Box>
-            AutoSweep
-          </Link>
-        </Box>
+
 
         {
           isMobile ? <Flex alignItems="center">
             <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
           </Flex> : <Flex alignItems="center">
 
-            <Box padding="10px 16px">
+            <Box p="10px 16px">
+              <Link to="/autoSweep">
+                <Box position="absolute" color="orange" top="10px" ml="-10px" >
+                  New
+                </Box>
+                AutoSweep
+              </Link>
+            </Box>
+            <Box p="10px 16px">
               <Link to="/marketplace">
+                <Box position="absolute" color="orange" top="10px" ml="-10px" >
+                  New
+                </Box>
                 Marketplace
               </Link>
             </Box>
-
             <Box h="44px" mx="32px">
               <Divider orientation='vertical' bg="white" w="1px" />
             </Box>
@@ -145,6 +148,12 @@ export default function Navbar() {
           boxShadow="0px 4px 8px rgba(0, 0, 0, 0.05)"
         >
           <List fontWeight={500}>
+            <Link to="/autoSweep">
+              <ListItem>
+                AutoSweep
+              </ListItem>
+            </Link>
+
             <Link to="/marketplace">
               <ListItem>
                 Marketplace
