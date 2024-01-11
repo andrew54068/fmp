@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
-import useRealTimeListingEvent from 'src/hooks/useRealTimeListingEvent';
+import useRealTimeListingEvent, { BlockEvent } from 'src/hooks/useRealTimeListingEvent';
 import convertTimestampToLocalTime from 'src/utils/convertTimestampToLocalTime';
 import { Box, Card } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { motion } from 'framer-motion';
 import { FLOW_SCAN_URL } from 'src/constants'
+import BigNumber from 'bignumber.js';
 
 
 export default function PurchaseBoard() {
   const { realTimeListingEvent } = useRealTimeListingEvent();
-  const [displayedEventsMap, setDisplayedEventsMap] = useState<Record<string, object>>({})
+  const [displayedEventsMap, setDisplayedEventsMap] = useState<Record<string, BlockEvent[]>>({})
   console.log('displayedEventsMap :', displayedEventsMap);
 
 
   console.log('realTimeListingEvent :', realTimeListingEvent);
 
   useEffect(() => {
-    realTimeListingEvent.forEach((events) => {
+    realTimeListingEvent.forEach((events: BlockEvent[]) => {
       const transactionId = events[0].transactionId
       if (!displayedEventsMap[transactionId]) {
         setDisplayedEventsMap({
@@ -40,10 +41,12 @@ export default function PurchaseBoard() {
     overflow="scroll"
     borderRadius="8px"
     width={["100%", "100%", "200px"]}
-    maxHeight={["300px", "400px"]}
+    maxHeight={["400px", "500px"]}
     boxShadow="inset 10px -8px 102px -40px rgba(0,0,0,0.7)" >
     {
-      Object.entries(displayedEventsMap).reverse().map(([, events], index) => {
+      Object.values(displayedEventsMap).sort((a, b) => {
+        return BigNumber(b[0].blockHeight).minus(BigNumber(a[0].blockHeight)).toNumber()
+      }).map((events: BlockEvent[], index) => {
         const blockTimeStamp = events[0].blockTimestamp
         return (
           <motion.div

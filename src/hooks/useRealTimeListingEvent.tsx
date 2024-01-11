@@ -28,7 +28,7 @@ export default function useRealTimeListingEvent() {
   const [prevBlockHeight, setPrevBlockHeight] = useState<number>(0)
   const [realTimeListingEvent, setRealTimeListingEvent] = useState<BlockEvent[][]>([])
 
-  const getListingEventByRange = useCallback(async (fromBlockHeight: number, toBlockHeight: number) => {
+  const getListingEventByRange = useCallback(async (fromBlockHeight: number, toBlockHeight: number): Promise<BlockEvent[][] | undefined> => {
     const blockEventMap: Record<string, BlockEvent[]> = {}
     let startBlockHeight = fromBlockHeight
     let endBlockHeight = Math.min(startBlockHeight + 249, toBlockHeight)
@@ -78,10 +78,7 @@ export default function useRealTimeListingEvent() {
       return latestListingEvent
     }
 
-
   }, [getListingEventByRange])
-
-
 
   const getLatestTenEvent = useCallback(async () => {
     const { height: latestBlockHeight } = await fcl
@@ -95,13 +92,13 @@ export default function useRealTimeListingEvent() {
     let fromBlock = latestBlockHeight - 249;
     let toBlock = latestBlockHeight;
     let attempt = 0
-    const recentEvents: BlockEvent[][] = [];
+    let recentEvents: BlockEvent[][] = [];
     const maxAttempt = 30;
 
     while (recentEvents.length < 10 && attempt < maxAttempt) {
       const latestListingEvent = await getListingEventByRange(fromBlock, toBlock);
       if (Array.isArray(latestListingEvent) && latestListingEvent.length > 0) {
-        recentEvents.push(...latestListingEvent);
+        recentEvents = [...recentEvents, ...latestListingEvent]
       }
       if (recentEvents.length >= 10) {
         break;
@@ -113,9 +110,11 @@ export default function useRealTimeListingEvent() {
 
     const latestEventsAfterInitChecking = await getLatestEvent(latestBlockHeight)
 
-    setRealTimeListingEvent(latestEventsAfterInitChecking ?
-      [...recentEvents.slice(0, 10), ...latestEventsAfterInitChecking] :
-      recentEvents.slice(0, 10));
+    const totalEvents = latestEventsAfterInitChecking ?
+    [...recentEvents, ...latestEventsAfterInitChecking] :
+    recentEvents
+
+    setRealTimeListingEvent(totalEvents);
   }, [getLatestEvent, getListingEventByRange])
 
 
