@@ -72,7 +72,7 @@ export default function Marketplace() {
             statistic={`${flowBalance} Flow`}
             desc="Total Trading Volume"
           ></InfoBlock>
-          <InfoBlock statistic={`21908`} desc="Total Holders"></InfoBlock>
+          <InfoBlock statistic={`21915`} desc="Total Holders"></InfoBlock>
         </Flex>
       </Flex>
       <Flex flexDir={["column-reverse", "column-reverse", "row"]} mx="auto">
