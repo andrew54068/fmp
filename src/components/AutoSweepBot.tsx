@@ -8,15 +8,7 @@ import {
   useRef,
 } from "react";
 import { GlobalContext } from "src/context/global";
-import {
-  Card,
-  Text,
-  Flex,
-  Box,
-  InputGroup,
-  Input,
-  InputRightAddon,
-} from "@chakra-ui/react";
+import { Card, Text, Flex, Box, Input, Select } from "@chakra-ui/react";
 import Button from "src/components/Button";
 import { sendScript } from "src/services/fcl/send-script";
 import {
@@ -37,14 +29,31 @@ import {
 import { convertToPurchaseModel } from "src/utils/convertToPurchaseModel";
 import { InscriptionDisplayModel } from "./ListingPanel";
 import { generateKeyPair } from "src/services/flow-local-wallet/local-wallet";
-import { ACCOUNT_CREATED_EVENT, FLOW_DEPOSIT_EVENT, INSCRIPTION_DEPOSIT_EVENT, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT, SWEEP_BOT_INFO } from "src/constants";
+import {
+  ACCOUNT_CREATED_EVENT,
+  FLOW_DEPOSIT_EVENT,
+  INSCRIPTION_DEPOSIT_EVENT,
+  PURCHASE_MODEL_TYPE,
+  PURCHASE_SUCCEED_EVENT,
+  SWEEP_BOT_INFO,
+} from "src/constants";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { logAutoSweepDeposit, logAutoSweepWithdraw, logAutoSweepingPurchase, logCreateBot } from "src/services/Amplitude";
+import {
+  logAutoSweepDeposit,
+  logAutoSweepWithdraw,
+  logAutoSweepingPurchase,
+  logCreateBot,
+} from "src/services/Amplitude";
 
 type BotInfo = {
   account: string;
   privateKey: string;
 };
+
+enum SelectType {
+  Amount = "Amount",
+  Price = "Price",
+}
 
 const setStoredSweepBotInfo = (account: string, privateKey: string) => {
   const jsonString = JSON.stringify({
@@ -56,6 +65,7 @@ const setStoredSweepBotInfo = (account: string, privateKey: string) => {
 
 export default function AutoSweepBot() {
   const [isLoadingList, setIsLoadingList] = useState(false);
+  const [selectType, setSelectType] = useState(SelectType.Amount);
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [waitingForCreate, setWaitingForCreate] = useState(false);
@@ -71,13 +81,14 @@ export default function AutoSweepBot() {
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [targetSweepAmount, setTargetSweepAmount] = useState(0);
+  const [inputAmount, setInputAmount] = useState<BigNumber>(BigNumber(0));
   const [message, setMessage] = useState("");
   const messageList = useRef<HTMLDivElement>(null);
 
   const { account } = useContext(GlobalContext);
 
   useEffect(() => {
-    messageList?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    messageList?.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [message]);
 
   useEffect(() => {
@@ -170,7 +181,10 @@ export default function AutoSweepBot() {
         getCreateAccountAndDepositScript(),
         (arg, types) => [
           arg(keyPair.publicKey, types.String),
-          arg(priceSummary.toString(), types.UFix64),
+          arg(
+            priceSummary.multipliedBy(BigNumber(1.1)).toString(),
+            types.UFix64
+          ),
         ]
       );
       console.log(`💥 txData: ${JSON.stringify(txData, null, "  ")}`);
@@ -211,26 +225,26 @@ export default function AutoSweepBot() {
         console.log(`💥 txData: ${JSON.stringify(txData, null, "  ")}`);
         const depositEvent = txData.events.find(
           (event) =>
-            event.type === FLOW_DEPOSIT_EVENT &&
-            event.data.to === address
+            event.type === FLOW_DEPOSIT_EVENT && event.data.to === address
         );
         setWaitingForTx(false);
-        if (depositEvent && BigNumber(depositEvent.data.amount).isEqualTo(amount)) {
+        if (
+          depositEvent &&
+          BigNumber(depositEvent.data.amount).isEqualTo(amount)
+        ) {
           appendMessage(
             `✅ Successfully deposit ${amount.toString()} Flow to ${address}`
           );
-          appendMessage(
-            `Now you can hit the Purchase button to continue.`
-          );
-          return true
+          appendMessage(`Now you can hit the Purchase button to continue.`);
+          return true;
         } else {
           setErrorMessage(`deposit failed`);
-          return false
+          return false;
         }
       } catch (error: any) {
         setErrorMessage(error.message);
         setWaitingForTx(false);
-        return false
+        return false;
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
@@ -315,9 +329,7 @@ export default function AutoSweepBot() {
 
         const successListingId = txData.events
           .filter((event) => {
-            return (
-              event.type === PURCHASE_SUCCEED_EVENT
-            );
+            return event.type === PURCHASE_SUCCEED_EVENT;
           })
           .map((event) => event.data.listingResourceID);
 
@@ -376,10 +388,7 @@ export default function AutoSweepBot() {
         startIndex < inscriptionIds.length ||
         (startIndex === inscriptionIds.length && inscriptionIds.length === 0)
       ) {
-        const selectedIds = inscriptionIds.slice(
-          startIndex,
-          endIndex + 1
-        );
+        const selectedIds = inscriptionIds.slice(startIndex, endIndex + 1);
 
         const txData = await sendTransactionWithLocalWallet(
           storedSweepBotInfo.account,
@@ -410,10 +419,7 @@ export default function AutoSweepBot() {
       }
       const depositFlowAmount: BigNumber = lastTxData.events
         .filter((event) => {
-          return (
-            event.type === FLOW_DEPOSIT_EVENT &&
-            event.data.to === account
-          );
+          return event.type === FLOW_DEPOSIT_EVENT && event.data.to === account;
         })
         .reduce((pre: BigNumber, currentEvent) => {
           return pre.plus(BigNumber(currentEvent.data.amount));
@@ -427,6 +433,7 @@ export default function AutoSweepBot() {
       );
       appendMessage(`✅ All finished!`);
     } catch (err: any) {
+      console.log(`💥 err: ${JSON.stringify(err, null, "  ")}`);
       setErrorMessage(err.message);
     }
     setWaitingForTx(false);
@@ -434,21 +441,32 @@ export default function AutoSweepBot() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
-  const handleSweepAmountChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const inputValue = event.target.value;
-    const bigNumberValue = BigNumber(inputValue);
-    console.log(`💥 inputValue: ${JSON.stringify(inputValue, null, "  ")}`);
-    if (inputValue && bigNumberValue) {
-      console.log(
-        `💥 bigNumberValue: ${JSON.stringify(bigNumberValue, null, "  ")}`
-      );
-      setTargetSweepAmount(bigNumberValue.toNumber());
-      const selectedInscriptions = displayModels.slice(
-        0,
-        bigNumberValue.toNumber()
-      );
+    if (inputValue === SelectType.Amount) {
+      // setTargetSweepAmount();
+      setSelectType(SelectType.Amount);
+    } else {
+      setSelectType(SelectType.Price);
+    }
+  };
+
+  useEffect(() => {
+    onAmountChange(BigNumber(inputAmount));
+  }, [selectType, inputAmount]);
+
+  const onAmountChange = useCallback(
+    async (input: BigNumber) => {
+      let selectedInscriptions: InscriptionDisplayModel[] = [];
+      if (selectType === SelectType.Amount) {
+        setTargetSweepAmount(input.toNumber());
+        selectedInscriptions = displayModels.slice(0, input.toNumber());
+      } else {
+        selectedInscriptions = displayModels.filter((model) =>
+          model.salePrice.isLessThanOrEqualTo(input)
+        );
+        setTargetSweepAmount(selectedInscriptions.length);
+      }
       const sum = selectedInscriptions.reduce(
         (pre: BigNumber, current: InscriptionDisplayModel) => {
           return pre.plus(current.salePrice);
@@ -488,6 +506,22 @@ export default function AutoSweepBot() {
           setIsFlowBalanceEnough(checkedResult.enough);
         }
       }
+    },
+    [account, botAccount, selectType, displayModels]
+  );
+
+  const handleSweepAmountChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const inputValue = event.target.value;
+    const bigNumberValue = BigNumber(inputValue);
+    console.log(`💥 inputValue: ${JSON.stringify(inputValue, null, "  ")}`);
+    if (inputValue && bigNumberValue) {
+      console.log(
+        `💥 bigNumberValue: ${JSON.stringify(bigNumberValue, null, "  ")}`
+      );
+      setInputAmount(bigNumberValue)
+      onAmountChange(bigNumberValue);
     }
   };
 
@@ -510,7 +544,7 @@ export default function AutoSweepBot() {
           alignItems="center"
           justifyContent="start"
           p="space.m"
-          maxWidth="420px"
+          maxWidth="520px"
           margin="0 auto"
         >
           <Text fontSize="size.heading.5" lineHeight="22px">
@@ -519,20 +553,28 @@ export default function AutoSweepBot() {
           <Text fontSize="size.body.5" mb="space.l" lineHeight="22px">
             Let the bot do the job for you!
           </Text>
-          <InputGroup>
+          <Flex width="100%" columnGap="space.s">
             <Input
               isDisabled={!account || isLoadingList}
               placeholder={"How many do you want?"}
               onChange={handleSweepAmountChange}
-            ></Input>
-            <InputRightAddon bg="gray.700">Amount</InputRightAddon>
-          </InputGroup>
+            />
+            <Select
+              width="50%"
+              defaultValue={SelectType.Amount}
+              onChange={handleSelectChange}
+            >
+              <option value="Amount">Amount</option>
+              <option value="Price">Price</option>
+            </Select>
+          </Flex>
           {!!targetSweepAmount && (
             <Text fontSize="size.heading.5" mb="space.l" lineHeight="22px">
               You attempt to buy {targetSweepAmount} inscriptions and it will
               cost at least {priceSummary.toString()} Flow, so we recommend you
-              to deposit at least {priceSummary.multipliedBy(1.1).toString()}{" "}
-              for the buffer
+              to deposit at least{" "}
+              {priceSummary.multipliedBy(BigNumber(1.1)).toString()} for the
+              buffer
             </Text>
           )}
           {botAccount ? (
@@ -548,7 +590,9 @@ export default function AutoSweepBot() {
                   onClick={async () => {
                     setErrorMessage("");
                     const success = await depositFlow(
-                      priceSummary.multipliedBy(1.1).minus(botAccountFlowBalance),
+                      priceSummary
+                        .multipliedBy(1.1)
+                        .minus(botAccountFlowBalance),
                       botAccount
                     );
                     setIsBotFlowBalanceEnough(success);
