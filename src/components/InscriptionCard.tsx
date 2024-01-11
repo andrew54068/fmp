@@ -40,7 +40,7 @@ export default function InscriptionsCard({ inscriptionData, selectable, price, i
         mt="10px"
         pt="10px"
         color="#00001E"
-        fontSize="size.heading.2"
+        fontSize={["size.heading.3", "size.heading.3", "size.heading.4"]}
         fontWeight="500">
         {price ? (price.toString() + ' Flow') : 'Not listed'} </Box>
     </Card>

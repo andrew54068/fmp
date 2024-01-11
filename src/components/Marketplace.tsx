@@ -55,7 +55,6 @@ export default function Marketplace() {
 
   return (
     <Box
-      bg="gray.700"
       mt="75px"
       minH="calc(100vh - 75px)"
       padding="16px"
@@ -92,18 +91,18 @@ export default function Marketplace() {
                 Listing Items{listingAmount ? ` ${listingAmount}` : ""}
               </Text>
               {listingLoading && (
-                <Spinner m="0px 10px" size="md" color="primary" thickness='3px' />
+                <Spinner m="0px 10px" size="sm" color="primary" thickness='3px' />
               )}
             </CustomTab>
             <CustomTab >
-              <Text m="10px">
+              <Text m="8px">
                 My Items
                 {personalInsccriptionAmount
                   ? ` ${personalInsccriptionAmount}`
                   : ""}
               </Text>
               {personalItemLoading && (
-                <Spinner m="0px 10px" size="md" color="primary" thickness='3px' />
+                <Spinner m="0px 10px" size="sm" color="primary" thickness='3px' />
               )}
             </CustomTab>
           </TabList>

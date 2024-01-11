@@ -28,14 +28,14 @@ const CustomTab = React.forwardRef((props: Props, ref: Ref<HTMLElement>) => {
       <Flex alignItems="center">
         {
           isSelected ? <Box as="span"
-            borderRadius="2px"
-            width="10px"
-            height="10px"
+            borderRadius="4px"
+            width="16px"
+            height="16px"
             bg="primary"
           /> : <Box as="span"
-            borderRadius="2px"
-            width="10px"
-            height="10px"
+            borderRadius="4px"
+            width="16px"
+            height="16px"
             bg="gray.300"
           />
         }

@@ -44,7 +44,8 @@ const theme = extendTheme(
         "network.hint": IS_PROD ? "transparent" : "status.warning.light",
         "network.hint.text": IS_PROD ? "transparent" : "status.warning.dark",
         "background.primary": "#00011E",
-        "primary": "#00F6F7"
+        "primary": "#00F6F7",
+        "secondary": "#6366F1"
       },
     },
     styles: {
@@ -95,6 +96,8 @@ const theme = extendTheme(
           },
           _disabled: {
             cursor: "not-allowed",
+            color: "#6366F1",
+            bg: "white"
           },
         },
         variants: {
@@ -113,9 +116,9 @@ const theme = extendTheme(
               bg: "white",
             },
             _disabled: {
-              bg: "#DBDBDB",
-              opacity: 1,
-              color: "rgba(42,17 ,54, 0.5)",
+              cursor: "not-allowed",
+              color: "#6366F1",
+              bg: "white"
             },
           },
           secondary: {

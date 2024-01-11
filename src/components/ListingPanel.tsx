@@ -441,7 +441,7 @@ export default function ListingPanel({
         left="0"
         right="0"
         width="100%"
-        bg="gray.800"
+        bg="background.primary"
       >
         <Flex
           alignItems="center"
