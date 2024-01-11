@@ -43,6 +43,7 @@ const theme = extendTheme(
       colors: {
         "network.hint": IS_PROD ? "transparent" : "status.warning.light",
         "network.hint.text": IS_PROD ? "transparent" : "status.warning.dark",
+        "background.primary": "#00011E"
       },
     },
     styles: {
@@ -97,14 +98,15 @@ const theme = extendTheme(
         },
         variants: {
           primary: {
-            width: "100%",
-            height: "54px",
-            py: "space.m",
-            bg: "gray.100",
-            borderRadius: "6px",
-            color: "#2A1136",
+
+            height: "46px",
+            padding: "10px 16px",
+            bg: "#00F6F7",
+            borderRadius: "8px",
+            border: "1px solid #6366F",
+            color: "#00011E",
             _hover: {
-              bg: { md: "white" },
+              bg: { md: "#00F6F7" },
               _disabled: { bg: "#DBDBDB" },
             },
             _active: {

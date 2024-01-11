@@ -1,8 +1,10 @@
 import { useEffect, useContext } from "react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import { useMediaQuery } from "@chakra-ui/react";
 import { GlobalContext } from "src/context/global";
 import { Box, ListItem as ChakraListItem, Collapse, Flex, IconButton, List } from "@chakra-ui/react";
 import Button from "src/components/Button";
+import Logo from "src/assets/Logo.svg?react";
 import useClickAway from "src/hooks/useClickAway";
 import { useState } from "react";
 import * as fcl from "@blocto/fcl";
@@ -37,6 +39,7 @@ const ListItem = ({ children, ...rest }: any) => (
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMobile] = useMediaQuery("(max-width: 768px)");
   const { account, setAccount } = useContext(GlobalContext)
 
   const disconnect = () => {
@@ -77,29 +80,37 @@ export default function Navbar() {
       zIndex="banner"
       position="fixed"
       width="100%"
-      bg="gray.800"
+      bg="background.primary"
       boxShadow="0 0 10px 0 rgba(0, 0, 0, 0.05)"
     >
       <Flex justify="space-between" alignItems="center" width="100%">
         <Box fontSize="size.heading.4" pl="space.l" >
           <Link to="/mint">
-            Freeflow
+            <Logo />
           </Link>
         </Box>
-        <Flex flex="1" justifyContent="flex-end" columnGap="space.l" p="12px">
+        <Box>
           <Link to="/autoSweep">
             <Box position="absolute" color="orange" top="10px" ml="-10px">
               New
             </Box>
             AutoSweep
           </Link>
-          <Link to="/marketplace">
-            Marketplace
-          </Link>
-        </Flex>
-        <Flex alignItems="center">
-          <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
-        </Flex>
+        </Box>
+
+        {
+          isMobile ? <Flex alignItems="center">
+            <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
+          </Flex> : <Flex alignItems="center">
+            {
+              !account ? <Button onClick={onClickConnect} >
+                Connect Wallet
+              </Button> : <Box>
+                {formatAddress(account)}
+              </Box>
+            }
+          </Flex>
+        }
       </Flex>
       {/* Dropdown menu on mobile */}
       <Collapse
@@ -122,9 +133,15 @@ export default function Navbar() {
           boxShadow="0px 4px 8px rgba(0, 0, 0, 0.05)"
         >
           <List fontWeight={500}>
+            <Link to="/marketplace">
+              <ListItem>
+                Marketplace
+              </ListItem>
+            </Link>
+
             <ListItem onClick={onClickConnect}>
               <Flex alignItems="center" justify="space-between">
-                <Box as="span" ml="space.s">
+                <Box as="span">
                   {account ? `${formatAddress(account)} ` : "Connect Wallet"}
                 </Box>
                 {account && (
