@@ -552,7 +552,7 @@ export default function AutoSweepBot() {
                       botAccount
                     );
                     setIsBotFlowBalanceEnough(success);
-                    logAutoSweepDeposit(targetSweepAmount);
+                    logAutoSweepDeposit(targetSweepAmount.toString());
                   }}
                   isDisabled={!account || isLoadingList || !targetSweepAmount}
                   isLoading={waitingForTx}
@@ -568,7 +568,7 @@ export default function AutoSweepBot() {
               colorScheme="blue"
               onClick={() => {
                 setErrorMessage("");
-                logCreateBot(targetSweepAmount);
+                logCreateBot(targetSweepAmount.toString());
                 createBotAccountAndDeposit();
               }}
               isDisabled={
@@ -597,7 +597,7 @@ export default function AutoSweepBot() {
               onClick={() => {
                 setErrorMessage("");
                 handleAutoPurchase();
-                logAutoSweepingPurchase(targetSweepAmount);
+                logAutoSweepingPurchase(targetSweepAmount.toString());
               }}
               isDisabled={
                 isLoadingList || !targetSweepAmount || !isBotFlowBalanceEnough

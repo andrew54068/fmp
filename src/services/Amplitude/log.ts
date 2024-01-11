@@ -45,11 +45,11 @@ export const logSweeping = (amount: string) => {
   logCore("sweeping", { amount });
 };
 
-export const logAutoSweepingPurchase = (amount: number) => {
+export const logAutoSweepingPurchase = (amount: string) => {
   logCore("click_auto_sweeping_purchase", { amount });
 };
 
-export const logCreateBot = (amount: number) => {
+export const logCreateBot = (amount: string) => {
   logCore("click_create_bot", { amount });
 };
 
@@ -57,6 +57,6 @@ export const logAutoSweepWithdraw = () => {
   logCore("click_auto_sweep_withdraw");
 };
 
-export const logAutoSweepDeposit = (amount: number) => {
+export const logAutoSweepDeposit = (amount: string) => {
   logCore("click_auto_sweep_deposit", { amount });
 };
