@@ -43,7 +43,7 @@ import {
   getMarketListingItemScripts,
 } from "src/utils/getScripts";
 import { FLOW_SCAN_URL, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT } from "src/constants";
-import { logSweepingButton, logSweeping } from "src/services/Amplitude/log";
+import { logSweepingButton, logSweeping, logBatchBuyButton } from "src/services/Amplitude/log";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
 import { convertToPurchaseModel } from "src/utils/convertToPurchaseModel";
@@ -360,7 +360,7 @@ export default function ListingPanel({
       <Box display="flex" columnGap="10px" w={["100%", "auto"]}>
         <Button
           onClick={() => {
-            logSweepingButton();
+            logSweepingButton(selectedInscriptions.length.toString());
             onOpen();
           }}
           width="auto"
@@ -378,6 +378,7 @@ export default function ListingPanel({
             setErrorMessage("");
             if (account) {
               handleSendTransaction();
+              logBatchBuyButton(selectedInscriptions.length.toString());
             } else {
               fcl.authenticate();
             }

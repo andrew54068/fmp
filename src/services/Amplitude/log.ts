@@ -37,8 +37,20 @@ export const logFinishMinting = () => {
   logCore("finish_minting");
 };
 
-export const logSweepingButton = () => {
-  logCore("click_sweep_button");
+export const logListButton = (amount: string) => {
+  logCore("click_list_button", { amount });
+};
+
+export const logDelistButton = (amount: string) => {
+  logCore("click_delist_button", { amount });
+};
+
+export const logBatchBuyButton = (amount: string) => {
+  logCore("click_purchase_button", { amount });
+};
+
+export const logSweepingButton = (amount: string) => {
+  logCore("click_sweep_button", { amount });
 };
 
 export const logSweeping = (amount: string) => {

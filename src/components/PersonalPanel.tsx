@@ -46,6 +46,7 @@ import { FLOW_SCAN_URL, LISTING_MODEL_TYPE } from "src/constants";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
 import { InscriptionDisplayModel } from "./ListingPanel";
+import { logDelistButton, logListButton } from "src/services/Amplitude";
 
 type PersonalDisplayModel = {
   listingId: string;
@@ -483,6 +484,7 @@ export default function PersonalPanel({
                   setErrorMessage("");
                   if (account) {
                     handleDelist();
+                    logDelistButton(selectedInscriptions.length.toString());
                   } else {
                     fcl.authenticate();
                   }
@@ -657,7 +659,10 @@ export default function PersonalPanel({
             >
               <Button
                 isDisabled={sellPrice.isEqualTo(new BigNumber(0))}
-                onClick={handleBatchListing}
+                onClick={() => {
+                  handleBatchListing();
+                  logListButton(selectedInscriptions.length.toString());
+                }}
               >
                 List
               </Button>
