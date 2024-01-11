@@ -62,11 +62,12 @@ export default function Marketplace() {
       >
         <Flex
           w="100%"
-          flexDir={["column", "row"]}
+          flexDir={["column", "column", "row"]}
           borderRadius="md"
           color="gray.700"
           gap="12px"
           columnGap="20px"
+          mb={["0", "0", "56px"]}
         >
           <InfoBlock
             statistic={`${flowBalance} Flow`}
