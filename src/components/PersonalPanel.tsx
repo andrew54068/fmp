@@ -452,7 +452,6 @@ export default function PersonalPanel({
         case SelectionType.List:
           return (
             <Button
-              colorScheme="blue"
               onClick={() => {
                 setErrorMessage("");
                 if (account) {
@@ -477,7 +476,6 @@ export default function PersonalPanel({
           return (
             <Flex columnGap="space.s">
               <Button
-                colorScheme="blue"
                 onClick={() => {
                   setErrorMessage("");
                   if (account) {
@@ -534,7 +532,6 @@ export default function PersonalPanel({
             <Button
               ml={["0", "space.m"]}
               mt={["space.s", "0"]}
-              colorScheme="blue"
               onClick={() => {
                 setErrorMessage("");
                 resetSelectionInfo();
