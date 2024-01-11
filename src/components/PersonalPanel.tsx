@@ -6,7 +6,7 @@ import {
   useCallback,
   useEffect,
   ChangeEvent,
-  useRef
+  useRef,
 } from "react";
 import { GlobalContext } from "src/context/global";
 import {
@@ -37,6 +37,7 @@ import InscriptionsCard from "src/components/InscriptionCard";
 import { sendTransaction } from "src/services/fcl/send-transaction";
 import { sendScript } from "src/services/fcl/send-script";
 import {
+  getBatchDelistScript,
   getBatchSellScripts,
   getPersonalAmountScripts,
   getPersonalDisplayModelScripts,
@@ -44,9 +45,10 @@ import {
 import { FLOW_SCAN_URL, LISTING_MODEL_TYPE } from "src/constants";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
-
+import { InscriptionDisplayModel } from "./ListingPanel";
 
 type PersonalDisplayModel = {
+  listingId: string;
   nftId: string;
   inscription: string;
   salePrice: BigNumber | null;
@@ -70,11 +72,24 @@ interface PersonalPanelProps {
   onLoading: (isLoading: boolean) => void;
 }
 
-export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPanelProps) {
+enum SelectionType {
+  None,
+  List,
+  Modify,
+}
+
+export default function PersonalPanel({
+  onUpdateAmount,
+  onLoading,
+}: PersonalPanelProps) {
   const footerRef = useRef<HTMLDivElement>(null);
   const { setFooterPosition } = useContext(FooterContext);
 
+  const [fetchingList, setFetchingList] = useState(false);
   const [waitingForTx, setWaitingForTx] = useState(false);
+  const [selectionType, setSelectionType] = useState<SelectionType>(
+    SelectionType.None
+  );
   const [sellPrice, setSellPrice] = useState(new BigNumber(0));
   const [inscriptions, setInscriptions] = useState<PersonalDisplayModel[]>([]);
   const [selectedInscriptions, setSelectedInscriptions] = useState<string[]>(
@@ -95,12 +110,13 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
         return;
       }
       onLoading(true);
+      setFetchingList(true);
 
       const totalAmount: number = await sendScript(
         getPersonalAmountScripts(),
         (arg, t) => [arg(account, t.Address)]
       );
-      onUpdateAmount(BigNumber(totalAmount))
+      onUpdateAmount(BigNumber(totalAmount));
 
       const itemRequests = await fetchAllList(
         totalAmount,
@@ -109,20 +125,27 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
         [
           {
             arg: account,
-            getType: (t) => t.Address
-          }
+            getType: (t) => t.Address,
+          },
         ]
       );
       const inscriptionReqeuestResults = await Promise.all(itemRequests);
-      const inscriptionResults = inscriptionReqeuestResults.flat();
+      const inscriptionResults: InscriptionDisplayModel[] =
+        inscriptionReqeuestResults.flat();
 
-      const displayModels: PersonalDisplayModel[] = inscriptionResults.map((value) => {
-        return {
-          nftId: value.nftId,
-          inscription: value.inscription,
-          salePrice: value.salePrice ? new BigNumber(value.salePrice) : null,
-        };
-      });
+      const displayModels: PersonalDisplayModel[] = inscriptionResults.map(
+        (value) => {
+          console.log(
+            `💥 value.listingId: ${JSON.stringify(value.listingId, null, "  ")}`
+          );
+          return {
+            listingId: value.listingId,
+            nftId: value.nftId,
+            inscription: value.inscription,
+            salePrice: value.salePrice ? new BigNumber(value.salePrice) : null,
+          };
+        }
+      );
       console.log(
         `💥 personal displayModels length: ${JSON.stringify(
           displayModels.length,
@@ -141,22 +164,61 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
         }
         return 0;
       });
-      setInscriptions(displayModels.slice(0, 200));
+      setInscriptions(displayModels.slice(0, 500));
       onLoading(false);
+      setFetchingList(false);
     };
     updateList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, onLoading]);
+  }, [account, waitingForTx]);
 
   useEffect(() => {
     if (footerRef.current) {
       const rect = footerRef.current.getBoundingClientRect();
-      setFooterPosition({ bottom: window.innerHeight - rect.top, left: rect.left });
+      setFooterPosition({
+        bottom: window.innerHeight - rect.top,
+        left: rect.left,
+      });
     }
   }, [setFooterPosition]);
 
+  useEffect(() => {
+    if (selectedInscriptions.length === 0) {
+      resetSelectionType();
+    }
+  }, [selectedInscriptions]);
+
+  const resetSelectionType = () => {
+    setSelectionType(SelectionType.None);
+  };
+
   const handleCardSelect = (inscription: PersonalDisplayModel) => {
-    if (inscription.salePrice) return;
+    const getNextSelectionType = (
+      inscription: PersonalDisplayModel
+    ): SelectionType => {
+      if (
+        inscription.salePrice &&
+        inscription.salePrice.isGreaterThan(BigNumber(0))
+      ) {
+        return SelectionType.Modify;
+      } else {
+        return SelectionType.List;
+      }
+    };
+
+    const nextType = getNextSelectionType(inscription);
+    switch (selectionType) {
+      case SelectionType.None: {
+        setSelectionType(nextType);
+        break;
+      }
+      case SelectionType.List:
+      case SelectionType.Modify:
+        if (selectionType == nextType) {
+          break;
+        }
+        return;
+    }
     if (!selectedInscriptions.includes(inscription.nftId)) {
       setSelectedInscriptions((prev) => [...prev, inscription.nftId]);
     } else {
@@ -299,49 +361,195 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
     toast,
   ]);
 
-  const CallToActionButton = () => {
-    return (
-      <Box w={["100%", "auto"]}>
-        <Button
-          colorScheme="blue"
-          onClick={() => {
-            setErrorMessage("");
-            if (account) {
-              onOpen();
+  const handleDelist = useCallback(async () => {
+    try {
+      console.log(`💥 account: ${JSON.stringify(account, null, "  ")}`);
+      if (!account) return;
+      setWaitingForTx(true);
+      const selectedDisplayModels: PersonalDisplayModel[] =
+        selectedInscriptions.reduce(
+          (pre: PersonalDisplayModel[], currentNFTId: string) => {
+            const inscription = inscriptions.find(
+              (inscription) => inscription.nftId == currentNFTId
+            );
+            if (inscription) {
+              return [...pre, inscription];
             } else {
-              fcl.authenticate();
+              return [...pre];
             }
-          }}
-          isLoading={waitingForTx}
-          isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
-          width={["100%", "auto"]}
-          bg="#01ef8b"
-          _hover={{
-            bg: "#01ef8b",
-            transform: "scale(0.98)",
-          }}
-        >
-          {account
-            ? `List ${selectedInscriptions.length} Items`
-            : "Connect Wallet"}
-        </Button>
-        {hasSelected && (
-          <Button
-            ml={["0", "space.m"]}
-            mt={["space.s", "0"]}
-            colorScheme="blue"
-            onClick={() => {
-              setErrorMessage("");
-              resetSelectionInfo();
-            }}
-            isLoading={waitingForTx}
-            width={["100%", "auto"]}
+          },
+          []
+        );
+
+      console.log(
+        `💥 selectedDisplayModels: ${JSON.stringify(
+          selectedDisplayModels,
+          null,
+          "  "
+        )}`
+      );
+
+      const delistIds = selectedDisplayModels.map((value) => value.listingId);
+
+      console.log(`💥 listingModels: ${JSON.stringify(delistIds, null, "  ")}`);
+
+      const txData = await sendTransaction(
+        getBatchDelistScript(),
+        (arg, types) => [arg(delistIds, types.Array(types.UInt64))]
+      );
+
+      resetSelectionInfo();
+
+      console.log("txData :", txData);
+
+      toast({
+        status: "success",
+        position: "top",
+        duration: null,
+        isClosable: true,
+        containerStyle: {
+          marginTop: "20px",
+        },
+        render: () => (
+          <Flex
+            alignItems="center"
+            bg="green.500"
+            color="white"
+            padding="20px"
+            borderRadius="12px"
           >
-            Cancel
-          </Button>
-        )}
+            <Link
+              to={FLOW_SCAN_URL + txData.hash}
+              target="_blank"
+              style={{ textDecoration: "underline" }}
+            >
+              <Icon as={WarningIcon} mr="8px" />
+              Inscription Listed successfully!!
+            </Link>
+            <Box
+              onClick={() => toast.closeAll()}
+              ml="8px"
+              cursor="pointer"
+              p="4px"
+            >
+              <SmallCloseIcon />
+            </Box>
+          </Flex>
+        ),
+      });
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    }
+    setWaitingForTx(false);
+  }, [account, selectedInscriptions]);
+
+  const CallToActionButton = () => {
+    const getCTAButton = (selectionType: SelectionType) => {
+      switch (selectionType) {
+        case SelectionType.None:
+          return <></>;
+        case SelectionType.List:
+          return (
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                setErrorMessage("");
+                if (account) {
+                  onOpen();
+                } else {
+                  fcl.authenticate();
+                }
+              }}
+              isLoading={waitingForTx}
+              isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
+              width={["100%", "auto"]}
+              bg="#01ef8b"
+              _hover={{
+                bg: "#01ef8b",
+                transform: "scale(0.98)",
+              }}
+            >
+              {account
+                ? `List ${selectedInscriptions.length} Items`
+                : "Connect Wallet"}
+            </Button>
+          );
+        case SelectionType.Modify:
+          return (
+            <Flex columnGap="space.s">
+              <Button
+                colorScheme="blue"
+                onClick={() => {
+                  setErrorMessage("");
+                  if (account) {
+                    handleDelist();
+                  } else {
+                    fcl.authenticate();
+                  }
+                }}
+                isLoading={waitingForTx}
+                isDisabled={
+                  !!account && (selectedInscriptions.length ?? 0) == 0
+                }
+                width={["100%", "auto"]}
+                bg="#01ef8b"
+                _hover={{
+                  bg: "#01ef8b",
+                  transform: "scale(0.98)",
+                }}
+              >
+                Delist {selectedInscriptions.length} Items
+              </Button>
+              {/* <Button
+                colorScheme="blue"
+                onClick={() => {
+                  setErrorMessage("");
+                  if (account) {
+                    onOpen();
+                  } else {
+                    fcl.authenticate();
+                  }
+                }}
+                isLoading={waitingForTx}
+                isDisabled={
+                  !!account && (selectedInscriptions.length ?? 0) == 0
+                }
+                width={["100%", "auto"]}
+                bg="#01ef8b"
+                _hover={{
+                  bg: "#01ef8b",
+                  transform: "scale(0.98)",
+                }}
+              >
+                Modify {selectedInscriptions.length} Items
+              </Button> */}
+            </Flex>
+          );
+      }
+    };
+
+    return (
+      <Box display="flex" flexDirection="column" rowGap="space.s">
+        <Flex w={["100%", "auto"]} columnGap="space.m">
+          {getCTAButton(selectionType)}
+          {hasSelected && (
+            <Button
+              ml={["0", "space.m"]}
+              mt={["space.s", "0"]}
+              colorScheme="blue"
+              onClick={() => {
+                setErrorMessage("");
+                resetSelectionInfo();
+              }}
+              isLoading={waitingForTx}
+              width={["100%", "auto"]}
+            >
+              Cancel
+            </Button>
+          )}
+        </Flex>
         {errorMessage && (
-          <Card p="16px" bg="red.200" mt="space.l">
+          <Card p="16px" bg="red.200" overflowY="auto" h="100px" width="600px">
             <Text color="red.500">{errorMessage}</Text>
           </Card>
         )}
@@ -359,11 +567,10 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
                 <Box key={index}>
                   <InscriptionsCard
                     inscriptionData={JSON.parse(inscription.inscription)}
-                    selectable={!inscription.salePrice}
-                    isSelected={
-                      !inscription.salePrice &&
-                      selectedInscriptions.includes(inscription.nftId)
-                    }
+                    selectable
+                    isSelected={selectedInscriptions.includes(
+                      inscription.nftId
+                    )}
                     onClick={() => handleCardSelect(inscription)}
                     price={inscription.salePrice}
                     cursor="pointer"
@@ -372,7 +579,9 @@ export default function PersonalPanel({ onUpdateAmount, onLoading }: PersonalPan
               ))
             ) : (
               <Text fontSize="size.heading.5" mb="space.l" lineHeight="22px">
-                You don't have Inscription yet!
+                {fetchingList
+                  ? "Loading..."
+                  : "You don't have Inscription yet!"}
               </Text>
             )}
           </SimpleGrid>

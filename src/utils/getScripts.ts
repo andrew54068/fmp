@@ -17,6 +17,7 @@ import createAccountAndDepositScript from '../../cadence/transactions/createAcco
 import transferInscriptionAndFlowScript from '../../cadence/transactions/transferInscriptionAndFlow.cdc?raw';
 import inscriptionIdsScript from '../../cadence/scripts/get_inscription_ids.cdc?raw';
 import transferFlowScript from '../../cadence/transactions/transferFlow.cdc?raw';
+import batchDelistScript from '../../cadence/transactions/bay/batchDelist.cdc?raw';
 
 const replacement = (script: string): string => {
   return script
@@ -102,4 +103,8 @@ export const getInscriptionIdsScript = () => {
 
 export const getTransferFlowScript = () => {
   return replacement(transferFlowScript)
+}
+
+export const getBatchDelistScript = () => {
+  return replacement(batchDelistScript)
 }
