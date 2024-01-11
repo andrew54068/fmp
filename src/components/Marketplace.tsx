@@ -4,7 +4,6 @@ import {
   Tabs,
   TabList,
   TabPanels,
-  Tab,
   TabPanel,
   Flex,
   Spinner,
@@ -20,16 +19,10 @@ import InfoBlock from "./InfoBlock";
 import { ROYALTY_ADDRESS } from "src/constants";
 import PurchaseBoard from './PurchaseBoard';
 
-enum TabName {
-  Listing = 0,
-  Personal = 1,
-}
-
 export default function Marketplace() {
   const [flowBalance, setFlowBalance] = useState("");
   const [listingLoading, setListingLoading] = useState(true);
   const [personalItemLoading, setPersonalItemLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabName>(TabName.Listing);
   const [personalInsccriptionAmount, setPersonalInsccriptionAmount] =
     useState<BigNumber | null>(null);
   const [listingAmount, setListingAmount] = useState<BigNumber | null>(null);
@@ -49,9 +42,6 @@ export default function Marketplace() {
     return () => clearInterval(refreshTradingVolume);
   }, []);
 
-  const onTabChange = (index: number) => {
-    setActiveTab(index);
-  }
 
   return (
     <Box
@@ -84,7 +74,7 @@ export default function Marketplace() {
         </Flex>
       </Flex>
       <Flex flexDir={["column-reverse", "column-reverse", "row"]} mx="auto">
-        <Tabs colorScheme="whiteAlpha" variant="marketplace" flex="1" onChange={onTabChange}>
+        <Tabs colorScheme="whiteAlpha" variant="marketplace" flex="1" >
           <TabList gap="24px" mb="24px">
             <CustomTab>
               <Text m="10px">
