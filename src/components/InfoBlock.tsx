@@ -9,7 +9,7 @@ export default function InfoBlock({ statistic, desc }: InfoBlockProp) {
   return (
     <Flex
       p="space.s"
-      w="50%"
+      w={["100%", "50%"]}
       direction="column"
       borderRadius="md"
       alignItems="left"

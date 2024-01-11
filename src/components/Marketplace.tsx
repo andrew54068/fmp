@@ -16,9 +16,8 @@ import { sendScript } from "src/services/fcl/send-script";
 import { getBalanceScript } from "src/utils/getScripts";
 import BigNumber from "bignumber.js";
 import InfoBlock from "./InfoBlock";
-import useRealTimeListingEvent from 'src/hooks/useRealTimeListingEvent';
-import { FooterContext } from 'src/context/marketplaceContext';
 import { ROYALTY_ADDRESS } from "src/constants";
+import PurchaseBoard from './PurchaseBoard';
 
 export default function Marketplace() {
   const [flowBalance, setFlowBalance] = useState("");
@@ -27,15 +26,9 @@ export default function Marketplace() {
   const [personalInsccriptionAmount, setPersonalInsccriptionAmount] =
     useState<BigNumber | null>(null);
   const [listingAmount, setListingAmount] = useState<BigNumber | null>(null);
-  const [footerPosition, setFooterPosition] = useState<{
-    bottom: number;
-    left: number;
-  }>({
-    bottom: 0,
-    left: 0,
-  });
 
-  useRealTimeListingEvent({ footerPosition });
+
+
 
   useEffect(() => {
     const fetchRoyaltyFeeBalance = async () => {
@@ -53,35 +46,37 @@ export default function Marketplace() {
   }, []);
 
   return (
-    <FooterContext.Provider value={{ setFooterPosition }}>
-      <Box
-        bg="gray.700"
-        mt="75px"
-        minH="calc(100vh - 75px)"
-        padding="16px"
-        pb="172px"
-        pt="60px"
+    <Box
+      bg="gray.700"
+      mt="75px"
+      minH="calc(100vh - 75px)"
+      padding="16px"
+      pb="172px"
+      pt="60px"
+    >
+      <Flex
+        borderRadius="md"
+        margin="20px 0px"
+        fontSize="size.heading.3"
+        color="gray.700"
       >
         <Flex
+          w="100%"
+          flexDir={["column", "row"]}
           borderRadius="md"
-          margin="20px 0px"
-          fontSize="size.heading.3"
           color="gray.700"
+          gap="12px"
+          columnGap="20px"
         >
-          <Flex
-            w="100%"
-            borderRadius="md"
-            color="gray.700"
-            columnGap="20px"
-          >
-            <InfoBlock
-              statistic={`${flowBalance} Flow`}
-              desc="Total Trading Volume"
-            ></InfoBlock>
-            <InfoBlock statistic={`21908`} desc="Total Holders"></InfoBlock>
-          </Flex>
+          <InfoBlock
+            statistic={`${flowBalance} Flow`}
+            desc="Total Trading Volume"
+          ></InfoBlock>
+          <InfoBlock statistic={`21908`} desc="Total Holders"></InfoBlock>
         </Flex>
-        <Tabs colorScheme="whiteAlpha" variant="marketplace">
+      </Flex>
+      <Flex flexDir={["column-reverse", "column-reverse", "row"]} mx="auto">
+        <Tabs colorScheme="whiteAlpha" variant="marketplace" flex="1">
           <TabList>
             <Tab pr="5px">
               <Text m="10px">
@@ -104,7 +99,7 @@ export default function Marketplace() {
             </Tab>
           </TabList>
 
-          <TabPanels>
+          <TabPanels >
             <TabPanel>
               <ListingPanel
                 onUpdateAmount={setListingAmount}
@@ -119,7 +114,8 @@ export default function Marketplace() {
             </TabPanel>
           </TabPanels>
         </Tabs>
-      </Box>
-    </FooterContext.Provider>
+        <PurchaseBoard />
+      </Flex>
+    </Box >
   );
 }

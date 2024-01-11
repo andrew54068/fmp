@@ -16,7 +16,7 @@ initAmplitude()
 const maxWidthSetting = {
   "/": "100%",
   "/mint": "520px",
-  "/marketplace": "820px"
+  "/marketplace": "1020px"
 }
 
 function App() {

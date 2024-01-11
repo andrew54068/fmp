@@ -1,10 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import useInterval from './useInterval';
 import * as fcl from "@blocto/fcl";
-import convertTimestampToLocalTime from 'src/utils/convertTimestampToLocalTime';
-import { LISTING_EVENT_NAME, FLOW_SCAN_URL } from 'src/constants'
-import { useToast, Box, Flex } from '@chakra-ui/react'
-import { Link } from "react-router-dom";
+import { LISTING_EVENT_NAME } from 'src/constants'
 
 type EventData = {
   listingResourceID: string;
@@ -14,7 +11,7 @@ type EventData = {
   nftID: string;
 };
 
-type BlockEvent = {
+export type BlockEvent = {
   blockHeight: number;
   blockId: string;
   blockTimestamp: string;
@@ -26,17 +23,10 @@ type BlockEvent = {
 };
 
 
-export default function useRealTimeListingEvent({ footerPosition }: {
-  footerPosition: {
-    bottom: number;
-    left: number;
-  }
-}) {
+export default function useRealTimeListingEvent() {
 
   const [prevBlockHeight, setPrevBlockHeight] = useState<number>(0)
   const [realTimeListingEvent, setRealTimeListingEvent] = useState<BlockEvent[][]>([])
-
-  const toast = useToast()
 
   const getListingEventByRange = useCallback(async (fromBlockHeight: number, toBlockHeight: number) => {
     const blockEventMap: Record<string, BlockEvent[]> = {}
@@ -136,45 +126,19 @@ export default function useRealTimeListingEvent({ footerPosition }: {
 
   useInterval(() => {
     if (!prevBlockHeight) return
-    const latestEvent = getLatestEvent(prevBlockHeight)
-    if (Array.isArray(latestEvent) && latestEvent.length > 0) {
-      setRealTimeListingEvent(latestEvent)
-    }
+    getLatestEvent(prevBlockHeight).then(
+      (latestEvent: undefined | BlockEvent[][]) => {
+        if (latestEvent && latestEvent.length > 0) {
+          setRealTimeListingEvent(latestEvent)
+        }
+      }
+    )
+
   }, 3000)
 
-  useEffect(() => {
-    if (realTimeListingEvent.length > 0) {
-      for (const [, events] of realTimeListingEvent.entries()) {
-        const blockTimeStamp = events[0].blockTimestamp
-
-        // show toast  
-        toast({
-          position: 'bottom-left',
-          duration: 10 * 1000,
-          containerStyle: {
-            position: 'relative',
-            bottom: `${footerPosition.bottom}px`,
-            left: `${footerPosition.left}px`,
-          },
-          render: () => (
-            <Flex>
-              <Box color='gray.500' p={2} bg='gray.800' borderRadius="4px">
-                <Link
-                  to={FLOW_SCAN_URL + (events[0].transactionId as string)}
-                  target="_blank"
-                  style={{ textDecoration: "underline" }}
-                >
-                  Someone just bought {Array.isArray(events) ? events.length : 1} FF inscription
-                  <br /> at {" "}
-                  {convertTimestampToLocalTime(blockTimeStamp)}{" "}!
-                </Link>
-              </Box>
-            </Flex>
-          ),
-        })
-      }
-      setRealTimeListingEvent([])
-    }
-  }, [footerPosition.bottom, footerPosition.left, realTimeListingEvent, toast])
+  return {
+    realTimeListingEvent,
+    setRealTimeListingEvent
+  }
 }
 
