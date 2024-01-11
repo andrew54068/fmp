@@ -106,8 +106,8 @@ export default function useRealTimeListingEvent() {
       if (recentEvents.length >= 10) {
         break;
       }
+      toBlock = fromBlock - 1;
       fromBlock -= 249;
-      toBlock = fromBlock;
       attempt += 1
     }
 
