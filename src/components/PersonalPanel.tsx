@@ -464,9 +464,7 @@ export default function PersonalPanel({
               isLoading={waitingForTx}
               isDisabled={!!account && (selectedInscriptions.length ?? 0) == 0}
               width={["100%", "auto"]}
-              bg="#01ef8b"
               _hover={{
-                bg: "#01ef8b",
                 transform: "scale(0.98)",
               }}
             >
@@ -494,9 +492,7 @@ export default function PersonalPanel({
                   !!account && (selectedInscriptions.length ?? 0) == 0
                 }
                 width={["100%", "auto"]}
-                bg="#01ef8b"
                 _hover={{
-                  bg: "#01ef8b",
                   transform: "scale(0.98)",
                 }}
               >
@@ -593,7 +589,7 @@ export default function PersonalPanel({
           Wallet not connected yet!
         </Text>
       )}
-      <Box pos="fixed" bottom="0" left="0" right="0" width="100%" bg="gray.800">
+      <Box pos="fixed" bottom="0" left="0" right="0" width="100%" bg="gray.800" zIndex="1">
         <Flex
           alignItems="center"
           justifyContent="space-between"
