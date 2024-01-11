@@ -96,7 +96,7 @@ export default function useRealTimeListingEvent() {
     let toBlock = latestBlockHeight;
     let attempt = 0
     const recentEvents: BlockEvent[][] = [];
-    const maxAttempt = 10;
+    const maxAttempt = 30;
 
     while (recentEvents.length < 10 && attempt < maxAttempt) {
       const latestListingEvent = await getListingEventByRange(fromBlock, toBlock);
