@@ -52,7 +52,7 @@ export default function PurchaseBoard() {
             animate="visible"
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Card key={index} p="8px" bg="white" color="gray.500" mb="8px">
+            <Card key={index} p="8px" color="primary" mb="8px" border="solid 2px #00F6F7" bg="transparent">
               <Link
                 to={FLOW_SCAN_URL + (events[0].transactionId as string)}
                 target="_blank"

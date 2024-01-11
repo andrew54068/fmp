@@ -441,6 +441,7 @@ export default function ListingPanel({
         left="0"
         right="0"
         width="100%"
+        zIndex="1"
         bg="background.primary"
       >
         <Flex
