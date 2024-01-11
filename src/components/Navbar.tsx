@@ -2,7 +2,7 @@ import { useEffect, useContext } from "react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useMediaQuery } from "@chakra-ui/react";
 import { GlobalContext } from "src/context/global";
-import { Box, ListItem as ChakraListItem, Collapse, Flex, IconButton, List } from "@chakra-ui/react";
+import { Divider, Box, ListItem as ChakraListItem, Collapse, Flex, IconButton, List } from "@chakra-ui/react";
 import Button from "src/components/Button";
 import Logo from "src/assets/Logo.svg?react";
 import useClickAway from "src/hooks/useClickAway";
@@ -102,13 +102,25 @@ export default function Navbar() {
           isMobile ? <Flex alignItems="center">
             <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
           </Flex> : <Flex alignItems="center">
-            {
-              !account ? <Button onClick={onClickConnect} >
-                Connect Wallet
-              </Button> : <Box>
-                {formatAddress(account)}
-              </Box>
-            }
+
+            <Box padding="10px 16px">
+              <Link to="/marketplace">
+                Marketplace
+              </Link>
+            </Box>
+
+            <Box h="44px" mx="32px">
+              <Divider orientation='vertical' bg="white" w="1px" />
+            </Box>
+            <Box>
+              {
+                !account ? <Button onClick={onClickConnect} >
+                  Connect Wallet
+                </Button> : <Box>
+                  {formatAddress(account)}
+                </Box>
+              }
+            </Box>
           </Flex>
         }
       </Flex>

@@ -99,11 +99,11 @@ const theme = extendTheme(
         variants: {
           primary: {
 
-            height: "46px",
+            height: "36px",
             padding: "10px 16px",
             bg: "#00F6F7",
             borderRadius: "8px",
-            border: "1px solid #6366F",
+            border: "1px solid #6366F1",
             color: "#00011E",
             _hover: {
               bg: { md: "#00F6F7" },
