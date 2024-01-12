@@ -14,7 +14,7 @@ import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
 export default function StakingCard() {
   return (
 
-    <Card maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" p={4} bg="blue.800" color="white">
+    <Card maxW="sm" borderRadius="30px" overflow="hidden" p="24px" bg="#475569" color="white">
       <Box
         position="relative"
         aspectRatio={3.41 / 1.43}
