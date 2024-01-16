@@ -1,9 +1,9 @@
 import React from 'react';
-import { Spinner, InputGroup, InputRightElement, Box, Text, Input, Stack } from '@chakra-ui/react';
+import { Spinner, InputGroup, InputRightElement, Box, Text, Input } from '@chakra-ui/react';
 
 interface TokenInputProps {
   tokenName: string;
-  balance: number;
+  balance?: number;
   value: string;
   label?: string;
   borderColor?: string;
@@ -70,9 +70,13 @@ const TokenInput: React.FC<TokenInputProps> = ({
             </Box>
           }
         </InputGroup>
-        <Text fontSize="sm" color="white" pl="0">
-          Balance: {balance.toFixed(3)}
-        </Text>
+        {
+          <Text fontSize="sm" color="white" pl="0" minH="20px">
+            {
+              balance && `Balance: ${balance.toFixed(3)}`
+            }
+          </Text>
+        }
       </Box>
     </Box>
   );

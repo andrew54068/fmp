@@ -9,7 +9,7 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
-import StakingModal from './StakingModal';
+import StakingModal from './components/StakingModal';
 
 export default function StakingCard() {
   const { isOpen: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();

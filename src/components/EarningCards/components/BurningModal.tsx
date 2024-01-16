@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -10,12 +10,14 @@ import {
   VStack,
   HStack,
   Image,
-  Flex
+  Flex,
 } from '@chakra-ui/react';
 import Button from 'src/components/Button';
 import ModalBanner from 'src/assets/fomopolyModalBanner.png';
-import TokenInput from './components/TokenInput';
-import InfoBlock from './components/InfoBlock';
+import TokenInput from './TokenInput';
+import InfoBlock from './InfoBlock';
+//@todo: update burn icon 
+import BurnIcon from 'src/assets/burn.svg?react';
 
 
 interface ModalProps {
@@ -25,21 +27,21 @@ interface ModalProps {
 }
 
 
-const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) => {
+const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) => {
   const [ffAmount, setFfAmount] = useState('');
-  const [loadingForFlowAmount, setLoadingForFlowAmount] = useState(false);
-  const [flowAmountNeeded, setFlowAmountNeeded] = useState('');
+  const [loadingForReceivingFMP, setLoadingForReceivingFMP] = useState(false);
+  const [FMPAmountReceived, setFMPAmountReceived] = useState('');
 
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFfAmount(event.target.value);
     console.log('event.target.value :', event.target.value);
-    setLoadingForFlowAmount(true)
+    setLoadingForReceivingFMP(true)
     // @todo: api logic for flow amount
     setTimeout(() => {
-      setLoadingForFlowAmount(false)
+      setLoadingForReceivingFMP(false)
       // if()
-      setFlowAmountNeeded(prev => `${Number(prev) + 1}`)
+      setFMPAmountReceived(prev => `${Number(prev) + 1}`)
     }, 1000)
   };
   return (
@@ -72,11 +74,13 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
           </Box>
 
           <ModalBody overflow="scroll" >
-            <VStack spacing="30px" >
+
+            <VStack spacing="30px" alignItems="center">
               <Flex
                 width="100%"
                 justifyContent="space-between"
                 flexDirection={["column", "row"]}
+                alignItems="center"
                 gap="16px">
                 <TokenInput
                   label="Stake"
@@ -85,44 +89,37 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                   onChange={handleChange}
                   balance={0.189}
                 />
+                <Flex
+                  position="relative"
+                  display="inline-flex"
+                  h={["20px", "128px"]}
+                  justifyContent="center"
+                  alignItems="center"
+                  width="100%">
+                  <Box pos="absolute" left="50%" top="60%" transform="translate(-50%,-50%)">
+                    <BurnIcon width="20px" height="20px" />
+                  </Box>
+                </Flex>
                 <TokenInput
-                  isLoading={loadingForFlowAmount}
-                  label="Paying"
-                  tokenName="$Flow"
-                  value={flowAmountNeeded}
-                  balance={0.189}
+                  isLoading={loadingForReceivingFMP}
+                  label="Receive"
+                  tokenName="$FMP"
+                  value={FMPAmountReceived}
                   borderColor='neutral.700'
                 />
               </Flex>
               {/* // Detail  */}
 
-              <InfoBlock label="Detail">
-                <HStack justifyContent="space-between" mb="12px">
+              <InfoBlock>
+                <HStack justifyContent="space-between" alignItems="center">
                   <Box>
-                    Paying
-                  </Box>
-                  <Box>
-                    {`${flowAmountNeeded || 0.00} $Flow`}
-                  </Box>
-                </HStack>
-                <HStack justifyContent="space-between" mb="12px">
-                  <Box>
-                    Staking
+                    You're paying
                   </Box>
                   <Box>
                     {`${ffAmount || 0.00} $FF`}
                   </Box>
                 </HStack>
-                <HStack justifyContent="space-between">
-                  <Box>
-                    Pool Share
-                  </Box>
-                  <Box>
-                    0.0 $FF
-                  </Box>
-                </HStack>
               </InfoBlock>
-
               <InfoBlock label="Earned">
                 <HStack justifyContent="space-between">
                   <Box>
@@ -155,7 +152,7 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                 variant="outline" onClick={onCloseModal}>Cancel</ChakraButton>
               <Button minW={[0, "65%", "370px"]} width={["100%", "370px"]}
                 onClick={onClickStake}
-              >Stake for $FMP</Button>
+              >Burn for $FMP</Button>
             </HStack>
           </ModalFooter>
         </ModalContent>
@@ -164,4 +161,4 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
   );
 };
 
-export default StakingModal;
+export default BurningModal;

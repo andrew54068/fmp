@@ -5,11 +5,14 @@ import {
   Progress,
   Stack,
   Flex,
-  Tag
+  Tag,
+  useDisclosure
 } from '@chakra-ui/react';
 import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
+import BurningModal from './components/BurningModal';
 
 export default function BurningCard() {
+  const { isOpen: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
   return (
 
     <Card
@@ -19,7 +22,8 @@ export default function BurningCard() {
       p="24px"
       bg="slate.600"
       color="white"
-      cursor="pointer">
+      cursor="pointer"
+      onClick={onOpenModal}>
       <Box
         position="relative"
         aspectRatio={3.41 / 1.43}
@@ -70,9 +74,17 @@ export default function BurningCard() {
         <Progress value={80} size="sm" colorScheme="monopolyEarnProgress" my="12px" height="16px" borderRadius="24px" />
 
         <Flex justifyContent="space-between" alignItems="center">
-          <Text fontSize="sm">Stake FF to earn FMP</Text>
+          <Text fontSize="sm">Burn FF to earn FMP</Text>
         </Flex>
       </Stack>
+      <BurningModal
+        onClickStake={() => {
+          //@todo: take tx logic.
+          onCloseModal()
+        }}
+        isModalOpen={isModalOpen}
+        onCloseModal={onCloseModal}
+      />
     </Card >
 
   )

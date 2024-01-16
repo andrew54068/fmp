@@ -1,9 +1,9 @@
 import { ReactElement, } from 'react'
 import { Box, Text } from '@chakra-ui/react'
 
-const InfoBlock = ({ label, children }: { label: string, children: ReactElement | ReactElement[] }) => (
+const InfoBlock = ({ label, children }: { label?: string, children: ReactElement | ReactElement[] }) => (
   <Box w="100%">
-    <Box
+    {label && <Box
       minHeight="20px"
       display="inline-block"
       borderRadius="8px"
@@ -15,7 +15,7 @@ const InfoBlock = ({ label, children }: { label: string, children: ReactElement 
       <Text fontSize="12px" color="neutral.50" >
         {label}
       </Text>
-    </Box>
+    </Box>}
     <Box
       border="1px solid"
       borderColor="neutral.400"
