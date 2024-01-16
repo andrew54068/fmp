@@ -7,7 +7,7 @@ import {
   Flex,
   Tag
 } from '@chakra-ui/react';
-import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
+import BannerIcon from 'src/assets/freeflowBanner.svg?react';
 
 export default function FFCard() {
   return (
