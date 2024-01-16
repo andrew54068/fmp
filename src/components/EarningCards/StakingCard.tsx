@@ -3,10 +3,8 @@ import {
   Text,
   Box,
   Progress,
-  Circle,
   Stack,
   Flex,
-  Button,
   Tag
 } from '@chakra-ui/react';
 import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
@@ -14,7 +12,14 @@ import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
 export default function StakingCard() {
   return (
 
-    <Card maxW="sm" borderRadius="30px" overflow="hidden" p="24px" bg="#475569" color="white">
+    <Card
+      maxW="sm"
+      borderRadius="30px"
+      overflow="hidden"
+      p="24px"
+      bg="#475569"
+      color="white"
+      cursor="pointer">
       <Box
         position="relative"
         aspectRatio={3.41 / 1.43}
@@ -67,7 +72,6 @@ export default function StakingCard() {
 
         <Flex justifyContent="space-between" alignItems="center">
           <Text fontSize="sm">Stake FF to earn FMP</Text>
-
         </Flex>
       </Stack>
     </Card >

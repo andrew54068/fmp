@@ -18,7 +18,7 @@ const maxWidthSetting = {
   "/": "100%",
   "/mint": "520px",
   "/marketplace": "1020px",
-  "/fomopoly-earn": "1020px"
+  "/fomopoly-earn": "1216px"
 }
 
 function App() {

@@ -1,6 +1,8 @@
 import { SimpleGrid, Box, Text } from '@chakra-ui/react'
 
 import StakingCard from './EarningCards/StakingCard'
+import BurningCard from './EarningCards/BurningCard'
+import FFCard from './EarningCards/FFCard'
 
 export default function FomopolyEarn() {
   return (
@@ -24,11 +26,15 @@ export default function FomopolyEarn() {
       </Text>
       {/* // use Grid to make 3 column layout */}
       <SimpleGrid columns={[1, 2, 3]} spacing='24px'>
-        <Box height='80px'>
+        <Box>
           <StakingCard />
         </Box>
-        <Box height='80px'></Box>
-        <Box height='80px'></Box>
+        <Box>
+          <BurningCard />
+        </Box>
+        <Box>
+          <FFCard />
+        </Box>
       </SimpleGrid>
     </Box >
   )
