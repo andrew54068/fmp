@@ -1,31 +1,50 @@
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalBody,
   ModalFooter,
-  Button,
+  Button as ChakraButton,
   Box,
-  FormControl,
-  FormLabel,
-  Input,
   VStack,
   HStack,
-  Image
+  Image,
+  Flex
 } from '@chakra-ui/react';
+import Button from 'src/components/Button';
 import ModalBanner from 'src/assets/fomopolyModalBanner.png';
+import TokenInput from './components/TokenInput';
+import InfoBlock from './components/InfoBlock';
+
 
 interface ModalProps {
   isModalOpen: boolean;
   onCloseModal: () => void;
+  onClickStake: () => void;
 }
 
-const StakingModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
 
+const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) => {
+  const [ffAmount, setFfAmount] = useState('');
+  const [loadingForFlowAmount, setLoadingForFlowAmount] = useState(false);
+  const [flowAmountNeeded, setFlowAmountNeeded] = useState('');
+
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFfAmount(event.target.value);
+    console.log('event.target.value :', event.target.value);
+    setLoadingForFlowAmount(true)
+    // @todo: api logic for flow amount
+    setTimeout(() => {
+      setLoadingForFlowAmount(false)
+      // if()
+      setFlowAmountNeeded(prev => `${Number(prev) + 1}`)
+    }, 1000)
+  };
   return (
     <>
-
-      <Modal isOpen={isModalOpen} onClose={onCloseModal} isCentered>
+      <Modal isOpen={isModalOpen} onClose={onCloseModal}  >
         <ModalOverlay />
         <ModalContent
           bgColor="slate.600"
@@ -33,9 +52,10 @@ const StakingModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
           padding="24px"
           maxWidth="591px"
           width="100%"
-          maxHeight="709px"
+          minHeight="709px"
+          mt="24px"
+          mx="16px"
         >
-
           <Box
             position="relative"
             paddingBottom="30%"
@@ -51,26 +71,91 @@ const StakingModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
             </Box>
           </Box>
 
-          <ModalBody>
-            <VStack spacing="5">
-              <HStack w="full" justifyContent="space-between">
-                <FormControl id="stake">
-                  <FormLabel>Stake</FormLabel>
-                  <Input placeholder="0.00" />
-                </FormControl>
-                <FormControl id="paying">
-                  <FormLabel>Paying</FormLabel>
-                  <Input placeholder="0.00" />
-                </FormControl>
-              </HStack>
-              {/* Other content goes here */}
+          <ModalBody overflow="scroll" >
+            <VStack spacing="30px" >
+              <Flex
+                width="100%"
+                justifyContent="space-between"
+                flexDirection={["column", "row"]}
+                gap="16px">
+                <TokenInput
+                  label="Stake"
+                  tokenName="$FF"
+                  value={ffAmount}
+                  onChange={handleChange}
+                  balance={0.189}
+                />
+                <TokenInput
+                  isLoading={loadingForFlowAmount}
+                  label="Paying"
+                  tokenName="$Flow"
+                  value={flowAmountNeeded}
+                  balance={0.189}
+                  borderColor='neutral.700'
+                />
+              </Flex>
+              {/* // Detail  */}
+
+              <InfoBlock label="Detail">
+                <HStack justifyContent="space-between" mb="12px">
+                  <Box>
+                    Paying
+                  </Box>
+                  <Box>
+                    {`${flowAmountNeeded || 0.00} $Flow`}
+                  </Box>
+                </HStack>
+                <HStack justifyContent="space-between" mb="12px">
+                  <Box>
+                    Staking
+                  </Box>
+                  <Box>
+                    {`${ffAmount || 0.00} $FF`}
+                  </Box>
+                </HStack>
+                <HStack justifyContent="space-between">
+                  <Box>
+                    Pool Share
+                  </Box>
+                  <Box>
+                    0.0 $FF
+                  </Box>
+                </HStack>
+              </InfoBlock>
+
+              <InfoBlock label="Earned">
+                <HStack justifyContent="space-between">
+                  <Box>
+                    Amount
+                  </Box>
+                  <Box
+                    borderRadius="8px"
+                    border="1px solid"
+                    borderColor="primary"
+                    p="4px 8px">
+                    0.0 <Box as="span" color="primary"> $FMP </Box>
+                  </Box>
+                </HStack>
+              </InfoBlock>
             </VStack>
           </ModalBody>
 
-          <ModalFooter>
-            <HStack width="full" justifyContent="space-between">
-              <Button variant="outline" onClick={onCloseModal}>Cancel</Button>
-              <Button colorScheme="blue">Stake for FMP</Button>
+          <ModalFooter boxShadow="  ">
+            <HStack
+              width="full"
+              justifyContent="space-between"
+              flexDirection={["column-reverse", "row"]}
+              gap="16px">
+              <ChakraButton
+                width={["100%"]}
+                color="neutral.50"
+                border="1px solid"
+                borderColor="neutral.50"
+
+                variant="outline" onClick={onCloseModal}>Cancel</ChakraButton>
+              <Button minW={[0, "65%", "370px"]} width={["100%", "370px"]}
+                onClick={onClickStake}
+              >Stake for $FMP</Button>
             </HStack>
           </ModalFooter>
         </ModalContent>

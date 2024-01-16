@@ -14,7 +14,6 @@ import StakingModal from './StakingModal';
 export default function StakingCard() {
   const { isOpen: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
   return (
-
     <Card
       maxW="sm"
       borderRadius="30px"
@@ -78,7 +77,13 @@ export default function StakingCard() {
           <Text fontSize="sm">Stake FF to earn FMP</Text>
         </Flex>
       </Stack>
-      <StakingModal isModalOpen={isModalOpen} onCloseModal={onCloseModal} />
+      <StakingModal
+        onClickStake={() => {
+          //@todo: take tx logic.
+          onCloseModal()
+        }}
+        isModalOpen={isModalOpen}
+        onCloseModal={onCloseModal} />
     </Card >
 
   )
