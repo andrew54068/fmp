@@ -17,7 +17,7 @@ export default function BurningCard() {
       borderRadius="30px"
       overflow="hidden"
       p="24px"
-      bg="#475569"
+      bg="slate.600"
       color="white"
       cursor="pointer">
       <Box

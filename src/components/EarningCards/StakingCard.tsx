@@ -5,11 +5,14 @@ import {
   Progress,
   Stack,
   Flex,
-  Tag
+  Tag,
+  useDisclosure
 } from '@chakra-ui/react';
 import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
+import StakingModal from './StakingModal';
 
 export default function StakingCard() {
+  const { isOpen: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
   return (
 
     <Card
@@ -17,9 +20,10 @@ export default function StakingCard() {
       borderRadius="30px"
       overflow="hidden"
       p="24px"
-      bg="#475569"
+      bg="slate.600"
       color="white"
-      cursor="pointer">
+      cursor="pointer"
+      onClick={onOpenModal}>
       <Box
         position="relative"
         aspectRatio={3.41 / 1.43}
@@ -74,6 +78,7 @@ export default function StakingCard() {
           <Text fontSize="sm">Stake FF to earn FMP</Text>
         </Flex>
       </Stack>
+      <StakingModal isModalOpen={isModalOpen} onCloseModal={onCloseModal} />
     </Card >
 
   )

@@ -51,6 +51,7 @@ const theme = extendTheme(
         "secondary": "#6366F1",
         "neutral.900": '#111827',
         "neutral.400": '#9CA3AF',
+        "slate.600": "#475569",
         "monopolyEarnProgress": {
           500: "#00F6F7",
         }
