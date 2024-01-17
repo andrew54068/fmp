@@ -46,6 +46,7 @@ import {
   FLOW_SCAN_URL,
   PURCHASE_MODEL_TYPE,
   PURCHASE_SUCCEED_EVENT,
+  purchaseLimit,
 } from "src/constants";
 
 import {
@@ -88,8 +89,6 @@ interface ListingPanelProps {
   onUpdateAmount: (amount: BigNumber) => void;
   onLoading: (isLoading: boolean) => void;
 }
-
-const purchaseLimit = 15;
 
 export default function ListingPanel({
   onUpdateAmount,

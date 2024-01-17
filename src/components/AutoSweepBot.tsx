@@ -36,6 +36,7 @@ import {
   PURCHASE_MODEL_TYPE,
   PURCHASE_SUCCEED_EVENT,
   SWEEP_BOT_INFO,
+  purchaseLimit,
 } from "src/constants";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
@@ -288,7 +289,7 @@ export default function AutoSweepBot() {
       if (targetSweepAmount == 0) return;
       setWaitingForTx(true);
       let currentBoughtAmount = 0;
-      const baseLimit = 15;
+      const baseLimit = purchaseLimit;
       let limit = Math.min(targetAmount - currentBoughtAmount, baseLimit);
       let startOffset = 0;
       let endOffset = Math.min(startOffset + limit - 1, targetSweepAmount - 1);
