@@ -38,17 +38,17 @@ transaction(purchaseModels: [ListingUtils.PurchaseModel]) {
                     // Gas Used: 72
                     
                         let nft = listing.borrowNFT()
-                        // Gas Used: 72
+                        // Gas Used: 108
 
                         let price = listing.getDetails().salePrice
-                        // Gas Used: 72
+                        // Gas Used: 114
 
                         assert(purchaseModel.buyPrice == price, message: "buyPrice is NOT same with salePrice")
-                        // Gas Used: 72
+                        // Gas Used: 
 
                         let targetTokenVault = signer.borrow<&{FungibleToken.Provider}>(from: /storage/flowTokenVault)
                             ?? panic("Cannot borrow target token vault from signer storage")
-                        // Gas Used: 72
+                        // Gas Used: 124
                         
                         let paymentVault <- targetTokenVault.withdraw(amount: price)
 
@@ -57,11 +57,13 @@ transaction(purchaseModels: [ListingUtils.PurchaseModel]) {
 
                         let item <- listing.purchase(payment: <- paymentVault)
                         nftCollection.deposit(token: <-item)
+                        // Gas Used: 239
 
                         // Be kind and recycle
                         storefront.cleanup(listingResourceID: purchaseModel.listingResourceID)
-                        Marketplace.removeListing(id: purchaseModel.listingResourceID)
-                        // Gas Used: 72
+                        // Gas Used: 245
+                        // Marketplace.removeListing(id: purchaseModel.listingResourceID)
+                        // Gas Used: 8261
                     }
                 }
             }
