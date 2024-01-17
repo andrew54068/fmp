@@ -42,9 +42,18 @@ import {
   getMarketListingAmountScripts,
   getMarketListingItemScripts,
 } from "src/utils/getScripts";
-import { FLOW_SCAN_URL, PURCHASE_MODEL_TYPE, PURCHASE_SUCCEED_EVENT } from "src/constants";
+import {
+  FLOW_SCAN_URL,
+  PURCHASE_MODEL_TYPE,
+  PURCHASE_SUCCEED_EVENT,
+} from "src/constants";
 
-import { logSweepingButton, logSweeping, logCopyErrorMessage, logBatchBuyButton } from "src/services/Amplitude/log";
+import {
+  logSweepingButton,
+  logSweeping,
+  logCopyErrorMessage,
+  logBatchBuyButton,
+} from "src/services/Amplitude/log";
 import { fetchAllList } from "src/utils/fetchList";
 import { FooterContext } from "src/context/marketplaceContext";
 import { convertToPurchaseModel } from "src/utils/convertToPurchaseModel";
@@ -80,7 +89,7 @@ interface ListingPanelProps {
   onLoading: (isLoading: boolean) => void;
 }
 
-const purchaseLimit = 15
+const purchaseLimit = 15;
 
 export default function ListingPanel({
   onUpdateAmount,
@@ -95,6 +104,7 @@ export default function ListingPanel({
     []
   );
   const [skipAmount, setSkipAmount] = useState<number>(0);
+  const [sweepAmount, setSweepAmount] = useState<number>(0);
   const [selectedInscriptions, setSelectedInscriptions] = useState<string[]>(
     []
   );
@@ -212,14 +222,36 @@ export default function ListingPanel({
     setShowSweepErrorMessage(false);
   };
 
-  const handleSkipAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setShowSweepErrorMessage(false);
-    const inputValue = event.target.value;
-    const bigNumberValue = BigNumber(inputValue);
-    if (inputValue && bigNumberValue) {
-      setSkipAmount(Math.floor(bigNumberValue.toNumber()));
-    }
-  };
+  useEffect(() => {
+    const selectedIns = inscriptions.slice(
+      skipAmount || 0,
+      sweepAmount + skipAmount
+    );
+    setSelectedInscriptions(selectedIns.map((value) => value.nftId));
+    const sum = selectedIns.reduce(
+      (pre: BigNumber, current: InscriptionDisplayModel) => {
+        return pre.plus(current.salePrice);
+      },
+      BigNumber(0)
+    );
+    setPriceSummary(sum);
+  }, [sweepAmount, skipAmount, inscriptions])
+
+  const handleSkipAmountChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setShowSweepErrorMessage(false);
+      const inputValue = event.target.value;
+      const bigNumberValue = BigNumber(inputValue);
+      if (inputValue && bigNumberValue) {
+        const skip = Math.floor(bigNumberValue.toNumber());
+        setSkipAmount(skip);
+      }
+      if (inputValue === "") {
+        setSkipAmount(0);
+      }
+    },
+    []
+  );
 
   const handleSweepAmountChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -231,23 +263,10 @@ export default function ListingPanel({
           setShowSweepErrorMessage(true);
           return;
         }
-        const selectedInscriptions = inscriptions.slice(
-          skipAmount || 0,
-          bigNumberValue.toNumber()
-        );
-        setSelectedInscriptions(
-          selectedInscriptions.map((value) => value.nftId)
-        );
-        const sum = selectedInscriptions.reduce(
-          (pre: BigNumber, current: InscriptionDisplayModel) => {
-            return pre.plus(current.salePrice);
-          },
-          BigNumber(0)
-        );
-        setPriceSummary(sum);
+        setSweepAmount(bigNumberValue.toNumber());
       }
     },
-    [skipAmount, inscriptions]
+    []
   );
 
   const handleSendTransaction = useCallback(async () => {
@@ -292,9 +311,7 @@ export default function ListingPanel({
 
       const successListingId = txData.events
         .filter((event) => {
-          return (
-            event.type === PURCHASE_SUCCEED_EVENT
-          );
+          return event.type === PURCHASE_SUCCEED_EVENT;
         })
         .map((event) => event.data.listingResourceID);
 
@@ -368,6 +385,7 @@ export default function ListingPanel({
           _hover={{
             transform: "scale(0.98)",
           }}
+          isDisabled={inscriptions.length <= 0}
           fontSize={window.innerWidth > 500 ? "size.heading.5" : "size.body.3"}
         >
           Sweep
@@ -404,20 +422,24 @@ export default function ListingPanel({
             }}
             isLoading={waitingForTx}
             width="auto"
-            fontSize={window.innerWidth > 500 ? "size.heading.5" : "size.body.3"}
+            fontSize={
+              window.innerWidth > 500 ? "size.heading.5" : "size.body.3"
+            }
           >
             Cancel
           </Button>
         )}
         {errorMessage && (
-          <Card p="16px" bg="red.200" mt="space.l" width="100%"
+          <Card
+            p="16px"
+            bg="red.200"
+            mt="space.l"
+            width="100%"
             maxHeight="100px"
             overflow="scroll"
-            position="relative">
-            <Box
-              right="8px"
-              top="8px"
-              position="absolute">
+            position="relative"
+          >
+            <Box right="8px" top="8px" position="absolute">
               <CopyIcon
                 color="red.400"
                 cursor="pointer"
@@ -432,7 +454,9 @@ export default function ListingPanel({
             <Text color="red.500">{errorMessage} </Text>
           </Card>
         )}
-        <Box ml="space.3xs" mt="space.xs">Your Flow balance: {flowBalance}</Box>
+        <Box ml="space.3xs" mt="space.xs">
+          Your Flow balance: {flowBalance}
+        </Box>
       </Flex>
     );
   };
@@ -480,7 +504,9 @@ export default function ListingPanel({
               alignItems="center"
             >
               <InfoOutlineIcon />
-              <Box ml="space.3xs">You can buy up to {purchaseLimit} items at a time.</Box>
+              <Box ml="space.3xs">
+                You can buy up to {purchaseLimit} items at a time.
+              </Box>
             </Flex>
             <Box fontSize="size.body.1">
               You are buying {selectedInscriptions.length} items for{" "}
@@ -497,7 +523,6 @@ export default function ListingPanel({
             alignItems="center"
           >
             <CallToActionButton />
-
           </Flex>
         </Flex>
       </Box>
@@ -516,8 +541,6 @@ export default function ListingPanel({
             >
               <InputGroup>
                 <Input
-                  isInvalid={showSweepErrorMessage}
-                  errorBorderColor="red.300"
                   placeholder={"Skip how many?"}
                   onChange={handleSkipAmountChange}
                 ></Input>
@@ -538,8 +561,8 @@ export default function ListingPanel({
               </Box>
               {showSweepErrorMessage && (
                 <Box color="red" fontSize="size.body.5">
-                  If you sweep more than 20 items the transaction might exceeds
-                  computation limit (9999)
+                  If you sweep more than {purchaseLimit} items the transaction
+                  might exceeds computation limit (9999)
                 </Box>
               )}
             </Flex>
