@@ -59,4 +59,4 @@ export const LISTING_MODEL_TYPE = 'A.88dd257fcf26d3cc.ListingUtils.ListingModel'
 export const ROYALTY_ADDRESS = '0x81bfc5cc7d1e0c74'
 
 
-export const purchaseLimit = 15;
+export const purchaseLimit = 10;
