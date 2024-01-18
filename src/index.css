@@ -14,4 +14,18 @@
   -webkit-text-size-adjust: 100%;
 }
 
- 
+@font-face {
+  font-family: panchang;
+  src: url(/Panchang-Regular.ttf);
+  font-weight: 400;
+} 
+@font-face {
+  font-family: panchang;
+  src: url(/Panchang-Medium.ttf);
+  font-weight: 500;
+} 
+@font-face {
+  font-family: panchang;
+  src: url(/Panchang-Bold.ttf);
+  font-weight: 600;
+} 

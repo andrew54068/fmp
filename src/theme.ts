@@ -1,6 +1,7 @@
 import boTheme from "@blocto/web-chakra-theme";
 import { extendTheme } from "@chakra-ui/react";
 import { tabsTheme } from './tabTheme'
+import { progressTheme } from './progressTheme'
 import merge from "lodash.merge";
 
 import { tagAnatomy } from "@chakra-ui/anatomy";
@@ -39,13 +40,24 @@ const cardTheme = defineMultiStyleConfig({ variants });
 
 const theme = extendTheme(
   merge(boTheme, {
+
     semanticTokens: {
       colors: {
         "network.hint": IS_PROD ? "transparent" : "status.warning.light",
         "network.hint.text": IS_PROD ? "transparent" : "status.warning.dark",
         "background.primary": "#00011E",
         "primary": "#00F6F7",
-        "secondary": "#6366F1"
+        "primary.dark": "#00D4D9",
+        "secondary": "#6366F1",
+        "neutral.50": "#F9FAFB",
+        "neutral.400": '#9CA3AF',
+        "neutral.900": '#111827',
+        "neutral.700": '#374151',
+        "slate.600": "#475569",
+        "monopolyEarnProgress": {
+          500: "#00F6F7",
+        }
+
       },
     },
     styles: {
@@ -188,6 +200,7 @@ const theme = extendTheme(
         },
       },
       Tabs: tabsTheme,
+      Progress: progressTheme,
     },
   })
 );
