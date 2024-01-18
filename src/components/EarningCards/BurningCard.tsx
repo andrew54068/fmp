@@ -63,7 +63,7 @@ export default function BurningCard() {
           >
             <Box as="span" width="8px" height="8px" borderRadius="50%" bg="primary.dark" mr="4px" />
 
-            Live
+            Coming Soon
           </Tag>
         </Flex>
 
