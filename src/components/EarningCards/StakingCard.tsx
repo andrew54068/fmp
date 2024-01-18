@@ -69,9 +69,9 @@ export default function StakingCard() {
 
         <Flex justify="space-between" alignItems="center">
           <Text fontSize="sm">Token distributed</Text>
-          <Text fontSize="sm">80%</Text>
+          <Text fontSize="sm">0%</Text>
         </Flex>
-        <Progress value={80} size="sm" colorScheme="monopolyEarnProgress" my="12px" height="16px" borderRadius="24px" />
+        <Progress value={0} size="sm" colorScheme="monopolyEarnProgress" my="12px" height="16px" borderRadius="24px" />
 
         <Flex justifyContent="space-between" alignItems="center">
           <Text fontSize="sm">Stake FF to earn FMP</Text>

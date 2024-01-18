@@ -8,6 +8,7 @@ interface TokenInputProps {
   label?: string;
   borderColor?: string;
   isLoading?: boolean;
+  isDisabled?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -18,6 +19,7 @@ const TokenInput: React.FC<TokenInputProps> = ({
   balance,
   value,
   onChange,
+  isDisabled,
   isLoading }) => {
   return (
     <Box w="100%">
@@ -48,6 +50,7 @@ const TokenInput: React.FC<TokenInputProps> = ({
             letterSpacing="-0.48px">{tokenName}</Text>} />
           {
             !isLoading ? <Input
+              isDisabled={isDisabled}
               placeholder="0.00"
               value={value}
               onChange={onChange}

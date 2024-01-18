@@ -83,11 +83,12 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                 alignItems="center"
                 gap="16px">
                 <TokenInput
-                  label="Stake"
+                  isDisabled
+                  label="Burn"
                   tokenName="$FF"
                   value={ffAmount}
                   onChange={handleChange}
-                  balance={0.189}
+                  balance={0}
                 />
                 <Flex
                   position="relative"
@@ -150,7 +151,11 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                 borderColor="neutral.50"
 
                 variant="outline" onClick={onCloseModal}>Cancel</ChakraButton>
-              <Button minW={[0, "65%", "370px"]} width={["100%", "370px"]}
+              <Button
+                // @todo: add logic for staking
+                isDisabled
+                minW={[0, "65%", "370px"]}
+                width={["100%", "370px"]}
                 onClick={onClickStake}
               >Burn for $FMP</Button>
             </HStack>

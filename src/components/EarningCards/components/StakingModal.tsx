@@ -79,19 +79,20 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                 flexDirection={["column", "row"]}
                 gap="16px">
                 <TokenInput
+                  isDisabled
                   label="Stake"
                   tokenName="$FF"
                   value={ffAmount}
                   onChange={handleChange}
-                  balance={0.189}
+                  balance={0}
                 />
                 <TokenInput
                   isLoading={loadingForFlowAmount}
                   label="Paying"
                   tokenName="$Flow"
                   value={flowAmountNeeded}
-                  balance={0.189}
                   borderColor='neutral.700'
+                  balance={0}
                 />
               </Flex>
               {/* // Detail  */}
@@ -118,7 +119,7 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                     Pool Share
                   </Box>
                   <Box>
-                    0.0 $FF
+                    0.0 %
                   </Box>
                 </HStack>
               </InfoBlock>
@@ -153,7 +154,11 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                 borderColor="neutral.50"
 
                 variant="outline" onClick={onCloseModal}>Cancel</ChakraButton>
-              <Button minW={[0, "65%", "370px"]} width={["100%", "370px"]}
+              <Button
+                // @todo: add logic for staking
+                isDisabled
+                minW={[0, "65%", "370px"]}
+                width={["100%", "370px"]}
                 onClick={onClickStake}
               >Stake for $FMP</Button>
             </HStack>
