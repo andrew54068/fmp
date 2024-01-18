@@ -9,9 +9,9 @@
 *
 */
 
-import "NonFungibleToken"
-import "InscriptionMetadata"
-import "ViewResolver"
+import NonFungibleToken from "./NonFungibleToken.cdc"
+import InscriptionMetadata from "./InscriptionMetadata.cdc"
+import ViewResolver from "./ViewResolver.cdc"
 
 pub contract Inscription: NonFungibleToken, ViewResolver {
 

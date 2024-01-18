@@ -1,4 +1,4 @@
-import "FungibleToken"
+import FungibleToken from "./FungibleToken.cdc"
 
 // Token contract of Blocto Token (BLT)
 pub contract BloctoToken: FungibleToken {

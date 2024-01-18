@@ -21,15 +21,25 @@ import batchDelistScript from '../../cadence/transactions/bay/batchDelist.cdc?ra
 
 const replacement = (script: string): string => {
   return script
+    .replace(`import NonFungibleToken from "./NonFungibleToken.cdc"`, `import NonFungibleToken from ${NonFungibleToken}`)
     .replace(`import "NonFungibleToken"`, `import NonFungibleToken from ${NonFungibleToken}`)
+    .replace(`import FungibleToken from "./FungibleToken.cdc"`, `import FungibleToken from ${FungibleToken}`)
     .replace(`import "FungibleToken"`, `import FungibleToken from ${FungibleToken}`)
+    .replace(`import Inscription from "./Inscription.cdc"`, `import Inscription from ${Inscription}`)
     .replace(`import "Inscription"`, `import Inscription from ${Inscription}`)
+    .replace(`import InscriptionMetadata from "./InscriptionMetadata.cdc"`, `import InscriptionMetadata from ${InscriptionMetadata}`)
     .replace(`import "InscriptionMetadata"`, `import InscriptionMetadata from ${InscriptionMetadata}`)
+    .replace(`import Marketplace from "./Marketplace.cdc"`, `import Marketplace from ${Marketplace}`)
     .replace(`import "Marketplace"`, `import Marketplace from ${Marketplace}`)
+    .replace(`import NFTStorefront from "./NFTStorefront.cdc"`, `import NFTStorefront from ${NFTStorefront}`)
     .replace(`import "NFTStorefront"`, `import NFTStorefront from ${NFTStorefront}`)
+    .replace(`import FlowToken from "./FlowToken.cdc"`, `import FlowToken from ${FlowToken}`)
     .replace(`import "FlowToken"`, `import FlowToken from ${FlowToken}`)
+    .replace(`import ListingUtils from "./ListingUtils.cdc"`, `import ListingUtils from ${ListingUtils}`)
     .replace(`import "ListingUtils"`, `import ListingUtils from ${ListingUtils}`)
+    .replace(`import MarketplaceCleaner from "./MarketplaceCleaner.cdc"`, `import MarketplaceCleaner from ${MarketplaceCleaner}`)
     .replace(`import "MarketplaceCleaner"`, `import MarketplaceCleaner from ${MarketplaceCleaner}`)
+    .replace(`import MarketplaceBlacklistV2 from "./MarketplaceBlacklistV2.cdc"`, `import MarketplaceBlacklistV2 from ${MarketplaceBlacklistV2}`)
     .replace(`import "MarketplaceBlacklistV2"`, `import MarketplaceBlacklistV2 from ${MarketplaceBlacklistV2}`);
 }
 

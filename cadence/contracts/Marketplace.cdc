@@ -1,5 +1,5 @@
-import "FungibleToken"
-import "NFTStorefront"
+import FungibleToken from "./FungibleToken.cdc"
+import NFTStorefront from "./NFTStorefront.cdc"
 
 pub contract Marketplace {
 

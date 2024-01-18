@@ -1,5 +1,5 @@
-import "FungibleToken"
-import "NonFungibleToken"
+import FungibleToken from "./FungibleToken.cdc"
+import NonFungibleToken from "./NonFungibleToken.cdc"
 
 /// NFTStorefront
 ///

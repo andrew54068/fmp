@@ -1,6 +1,6 @@
-import "FungibleToken"
-import "NonFungibleToken"
-import "Inscription"
+import FungibleToken from "./FungibleToken.cdc"
+import NonFungibleToken from "./NonFungibleToken.cdc"
+import Inscription from "./Inscription.cdc"
 
 // Token contract of Fomopoly (FMP)
 pub contract Fomopoly: FungibleToken {

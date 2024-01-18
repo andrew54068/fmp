@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true },
+  env: { browser: true, es2020: true, jest: true },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -16,4 +16,7 @@ module.exports = {
     ],
     "@typescript-eslint/no-explicit-any": "off",
   },
+  globals: {
+    '__dirname': true
+  }
 }

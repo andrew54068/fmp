@@ -1,84 +1,84 @@
 {
 	"contracts": {
 		"FlowToken": {
-			"source": "cadence/contracts/standards/FlowToken.cdc",
+			"source": "cadence/contracts/FlowToken.cdc",
 			"aliases": {
 				"emulator": "0ae53cb6e3f42a79",
 				"testnet": "7e60df042a9c0868"
 			}
 		},
 		"FungibleToken": {
-			"source": "cadence/contracts/standards/FungibleToken.cdc",
+			"source": "cadence/contracts/FungibleToken.cdc",
 			"aliases": {
 				"emulator": "ee82856bf20e2aa6",
 				"testnet": "9a0766d93b6608b7"
 			}
 		},
 		"Inscription": {
-			"source": "cadence/contracts/inscription/Inscription.cdc",
+			"source": "cadence/contracts/Inscription.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "564b229bd8380848"
 			}
 		},
 		"InscriptionMetadata": {
-			"source": "cadence/contracts/inscription/InscriptionMetadata.cdc",
+			"source": "cadence/contracts/InscriptionMetadata.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "564b229bd8380848"
 			}
 		},
 		"ListingUtils": {
-			"source": "cadence/contracts/marketplace/ListingUtils.cdc",
+			"source": "cadence/contracts/ListingUtils.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "564b229bd8380848"
 			}
 		},
 		"Marketplace": {
-			"source": "cadence/contracts/marketplace/Marketplace.cdc",
+			"source": "cadence/contracts/Marketplace.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "e1aa310cfe7750c4"
 			}
 		},
 		"MarketplaceBlacklistV2": {
-			"source": "cadence/contracts/Marketplace/MarketplaceBlacklistV2.cdc",
+			"source": "cadence/contracts/MarketplaceBlacklistV2.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "564b229bd8380848"
 			}
 		},
 		"MarketplaceCleaner": {
-			"source": "cadence/contracts/Marketplace/MarketplaceCleaner.cdc",
+			"source": "cadence/contracts/MarketplaceCleaner.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "564b229bd8380848"
 			}
 		},
 		"MetadataViews": {
-			"source": "cadence/contracts/standards/MetadataViews.cdc",
+			"source": "cadence/contracts/MetadataViews.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "631e88ae7f1d7c20"
 			}
 		},
 		"NFTStorefront": {
-			"source": "cadence/contracts/marketplace/NFTStorefront.cdc",
+			"source": "cadence/contracts/NFTStorefront.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "94b06cfca1d8a476"
 			}
 		},
 		"NonFungibleToken": {
-			"source": "cadence/contracts/standards/NonFungibleToken.cdc",
+			"source": "cadence/contracts/NonFungibleToken.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "631e88ae7f1d7c20"
 			}
 		},
 		"ViewResolver": {
-			"source": "cadence/contracts/standards/ViewResolver.cdc",
+			"source": "cadence/contracts/ViewResolver.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
 				"testnet": "631e88ae7f1d7c20"
