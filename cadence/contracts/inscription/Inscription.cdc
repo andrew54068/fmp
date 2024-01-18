@@ -30,6 +30,9 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
     /// The event that is emitted when an Inscription is deposited to a Collection
     pub event Deposit(id: UInt64, to: Address?)
 
+    /// The event that is emitted when an Inscription is burned from a address
+    pub event Burn(id: UInt64, from: Address?)
+
     /// Storage and Public Paths
     pub let CollectionStoragePath: StoragePath
     pub let CollectionPublicPath: PublicPath
@@ -143,6 +146,14 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
             destroy oldToken
         }
 
+        pub fun depositCollection(collection: @Inscription.Collection) {
+            let ids = collection.getIDs()
+            for id in ids {
+                collection.deposit(token: <- collection.withdraw(withdrawID: id))
+            }
+            destroy collection
+        }
+
         /// Helper method for getting the collection IDs
         ///
         /// @return An array containing the IDs of the Inscriptions in the collection
@@ -175,6 +186,17 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
             }
 
             return nil
+        }
+
+        pub fun burnInscription(ids: [UInt64]): [UInt64] {
+            var burnedId: [UInt64] = []
+            for id in ids {
+                let inscription <- self.withdraw(withdrawID: id)
+                destroy inscription
+                burnedId.append(id)
+                emit Burn(id: id, from: self.owner?.address)
+            }
+            return burnedId
         }
 
         destroy() {
@@ -245,7 +267,7 @@ pub contract Inscription: NonFungibleToken, ViewResolver {
     init() {
         // Initialize the total supply
         self.totalSupply = 0
-        self.hardCap = 2100000000
+        self.hardCap = 2_100_000_000
 
         // Set the named paths
         self.CollectionStoragePath = /storage/inscriptionCollection
