@@ -96,22 +96,25 @@ export default function Navbar() {
             <IconButton color="white" onClick={toggleDropdown} aria-label="menu-button" icon={<HamburgerIcon />} variant="outline" />
           </Flex> : <Flex alignItems="center">
 
-            <Box p="10px 16px">
-              <Link to="/autoSweep">
+
+            <Link to="/token">
+              <Box p="10px 16px" cursor="pointer">
                 <Box position="absolute" color="orange" top="10px" ml="-10px" >
                   New
                 </Box>
+                Token
+              </Box>
+            </Link>
+            <Link to="/autoSweep">
+              <Box p="10px 16px" cursor="pointer">
                 AutoSweep
-              </Link>
-            </Box>
-            <Box p="10px 16px">
-              <Link to="/marketplace">
-                <Box position="absolute" color="orange" top="10px" ml="-10px" >
-                  New
-                </Box>
+              </Box>
+            </Link>
+            <Link to="/marketplace">
+              <Box p="10px 16px" cursor="pointer">
                 Marketplace
-              </Link>
-            </Box>
+              </Box>
+            </Link>
             <Box h="44px" mx="32px">
               <Divider orientation='vertical' bg="white" w="1px" />
             </Box>
@@ -158,6 +161,11 @@ export default function Navbar() {
           boxShadow="0px 4px 8px rgba(0, 0, 0, 0.05)"
         >
           <List fontWeight={500}>
+            <Link to="/token">
+              <ListItem>
+                Token
+              </ListItem>
+            </Link>
             <Link to="/autoSweep">
               <ListItem>
                 AutoSweep
