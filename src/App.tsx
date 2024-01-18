@@ -11,7 +11,7 @@ import { initAmplitude } from "./services/Amplitude"
 import { logPageView } from "./services/Amplitude/log"
 import { GlobalProvider } from "./context/globalContextProvider";
 import AutoSweepBot from "./components/AutoSweepBot";
-import FomopolyEarn from "./components/FomopolyEarn";
+import FomopolyToken from "./components/FomopolyToken";
 
 initAmplitude()
 const maxWidthSetting = {
@@ -44,7 +44,7 @@ function App() {
               <Route path="/mint" element={<Mint />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/autoSweep" element={<AutoSweepBot />} />
-              <Route path="/fomopoly-earn" element={<FomopolyEarn />} />
+              <Route path="/token" element={<FomopolyToken />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>
