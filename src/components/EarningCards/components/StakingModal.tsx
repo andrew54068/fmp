@@ -71,7 +71,7 @@ const StakingModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
             </Box>
           </Box>
 
-          <ModalBody overflow="scroll" >
+          <ModalBody  >
             <VStack spacing="30px" >
               <Flex
                 width="100%"

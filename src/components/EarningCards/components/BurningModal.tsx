@@ -73,7 +73,7 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
             </Box>
           </Box>
 
-          <ModalBody overflow="scroll" >
+          <ModalBody  >
 
             <VStack spacing="30px" alignItems="center">
               <Flex
