@@ -5,7 +5,6 @@ import Fomopoly from 0xFomopoly
 transaction(ids: [UInt64]) {
     let withdrawRef: auth &Inscription.Collection
     let sentVault: @FlowToken.Vault
-    // let inscriptionVault: @Inscription.Collection
 
     prepare(signer: AuthAccount) {
         // borrow a reference to the signer's Inscription collection

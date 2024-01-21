@@ -191,7 +191,7 @@ pub contract Fomopoly: FungibleToken {
         pre {
             collectionRef.owner != nil: "Owner not found!"
             flowVault.balance >= UFix64(stakeIds.length) / self.divisor: "Vault balance is not enough."
-            getCurrentBlock().timestamp < self.stakingEndTime: "Can't stake after stakingEndTime."
+            getCurrentBlock().timestamp <= self.stakingEndTime: "Can't stake after stakingEndTime."
         }
         self.flowVault.deposit(from: <- flowVault)
         let newCollection <- Inscription.createEmptyCollection() as! @Inscription.Collection
@@ -383,14 +383,12 @@ pub contract Fomopoly: FungibleToken {
     pub resource Administrator {
         // updateStakingStartTime
         //
-        pub fun updateStakingStartTime(time: UFix64) {
-            Fomopoly.stakingStartTime = time
-        }
-
-        // updateStakingStartTime
-        //
-        pub fun updateStakingEndTime(time: UFix64) {
-            Fomopoly.stakingEndTime = time
+        pub fun updateStakingTime(start: UFix64, end: UFix64) {
+            post {
+                Fomopoly.stakingEndTime > Fomopoly.stakingStartTime: "End time should be later than start time."
+            }
+            Fomopoly.stakingStartTime = start
+            Fomopoly.stakingEndTime = end
         }
     }
 

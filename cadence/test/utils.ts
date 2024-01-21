@@ -98,6 +98,14 @@ export const mintInscription = async (toPersonName: string, amount: number) => {
   }
 }
 
+export const updateStakeTime = async (start: string, end: string) => {
+  const scriptName = "updateStakeTime"
+  const admin = await getAccountAddress(adminAddressName);
+  const args = [start, end];
+  const signers = [admin];
+  await safeExecuteTransaction(scriptName, args, signers, addressMap, true)
+}
+
 export const stakeInscription = async (toPersonName: string, ids: number[], expectSucceed: boolean) => {
   const staker = await getAccountAddress(toPersonName);
   const args = [ids.map(value => value.toString())];
@@ -110,6 +118,10 @@ export const stakeInscription = async (toPersonName: string, ids: number[], expe
   // );
   // expect(events.length).toEqual(amount)
   return [mintResult, error]
+}
+
+export const sleep = (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 const safeExecuteTransaction = async (
@@ -143,7 +155,7 @@ const safeExecuteTransaction = async (
   return [txResult, error]
 }
 
-const safeExecuteScript = async (scriptName: string, args: any[]) => {
+export const safeExecuteScript = async (scriptName: string, args: any[]) => {
   const code = getScriptCode(scriptName, addressMap)
   const [scriptResult, scriptError] = await executeScript({
     code,
