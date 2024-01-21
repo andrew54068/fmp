@@ -1,4 +1,4 @@
-import "Inscription"
+import Inscription from 0xInscription
 
 /// Script to get current supply and hard cap
 ///

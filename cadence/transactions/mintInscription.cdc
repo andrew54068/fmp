@@ -1,6 +1,6 @@
-import "NonFungibleToken"
-import "Inscription"
-import "InscriptionMetadata"
+import NonFungibleToken from 0xNonFungibleToken
+import Inscription from 0xInscription
+import InscriptionMetadata from 0xInscriptionMetadata
 
 /// Mints a new Inscription into recipient's account
 
@@ -43,16 +43,19 @@ transaction(amount: UInt64) {
 
         let currentIDString = self.mintingIDBefore.toString()
 
-        // Mint the Inscription and deposit it to the recipient's collection
-        Inscription.mintInscription(
-            recipient: self.recipientCollectionRef,
-            amount: amount
-        )
+        var index = 0
+        while index < Int(amount) {
+            // Mint the Inscription and deposit it to the recipient's collection
+            Inscription.mintInscription(
+                recipient: self.recipientCollectionRef,
+                amount: UInt64(1000)
+            )
+            index = index + 1
+        }
 
     }
 
     post {
         self.recipientCollectionRef.getIDs().contains(self.mintingIDBefore): "The next Inscription ID should have been minted and delivered"
-        Inscription.totalSupply == self.mintingIDBefore + amount: "The total supply should have been increased by ".concat(amount.toString())
     }
 }

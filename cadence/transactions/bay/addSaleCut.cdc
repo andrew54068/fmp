@@ -1,7 +1,7 @@
-import "FungibleToken"
-import "Marketplace"
-import "FlowToken"
-import "Inscription"
+import FungibleToken from 0xFungibleToken
+import Marketplace from 0xMarketplace
+import FlowToken from 0xFlowToken
+import Inscription from 0xInscription
 
 // This transaction creates SaleCutRequirements of Marketplace for NFT & Blocto
 

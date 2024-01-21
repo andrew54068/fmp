@@ -6,9 +6,14 @@ export default defineConfig({
 		environment: 'node',
 		testTimeout: 50000,
 		deps: {
-      inline: [
-        '@onflow/flow-js-testing',
-      ],
-    },
+			inline: [
+				'@onflow/flow-js-testing',
+			],
+		},
+		poolOptions: {
+			threads: {
+				singleThread: true
+			}
+		}
 	},
 })

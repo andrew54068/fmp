@@ -1,6 +1,6 @@
-import "NonFungibleToken"
-import "InscriptionMetadata"
-import "Inscription"
+import NonFungibleToken from 0xNonFungibleToken
+import InscriptionMetadata from 0xInscriptionMetadata
+import Inscription from 0xInscription
 
 /// This transaction is what an account would run
 /// to set itself up to receive Inscriptions

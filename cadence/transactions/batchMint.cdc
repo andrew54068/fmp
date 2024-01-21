@@ -1,6 +1,6 @@
-import NonFungibleToken from 0x1d7e57aa55817448
-import Inscription from 0x88dd257fcf26d3cc
-import InscriptionMetadata from 0x88dd257fcf26d3cc
+import NonFungibleToken from 0xNonFungibleToken
+import Inscription from 0xInscription
+import InscriptionMetadata from 0xInscriptionMetadata
 
 transaction() {
     /// local variable for storing the minter reference

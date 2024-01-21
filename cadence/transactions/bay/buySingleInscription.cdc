@@ -1,10 +1,10 @@
-import "FungibleToken"
-import "NonFungibleToken"
-import "NFTStorefront"
-import "Marketplace"
-import "FlowToken"
-import "Inscription"
-import "ListingUtils"
+import FungibleToken from 0xFungibleToken
+import NonFungibleToken from 0xNonFungibleToken
+import NFTStorefront from 0xNFTStorefront
+import Marketplace from 0xMarketplace
+import FlowToken from 0xFlowToken
+import Inscription from 0xInscription
+import ListingUtils from 0xListingUtils
 
 transaction(purchaseModel: ListingUtils.PurchaseModel) {
     let paymentVault: @FungibleToken.Vault

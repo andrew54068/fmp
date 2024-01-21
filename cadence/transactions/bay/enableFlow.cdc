@@ -1,5 +1,5 @@
-import "FlowToken"
-import "FungibleToken"
+import FlowToken from 0xFlowToken
+import FungibleToken from 0xFungibleToken
 
 transaction() {
 

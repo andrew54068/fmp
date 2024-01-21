@@ -1,5 +1,5 @@
-import "Inscription"
-import "Marketplace"
+import Inscription from 0xInscription
+import Marketplace from 0xMarketplace
 
 pub struct PersonalDisplayModel {
     pub let listingId: UInt64?

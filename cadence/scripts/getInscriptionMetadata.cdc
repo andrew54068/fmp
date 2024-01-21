@@ -1,5 +1,5 @@
-import "InscriptionMetadata"
-import "Inscription"
+import InscriptionMetadata from 0xInscriptionMetadata
+import Inscription from 0xInscription
 
 pub fun main(address: Address, id: UInt64): InscriptionMetadata.InscriptionView {
     let account = getAccount(address)

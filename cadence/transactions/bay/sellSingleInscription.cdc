@@ -1,9 +1,9 @@
-import "FungibleToken"
-import "NonFungibleToken"
-import "NFTStorefront"
-import "Marketplace"
-import "FlowToken"
-import "Inscription"
+import FungibleToken from 0xFungibleToken
+import NonFungibleToken from 0xNonFungibleToken
+import NFTStorefront from 0xNFTStorefront
+import Marketplace from 0xMarketplace
+import FlowToken from 0xFlowToken
+import Inscription from 0xInscription
 
 transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
     let tokenReceiver: Capability<&{FungibleToken.Receiver}>

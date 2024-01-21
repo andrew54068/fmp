@@ -1,6 +1,7 @@
 import FungibleToken from "./FungibleToken.cdc"
 import NonFungibleToken from "./NonFungibleToken.cdc"
 import Inscription from "./Inscription.cdc"
+import FlowToken from "./FlowToken.cdc"
 
 // Token contract of Fomopoly (FMP)
 pub contract Fomopoly: FungibleToken {
@@ -39,6 +40,8 @@ pub contract Fomopoly: FungibleToken {
 
     pub var stakingEndTime: UFix64
 
+    // Deside how many flow does stake a inscription need
+    pub let divisor: UFix64
 
     // Events
 
@@ -57,17 +60,21 @@ pub contract Fomopoly: FungibleToken {
     // Event that is emitted when tokens are destroyed
     pub event TokensBurned(amount: UFix64, from: Address?)
 
-    // Event that is emitted when a new minter resource is created
-    pub event MinterCreated(allowedAmount: UFix64)
-
     // Event that is emitted when a new burner resource is created
     pub event BurnerCreated()
+
+    // Event that is emitted when new inscriptions got staked
+    pub event InscriptionStaked(stakeIds: [UInt64], from: Address)
+
+    // Private
 
     priv let stakingModelMap: @{ Address: [StakingModel] }
 
     priv let stakingInfoMap: { Address: [StakingInfo] }
 
     priv let rewardClaimed: { Address: Bool }
+
+    priv let flowVault: @FungibleToken.Vault
 
     // Vault
     //
@@ -176,15 +183,27 @@ pub contract Fomopoly: FungibleToken {
         return <-create Vault(balance: mintedAmount)
     }
 
-    pub fun stakingInscription(collection: @Inscription.Collection, stakeIds: [UInt64]) {
+    pub fun stakingInscription(
+        flowVault: @FungibleToken.Vault,
+        collectionRef: auth &Inscription.Collection,
+        stakeIds: [UInt64]
+    ) {
         pre {
-            collection.owner != nil: "Owner not found!"
+            collectionRef.owner != nil: "Owner not found!"
+            flowVault.balance >= UFix64(stakeIds.length) / self.divisor: "Vault balance is not enough."
+            getCurrentBlock().timestamp < self.stakingEndTime: "Can't stake after stakingEndTime."
         }
-        let collectionRef = &collection as &Inscription.Collection
-        let stakingInfo = self.generateStakingInfo(collection: collectionRef)
-        let stakingModel <- self.generateStakingModel(collection: <- collection)
+        self.flowVault.deposit(from: <- flowVault)
+        let newCollection <- Inscription.createEmptyCollection() as! @Inscription.Collection
+        for id in stakeIds {
+            newCollection.deposit(token: <- collectionRef.withdraw(withdrawID: id))
+        }
+        let newCollectionRef = &newCollection as &Inscription.Collection
+        let stakingInfo = self.generateStakingInfo(collection: newCollectionRef)
+        let stakingModel <- self.generateStakingModel(collection: <- newCollection)
         self.addInfoToMap(info: stakingInfo, address: collectionRef.owner!.address)
         self.addModelToMap(model: <- stakingModel, address: collectionRef.owner!.address)
+        emit InscriptionStaked(stakeIds: stakeIds, from: collectionRef.owner!.address)
     }
 
     pub fun claimStakingReward(
@@ -214,6 +233,7 @@ pub contract Fomopoly: FungibleToken {
         let ownerScore = self.calculateScore(address: receiver!, endTime: self.stakingEndTime)
         let percentage = ownerScore / totalScore
         let reward = self.mintedByMinedSupply * percentage
+        emit TokensMinted(amount: reward)
         identityCollectionRef.deposit(from: <- self.createVault(balance: reward))
         self.currentMintedByMinedSupply = self.currentMintedByMinedSupply + reward
         assert(self.mintedByMinedSupply >= self.currentMintedByMinedSupply, message: "Reward exceed supply!")
@@ -385,10 +405,12 @@ pub contract Fomopoly: FungibleToken {
         self.currentSupply = 0.0
         self.stakingStartTime = 0.0
         self.stakingEndTime = 0.0
+        self.divisor = 20.0
 
         self.stakingModelMap <- {}
         self.stakingInfoMap = {}
         self.rewardClaimed = {}
+        self.flowVault <- FlowToken.createEmptyVault()
 
         self.TokenStoragePath = /storage/fomopolyTokenVault
         self.TokenPublicReceiverPath = /public/fomopolyTokenReceiver

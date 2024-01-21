@@ -1,5 +1,5 @@
-import "NonFungibleToken"
-import "Inscription"
+import NonFungibleToken from 0xNonFungibleToken
+import Inscription from 0xInscription
 
 /// Script to get Inscription IDs in an account's collection
 ///

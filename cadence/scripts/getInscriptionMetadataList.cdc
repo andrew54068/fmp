@@ -1,7 +1,7 @@
-import "InscriptionMetadata"
-import "Inscription"
+import InscriptionMetadata from 0xInscriptionMetadata
+import Inscription from 0xInscription
 
-pub fun main(address: Address): Int {
+pub fun main(address: Address): [InscriptionMetadata.InscriptionView] {
     let account = getAccount(address)
 
     if let collectionRef = account
@@ -19,8 +19,8 @@ pub fun main(address: Address): Int {
             views.append(view)
         }
 
-        return views.length
+        return views 
     }
-    return 0
+    return []
 
 }

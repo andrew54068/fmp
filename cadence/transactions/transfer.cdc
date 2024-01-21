@@ -1,5 +1,5 @@
-import "NonFungibleToken"
-import "Inscription"
+import NonFungibleToken from 0xNonFungibleToken
+import Inscription from 0xInscription
 
 /// This transaction is for transferring and Inscription from
 /// one account to another

@@ -1,5 +1,5 @@
-import "NFTStorefront"
-import "Marketplace"
+import NFTStorefront from 0xNFTStorefront
+import Marketplace from 0xMarketplace
 
 transaction(listingResourceIDs: [UInt64]) {
     let storefrontManager: &NFTStorefront.Storefront{NFTStorefront.StorefrontManager}
