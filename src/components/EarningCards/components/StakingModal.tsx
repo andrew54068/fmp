@@ -60,14 +60,12 @@ const StakingModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
   const [flowAmountNeeded, setFlowAmountNeeded] = useState<BigNumber | null>(
     null
   );
-  const [inputInvalid, setInputInvalid] = useState(false);
   const [flowInsufficient, setFlowInsufficient] = useState(false);
   const [inscriptionInsufficient, setInscriptionInsufficient] = useState(false);
   const [holdingAmount, setHoldingAmount] = useState<AssetsBalance>({
     flowBalance: BigNumber(0),
     inscriptionAmount: 0,
   });
-  // const [loadingForReceivingFMP, setLoadingForReceivingFMP] = useState(false);
   const [personalStakingInfo, setPersonalStakingInfo] =
     useState<PersonalStakingScoreInfo | null>(null);
   const [sendingTx, setSendingTx] = useState(false);
@@ -364,7 +362,7 @@ const StakingModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
                 gap="16px"
               >
                 <TokenInput
-                  borderColor={inputInvalid ? "red.300" : "neutral.400"}
+                  borderColor={inscriptionInsufficient ? "red.300" : "neutral.400"}
                   isDisabled={!account}
                   label="Stake"
                   tokenName="$FF"
@@ -373,11 +371,11 @@ const StakingModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
                   balance={holdingAmount.inscriptionAmount}
                 />
                 <TokenInput
+                  borderColor={flowInsufficient ? "red.300" : "neutral.700"}
                   isLoading={loadingForAssetsAmount}
                   label="Paying"
                   tokenName="$Flow"
                   value={flowAmountNeeded ? flowAmountNeeded.toString() : ""}
-                  borderColor="neutral.700"
                   balance={holdingAmount.flowBalance.toNumber()}
                 />
               </Flex>
@@ -456,8 +454,7 @@ const StakingModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
                 Cancel
               </ChakraButton>
               <Button
-                // @todo: add logic for staking
-                isDisabled={loadingForAssetsAmount || inputInvalid || !ffAmount}
+                isDisabled={loadingForAssetsAmount || inscriptionInsufficient || flowInsufficient || !ffAmount}
                 isLoading={sendingTx || loadingForAssetsAmount}
                 minW={[0, "65%", "370px"]}
                 width={["100%", "370px"]}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
   getBurningInfoScript,
   getBurningScript,
@@ -103,8 +103,8 @@ export default function useFomopolyContract() {
       totalSupply,
     ] = (await sendScript(getBurningInfoScript())) as string[];
     return {
-      startTime: +burningStartTime,
-      endTime: +burningEndTime,
+      startTime: burningStartTime,
+      endTime: burningEndTime,
       divisor: BigNumber(divisor),
       currentIssued: BigNumber(currentIssued),
       totalSupply: BigNumber(totalSupply),
