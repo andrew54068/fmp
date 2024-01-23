@@ -66,9 +66,8 @@ export const serviceAccountMintTo = async (receiverName: string, amount: number)
     );
     expect(mintError).toBeNull();
     
-    const [scriptResult, scriptError] = await safeExecuteScript("getFlowBalance", [receiver])
+    const [, scriptError] = await safeExecuteScript("getFlowBalance", [receiver])
     expect(scriptError).toBeNull();
-    console.log(`💥 scriptResult: ${JSON.stringify(scriptResult, null, '  ')}`);
   } catch (error) {
     console.log(`💥 error: ${JSON.stringify(error, null, "	")}`);
     throw error
@@ -106,18 +105,48 @@ export const updateStakeTime = async (start: string, end: string) => {
   await safeExecuteTransaction(scriptName, args, signers, addressMap, true)
 }
 
-export const stakeInscription = async (toPersonName: string, ids: number[], expectSucceed: boolean) => {
+export const stakeInscription = async (toPersonName: string, amount: number, expectSucceed: boolean) => {
   const staker = await getAccountAddress(toPersonName);
-  const args = [ids.map(value => value.toString())];
+  const args = [amount.toString()];
   const signers = [staker];
   const scriptName = "staking"
   const [mintResult, error] = await safeExecuteTransaction(scriptName, args, signers, addressMap, expectSucceed)
-  // console.log(`💥 mintResult: ${JSON.stringify(mintResult, null, '  ')}`);
-  // const events = mintResult.events.filter(
-  //   (value) => value.type == type && value.data.to == receiver
-  // );
-  // expect(events.length).toEqual(amount)
+  const type = "A.01cf0e2f2f715450.Fomopoly.InscriptionStaked"
+  if (expectSucceed) {
+    const events = mintResult.events.filter(
+      (value) => value.type == type && value.data.from == staker
+    );
+    expect(events[0].data.stakeIds.length).toEqual(amount)
+  }
   return [mintResult, error]
+}
+
+export const claimFMP = async (toPersonName: string, expectSucceed: boolean) => {
+  const receiver = await getAccountAddress(toPersonName);
+  const args = [];
+  const signers = [receiver];
+  const scriptName = "claimFMP"
+  const [claimResult, error] = await safeExecuteTransaction(scriptName, args, signers, addressMap, expectSucceed)
+  return [claimResult, error]
+}
+
+export const claimFMPAttack = async (fromPersonName: string, toPersonName: string, expectSucceed: boolean) => {
+  const attacker = await getAccountAddress(fromPersonName);
+  const owner = await getAccountAddress(toPersonName);
+  const args = [owner];
+  const signers = [attacker];
+  const scriptName = "claimFMPAttack"
+  const [claimResult, error] = await safeExecuteTransaction(scriptName, args, signers, addressMap, expectSucceed)
+  return [claimResult, error]
+}
+
+export const burnInscription = async (fromPersonName: string, amount: number, expectSucceed: boolean) => {
+  const owner = await getAccountAddress(fromPersonName);
+  const args = [amount.toString()];
+  const signers = [owner];
+  const scriptName = "burning"
+  const [claimResult, error] = await safeExecuteTransaction(scriptName, args, signers, addressMap, expectSucceed)
+  return [claimResult, error]
 }
 
 export const sleep = (ms: number) => {

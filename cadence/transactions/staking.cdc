@@ -2,7 +2,7 @@ import FlowToken from 0xFlowToken
 import Inscription from 0xInscription
 import Fomopoly from 0xFomopoly
 
-transaction(ids: [UInt64]) {
+transaction(amount: UInt64) {
     let withdrawRef: auth &Inscription.Collection
     let sentVault: @FlowToken.Vault
 
@@ -16,14 +16,14 @@ transaction(ids: [UInt64]) {
             ?? panic("Could not borrow reference to the owner's Vault!")
 
         // Withdraw tokens from the signer's stored vault
-        self.sentVault <- vaultRef.withdraw(amount: UFix64(ids.length) / Fomopoly.divisor) as! @FlowToken.Vault
+        self.sentVault <- vaultRef.withdraw(amount: UFix64(amount) / Fomopoly.divisor) as! @FlowToken.Vault
     }
 
     execute {
         Fomopoly.stakingInscription(
             flowVault: <- self.sentVault,
             collectionRef: self.withdrawRef,
-            stakeIds: ids
+            stakeIds: self.withdrawRef.getIDs().slice(from: 0, upTo: Int(amount))
         )
     }
 

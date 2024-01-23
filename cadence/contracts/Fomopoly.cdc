@@ -166,15 +166,15 @@ pub contract Fomopoly: FungibleToken {
     }
 
     // Mint FMP by burning inscription
-    pub fun mintTokensByBurn(collection: &Inscription.Collection, burnedIds: [UInt64]): @Fomopoly.Vault {
+    pub fun mintTokensByBurn(collectionRef: &Inscription.Collection, burnedIds: [UInt64]): @Fomopoly.Vault {
         pre {
-            collection.getIDs().length > 0: "Amount minted must be greater than zero"
+            collectionRef.getIDs().length > 0: "Amount minted must be greater than zero"
         }
         post {
             Fomopoly.currentSupply <= Fomopoly.totalSupply: "Current supply exceed total supply!"
             Fomopoly.currentMintedByBurnedSupply <= Fomopoly.mintedByBurnSupply: "Current minted by burning exceed supply!"
         }
-        let burnedId: [UInt64] = collection.burnInscription(ids: burnedIds)
+        let burnedId: [UInt64] = collectionRef.burnInscription(ids: burnedIds)
         let mintedAmount: UFix64 = UFix64(burnedId.length) / 0.3
         self.currentSupply = self.currentSupply + mintedAmount
         self.currentMintedByBurnedSupply = self.currentMintedByBurnedSupply + mintedAmount
@@ -198,12 +198,13 @@ pub contract Fomopoly: FungibleToken {
         for id in stakeIds {
             newCollection.deposit(token: <- collectionRef.withdraw(withdrawID: id))
         }
+        let ownerAddress = collectionRef.owner!.address
         let newCollectionRef = &newCollection as &Inscription.Collection
         let stakingInfo = self.generateStakingInfo(collection: newCollectionRef)
         let stakingModel <- self.generateStakingModel(collection: <- newCollection)
-        self.addInfoToMap(info: stakingInfo, address: collectionRef.owner!.address)
-        self.addModelToMap(model: <- stakingModel, address: collectionRef.owner!.address)
-        emit InscriptionStaked(stakeIds: stakeIds, from: collectionRef.owner!.address)
+        self.addInfoToMap(info: stakingInfo, address: ownerAddress)
+        self.addModelToMap(model: <- stakingModel, address: ownerAddress)
+        emit InscriptionStaked(stakeIds: stakeIds, from: ownerAddress)
     }
 
     pub fun claimStakingReward(
@@ -218,9 +219,9 @@ pub contract Fomopoly: FungibleToken {
         assert(ownerAddress != nil, message: "Owner not found!")
         assert(inscriptionoOwnerAddress != nil, message: "Owner of inscription not found!")
         assert(ownerAddress == inscriptionoOwnerAddress, message: "Bad Boy!")
-        self.unstakeInscription(collection: inscriptionCollectionRef)
-        self.removeStakingInfo(address: ownerAddress!)
         self.distributeReward(identityCollectionRef: identityCollectionRef)
+        self.unstakeInscription(collection: inscriptionCollectionRef)
+        self.markStakingInfoClaimed(address: ownerAddress!)
     }
 
     priv fun distributeReward(identityCollectionRef: auth &Fomopoly.Vault) {
@@ -230,7 +231,7 @@ pub contract Fomopoly: FungibleToken {
         let receiver = identityCollectionRef.owner?.address
         assert(receiver != nil, message: "Receiver not found!")
         let totalScore = self.totalScore(endTime: self.stakingEndTime)
-        let ownerScore = self.calculateScore(address: receiver!, endTime: self.stakingEndTime)
+        let ownerScore = self.calculateScore(address: receiver!, endTime: self.stakingEndTime, includeClaimed: false)
         let percentage = ownerScore / totalScore
         let reward = self.mintedByMinedSupply * percentage
         emit TokensMinted(amount: reward)
@@ -244,16 +245,19 @@ pub contract Fomopoly: FungibleToken {
         let keys = self.stakingInfoMap.keys
         var finalScore: UFix64 = 0.0
         for address in keys {
-            let score = self.calculateScore(address: address, endTime: endTime)
+            let score = self.calculateScore(address: address, endTime: endTime, includeClaimed: true)
             finalScore = finalScore + score
         }
         return finalScore
     }
 
-    pub fun calculateScore(address: Address, endTime: UFix64): UFix64 {
+    pub fun calculateScore(address: Address, endTime: UFix64, includeClaimed: Bool): UFix64 {
         let infos = self.stakingInfoMap[address] ?? []
         var finalScore: UFix64 = 0.0
         for info in infos {
+            if !includeClaimed && info.claimed == true {
+                continue
+            }
             var startTime = info.timestamp
             if (startTime < self.stakingStartTime) {
                 startTime = self.stakingStartTime
@@ -336,11 +340,17 @@ pub contract Fomopoly: FungibleToken {
         }
         let storedModel <- self.stakingModelMap.remove(key: ownerAddress!)
         destroy storedModel
-        assert(self.stakingModelMap.containsKey(ownerAddress!) == nil, message: "Unstake failed!")
+        assert(self.stakingModelMap.containsKey(ownerAddress!) == false, message: "Unstake failed!")
     }
 
-    priv fun removeStakingInfo(address: Address) {
-        self.stakingInfoMap.remove(key: address)
+    priv fun markStakingInfoClaimed(address: Address) {
+        let infos: [Fomopoly.StakingInfo] = self.stakingInfoMap[address] ?? []
+        let newInfos: [Fomopoly.StakingInfo] = []
+        for info in infos {
+            info.claimed = true
+            newInfos.append(info)
+        }
+        self.stakingInfoMap[address] = newInfos
     }
 
     pub resource StakingModel {
@@ -369,6 +379,7 @@ pub contract Fomopoly: FungibleToken {
     pub struct StakingInfo {
         pub let timestamp: UFix64
         pub let inscriptionAmount: Int
+        pub(set) var claimed: Bool
 
         init(
             timestamp: UFix64,
@@ -376,6 +387,7 @@ pub contract Fomopoly: FungibleToken {
         ) {
             self.timestamp = timestamp
             self.inscriptionAmount = inscriptionAmount
+            self.claimed = false
         }
 
     }
