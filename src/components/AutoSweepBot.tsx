@@ -93,6 +93,7 @@ export default function AutoSweepBot() {
   }, [message]);
 
   useEffect(() => {
+    if (!account) return
     const getList = async () => {
       setIsLoadingList(true);
       const totalListingAmount: number = await sendScript(
@@ -109,7 +110,7 @@ export default function AutoSweepBot() {
       const inscriptionReqeuestResults = await Promise.all(itemRequests);
       const inscriptionResults = inscriptionReqeuestResults.flat();
 
-      const displayModels: InscriptionDisplayModel[] = inscriptionResults.map(
+      const displayModels: InscriptionDisplayModel[] = inscriptionResults.filter(value => value.seller != account).map(
         (value) => {
           return {
             listingId: value.listingId,
@@ -122,7 +123,7 @@ export default function AutoSweepBot() {
         }
       );
       setDisplayModels(displayModels);
-      appendMessage(`Total listing items: ${displayModels.length}`);
+      appendMessage(`Total listing items: ${displayModels.length} (already excluded your listing items)`);
       displayModels.sort(
         (a: InscriptionDisplayModel, b: InscriptionDisplayModel) => {
           const aSalePrice = new BigNumber(a.salePrice);
@@ -145,7 +146,7 @@ export default function AutoSweepBot() {
       setBotAccount(storedSweepBotInfo.account);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [account]);
 
   const getStoredSweepBotInfo = useCallback((): BotInfo | null => {
     const rawItem = localStorage.getItem(SWEEP_BOT_INFO);
