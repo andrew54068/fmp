@@ -28,6 +28,7 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  Tooltip,
 } from "@chakra-ui/react";
 import { CopyIcon, WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
@@ -197,6 +198,7 @@ export default function ListingPanel({
     console.log(
       `💥 selected inscription: ${JSON.stringify(inscription, null, "  ")}`
     );
+    if (inscription.seller === account) return;
     if (!selectedInscriptions.includes(inscription.nftId)) {
       setSelectedInscriptions((prev) => [...prev, inscription.nftId]);
       // Add price to summary
@@ -222,10 +224,10 @@ export default function ListingPanel({
   };
 
   useEffect(() => {
-    const selectedIns = inscriptions.slice(
-      skipAmount || 0,
-      sweepAmount + skipAmount
-    );
+    if (!account) return;
+    const selectedIns = inscriptions
+      .filter((value) => value.seller != account)
+      .slice(skipAmount || 0, sweepAmount + skipAmount);
     setSelectedInscriptions(selectedIns.map((value) => value.nftId));
     const sum = selectedIns.reduce(
       (pre: BigNumber, current: InscriptionDisplayModel) => {
@@ -234,7 +236,7 @@ export default function ListingPanel({
       BigNumber(0)
     );
     setPriceSummary(sum);
-  }, [sweepAmount, skipAmount, inscriptions])
+  }, [account, sweepAmount, skipAmount, inscriptions]);
 
   const handleSkipAmountChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -465,14 +467,27 @@ export default function ListingPanel({
       <SimpleGrid columns={[1, 2, 3, 4]} spacing="space.l" gap="16px">
         {inscriptions.map((inscription, index) => (
           <Box key={index}>
-            <InscriptionCard
-              inscriptionData={JSON.parse(inscription.inscription)}
-              selectable
-              isSelected={selectedInscriptions.includes(inscription.nftId)}
-              onClick={() => handleCardSelect(inscription)}
-              price={inscription.salePrice}
-              cursor="pointer"
-            />
+            {inscription.seller == account ? (
+              <Tooltip key={index} label='You own this inscription' bg='gray.300' color='black'>
+                <InscriptionCard
+                  inscriptionData={JSON.parse(inscription.inscription)}
+                  selectable={false}
+                  isSelected={selectedInscriptions.includes(inscription.nftId)}
+                  onClick={() => handleCardSelect(inscription)}
+                  price={inscription.salePrice}
+                  cursor="not-allowed"
+                />
+              </Tooltip>
+            ) : (
+              <InscriptionCard
+                inscriptionData={JSON.parse(inscription.inscription)}
+                selectable
+                isSelected={selectedInscriptions.includes(inscription.nftId)}
+                onClick={() => handleCardSelect(inscription)}
+                price={inscription.salePrice}
+                cursor="pointer"
+              />
+            )}
           </Box>
         ))}
       </SimpleGrid>
