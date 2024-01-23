@@ -1,11 +1,11 @@
 import { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklistV2 } from 'src/constants';
-import mintScript from '../../cadence/transactions/mint.cdc?raw';
+import mintScript from '../../cadence/transactions/mintInscription.cdc?raw';
 import purchaseScript from '../../cadence/transactions/bay/buySingleInscription.cdc?raw';
 import batchPurchaseScript from '../../cadence/transactions/batchBuyInscription.cdc?raw';
 import batchSellScript from '../../cadence/transactions/batchListInscription.cdc?raw';
 import personalDisplayModel from '../../cadence/scripts/Marketplace/get_personal_display_model.cdc?raw';
 import personalAmount from '../../cadence/scripts/Marketplace/get_personal_amount.cdc?raw';
-import metaDataListScript from '../../cadence/scripts/getInscriptionMetadata_list.cdc?raw';
+import metaDataListScript from '../../cadence/scripts/getInscriptionMetadataList.cdc?raw';
 import listingItemScript from '../../cadence/scripts/Marketplace/get_all_listing_display_model.cdc?raw';
 import listingAmountScript from '../../cadence/scripts/Marketplace/get_all_listing_amount.cdc?raw';
 import cleanNotListedItemsScript from '../../cadence/transactions/cleanNotListedItems.cdc?raw';

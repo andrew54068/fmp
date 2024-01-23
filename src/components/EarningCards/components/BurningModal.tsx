@@ -55,7 +55,7 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
           maxWidth="591px"
           width="100%"
           minHeight="709px"
-          mt="24px"
+          mt="5%"
           mx="16px"
         >
           <Box
