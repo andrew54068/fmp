@@ -16,14 +16,15 @@ import {
 } from "src/services/fcl/send-transaction";
 
 export type StakingInfo = {
-  startTime: number;
-  endTime: number;
+  startTime: string;
+  endTime: string;
   divisor: BigNumber;
+  minedSupply: BigNumber;
 };
 
 export type BurningInfo = {
-  startTime: number;
-  endTime: number;
+  startTime: string;
+  endTime: string;
   divisor: BigNumber;
   currentIssued: BigNumber;
   totalSupply: BigNumber;
@@ -34,14 +35,15 @@ export default function useFomopolyContract() {
   const fetchPredictedScore = async (
     address: string,
     amount: number,
-    endTime: number
+    endTime: string
   ): Promise<BigNumber> => {
+    console.log(`💥 endTime: ${JSON.stringify(endTime, null, '  ')}`);
     const predictedScore: string = await sendScript(
       getPredictedStakingScript(),
       (arg, t) => [
         arg(address, t.Address),
-        arg(amount, t.Int),
-        arg(endTime, t.UFix64),
+        arg(amount.toString(), t.Int),
+        arg(endTime + ".0", t.UFix64),
       ]
     );
     return BigNumber(predictedScore);
@@ -49,7 +51,7 @@ export default function useFomopolyContract() {
 
   const fetchCurrentScoreInfo = async (
     address: string,
-    endTime: number
+    endTime: string
   ): Promise<BigNumber[]> => {
     const [totalScore, calculateScore] = (await sendScript(
       getStakingScoreScript(),
@@ -82,12 +84,13 @@ export default function useFomopolyContract() {
   }, []);
 
   const fetchStakingInfo = async (): Promise<StakingInfo> => {
-    const [stakingStartTime, stakingEndTime, stakingDivisor] =
+    const [stakingStartTime, stakingEndTime, stakingDivisor, totalMinedSupply] =
       (await sendScript(getStakingInfoScript())) as string[];
     return {
-      startTime: +stakingStartTime,
-      endTime: +stakingEndTime,
+      startTime: stakingStartTime,
+      endTime: stakingEndTime,
       divisor: BigNumber(stakingDivisor),
+      minedSupply: BigNumber(totalMinedSupply),
     };
   };
 

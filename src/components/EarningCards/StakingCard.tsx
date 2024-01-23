@@ -78,10 +78,6 @@ export default function StakingCard() {
         </Flex>
       </Stack>
       <StakingModal
-        onClickStake={() => {
-          //@todo: take tx logic.
-          onCloseModal()
-        }}
         isModalOpen={isModalOpen}
         onCloseModal={onCloseModal} />
     </Card >

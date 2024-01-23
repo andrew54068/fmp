@@ -42,14 +42,14 @@ const BurningModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
   const [ffAmount, setFfAmount] = useState<BigNumber | null>(null);
   const [inputInvalid, setInputInvalid] = useState(false);
   const [holdingAmount, setHoldingAmount] = useState<number>(0);
-  const [loadingForReceivingFMP, setLoadingForReceivingFMP] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const [FMPAmountReceived, setFMPAmountReceived] = useState<BigNumber | null>(
     null
   );
   const [burningInfo, setBurningInfo] = useState<BurningInfo | null>(null);
   const [sendingTx, setSendingTx] = useState(false);
 
-  const toast = useToast()
+  const toast = useToast();
   const { account } = useContext(GlobalContext);
 
   const { fetchBurningInfo, burnInscription } = useFomopolyContract();
@@ -77,11 +77,11 @@ const BurningModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
       const bigValue = BigNumber(inputValue);
       if (!bigValue.isNaN()) {
         setFfAmount(bigValue);
-        setLoadingForReceivingFMP(true);
+        setLoadingData(true);
 
         const burningInfoResult = await fetchBurningInfo();
         setBurningInfo(burningInfoResult);
-        setLoadingForReceivingFMP(false);
+        setLoadingData(false);
         if (bigValue.isGreaterThan(BigNumber(holdingAmount))) {
           setInputInvalid(true);
           setFMPAmountReceived(null);
@@ -107,7 +107,48 @@ const BurningModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
     ) {
       setSendingTx(true);
       try {
-        await burnInscription(ffAmount.toNumber());
+        const txData = await burnInscription(ffAmount.toNumber());
+        // const burnSucceedEvent = txData.events
+        // .find((event) => {
+        //   return event.type === BURN_SUCCEED_EVENT;
+        // })
+        // TODO: check event
+        toast({
+          status: "error",
+          position: "top",
+          duration: null,
+          isClosable: true,
+          containerStyle: {
+            marginTop: "20px",
+          },
+          render: () => (
+            <Flex
+              alignItems="center"
+              bg="red.300"
+              color="white"
+              padding="20px"
+              borderRadius="12px"
+            >
+              <Link
+                to={FLOW_SCAN_URL + txData.hash}
+                target="_blank"
+                style={{ textDecoration: "underline" }}
+              >
+                <Icon as={WarningIcon} mr="8px" />
+                You've successfully burn {ffAmount.toString()} and earn {} FMP
+                token
+              </Link>
+              <Box
+                onClick={() => toast.closeAll()}
+                ml="8px"
+                cursor="pointer"
+                p="4px"
+              >
+                <SmallCloseIcon />
+              </Box>
+            </Flex>
+          ),
+        });
       } catch (err: any) {
         toast({
           status: "error",
@@ -187,6 +228,7 @@ const BurningModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
               >
                 <TokenInput
                   borderColor={inputInvalid ? "red.300" : "neutral.400"}
+                  isDisabled={!account}
                   label="Burn"
                   tokenName="$FF"
                   value={ffAmount ? ffAmount.toString() : ""}
@@ -211,7 +253,7 @@ const BurningModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
                   </Box>
                 </Flex>
                 <TokenInput
-                  isLoading={loadingForReceivingFMP}
+                  isLoading={loadingData}
                   label="Receive"
                   tokenName="$FMP"
                   value={FMPAmountReceived ? FMPAmountReceived.toString() : ""}
@@ -282,8 +324,8 @@ const BurningModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
                 Cancel
               </ChakraButton>
               <Button
-                isDisabled={loadingForReceivingFMP || inputInvalid}
-                isLoading={sendingTx || loadingForReceivingFMP}
+                isDisabled={loadingData || inputInvalid || !ffAmount}
+                isLoading={sendingTx || loadingData}
                 minW={[0, "65%", "370px"]}
                 width={["100%", "370px"]}
                 onClick={onClickBurn}

@@ -4,6 +4,7 @@ pub fun main(): [UFix64] {
     return [
         Fomopoly.stakingStartTime,
         Fomopoly.stakingEndTime,
-        Fomopoly.stakingDivisor
+        Fomopoly.stakingDivisor,
+        Fomopoly.mintedByMinedSupply
     ]
 }

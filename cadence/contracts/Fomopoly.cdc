@@ -285,7 +285,7 @@ pub contract Fomopoly: FungibleToken {
         }
         let age = finalEndTime - currentTime
         let score = UFix64(amount) * age
-        return age * score
+        return score
     }
 
     priv fun addModelToMap(model: @Fomopoly.StakingModel, address: Address) {
