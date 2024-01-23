@@ -7,6 +7,13 @@
 				"testnet": "7e60df042a9c0868"
 			}
 		},
+		"Fomopoly": {
+			"source": "cadence/contracts/Fomopoly.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "564b229bd8380848"
+			}
+		},
 		"FungibleToken": {
 			"source": "cadence/contracts/FungibleToken.cdc",
 			"aliases": {
@@ -130,7 +137,8 @@
 				"NFTStorefront",
 				"Marketplace",
 				"ListingUtils",
-				"MarketplaceBlacklistV2"
+				"MarketplaceBlacklistV2",
+				"Fomopoly"
 			]
 		},
 		"testnet": {
@@ -139,10 +147,10 @@
 				"InscriptionMetadata",
 				"Marketplace",
 				"ListingUtils",
-				"MarketplaceBlacklistV2"
+				"MarketplaceBlacklistV2",
+				"Fomopoly"
 			],
 			"testnet-user": [
-				"MarketplaceBlacklistV2"
 			]
 		}
 	}

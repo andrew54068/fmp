@@ -63,7 +63,7 @@ export default function StakingCard() {
           >
             <Box as="span" width="8px" height="8px" borderRadius="50%" bg="primary.dark" mr="4px" />
 
-            Coming Soon
+            Live
           </Tag>
         </Flex>
 

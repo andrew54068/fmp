@@ -45,7 +45,7 @@ describe("Deploy Contracts", () => {
     const user = "Bob"
     await mintInscription(user, 2)
     await serviceAccountMintTo(user, 0.1)
-    const scriptName = "getStakingTime"
+    const scriptName = "getStakingInfo"
     const [stakingTimeResult, stakingTimeError] = await safeExecuteScript(scriptName, [])
     expect(stakingTimeError).toBeNull()
     expect(stakingTimeResult).toEqual([
@@ -70,7 +70,7 @@ describe("Deploy Contracts", () => {
     const user = "Bob"
     await mintInscription(user, 2)
     await serviceAccountMintTo(user, 0.1)
-    const scriptName = "getStakingTime"
+    const scriptName = "getStakingInfo"
     const [stakingTimeResult, stakingTimeError] = await safeExecuteScript(scriptName, [])
     expect(stakingTimeError).toBeNull()
     expect(stakingTimeResult).toEqual([
@@ -112,7 +112,7 @@ describe("Deploy Contracts", () => {
     await mintInscription(user2, 10)
     await serviceAccountMintTo(user, 0.1)
     await serviceAccountMintTo(user2, 0.5)
-    const scriptName = "getStakingTime"
+    const scriptName = "getStakingInfo"
     const [stakingTimeResult, stakingTimeError] = await safeExecuteScript(scriptName, [])
     expect(stakingTimeError).toBeNull()
     expect(stakingTimeResult).toEqual([
@@ -167,7 +167,7 @@ describe("Deploy Contracts", () => {
     await serviceAccountMintTo(user, 0.2)
     await serviceAccountMintTo(user2, 0.5)
     await serviceAccountMintTo(user3, 0.5)
-    const scriptName = "getStakingTime"
+    const scriptName = "getStakingInfo"
     const [stakingTimeResult, stakingTimeError] = await safeExecuteScript(scriptName, [])
     expect(stakingTimeError).toBeNull()
     expect(stakingTimeResult).toEqual([
@@ -242,7 +242,7 @@ describe("Deploy Contracts", () => {
     await mintInscription(user2, 10)
     await serviceAccountMintTo(user, 0.1)
     await serviceAccountMintTo(user2, 0.5)
-    const scriptName = "getStakingTime"
+    const scriptName = "getStakingInfo"
     const [stakingTimeResult, stakingTimeError] = await safeExecuteScript(scriptName, [])
     expect(stakingTimeError).toBeNull()
     expect(stakingTimeResult).toEqual([

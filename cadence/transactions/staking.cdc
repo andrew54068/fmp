@@ -16,7 +16,7 @@ transaction(amount: UInt64) {
             ?? panic("Could not borrow reference to the owner's Vault!")
 
         // Withdraw tokens from the signer's stored vault
-        self.sentVault <- vaultRef.withdraw(amount: UFix64(amount) / Fomopoly.divisor) as! @FlowToken.Vault
+        self.sentVault <- vaultRef.withdraw(amount: UFix64(amount) / Fomopoly.stakingDivisor) as! @FlowToken.Vault
     }
 
     execute {

@@ -11,6 +11,7 @@ const testnetAddress = {
   ListingUtils: "0x564b229bd8380848",
   MarketplaceCleaner: "",
   MarketplaceBlacklistV2: "",
+  Fomopoly: "0x564b229bd8380848",
 }
 
 const mainnetAddress = {
@@ -24,6 +25,7 @@ const mainnetAddress = {
   ListingUtils: "0x88dd257fcf26d3cc",
   MarketplaceCleaner: "0x88dd257fcf26d3cc",
   MarketplaceBlacklistV2: "0x4219a16943bb0993",
+  Fomopoly: "0x88dd257fcf26d3cc"
 }
 export const LISTING_EVENT_NAME = "A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted"
 export const LATEST_BLOCK_HEIGHT_KEY = 'LATEST_BLOCK_HEIGHT_KEY'
@@ -42,7 +44,7 @@ export const SWEEP_BOT_INFO = 'SWEEP_BOT_INFO'
 // export const FLOW_SCAN_URL = 'https://testnet.flowdiver.io/tx/'
 
 export const FLOW_SCAN_URL = isMainnet ? 'https://flowdiver.io/tx/' : 'https://testnet.flowdiver.io/tx/'
-export const { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklistV2 } = isMainnet ? mainnetAddress : testnetAddress
+export const { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklistV2, Fomopoly } = isMainnet ? mainnetAddress : testnetAddress
 
 // Events
 export const FLOW_DEPOSIT_EVENT = 'A.1654653399040a61.FlowToken.TokensDeposited'

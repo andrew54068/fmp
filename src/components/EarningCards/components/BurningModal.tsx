@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -11,42 +11,147 @@ import {
   HStack,
   Image,
   Flex,
-} from '@chakra-ui/react';
-import Button from 'src/components/Button';
-import ModalBanner from 'src/assets/fomopolyModalBanner.png';
-import TokenInput from './TokenInput';
-import InfoBlock from './InfoBlock';
-//@todo: update burn icon 
-import BurnIcon from 'src/assets/burn.svg?react';
-
+  Text,
+  Progress,
+  useToast,
+  Icon,
+} from "@chakra-ui/react";
+import Button from "src/components/Button";
+import ModalBanner from "src/assets/fomopolyModalBanner.png";
+import TokenInput from "./TokenInput";
+import InfoBlock from "./InfoBlock";
+//@todo: update burn icon
+import BurnIcon from "src/assets/burn.svg?react";
+import BigNumber from "bignumber.js";
+import useFomopolyContract, {
+  BurningInfo,
+} from "src/hooks/useFomopolyContract";
+import { sendScript } from "src/services/fcl/send-script";
+import { GlobalContext } from "src/context/global";
+import { getPersonalAmountScripts } from "src/utils/getScripts";
+import { Link } from "react-router-dom";
+import { FLOW_SCAN_URL } from "src/constants";
+import { WarningIcon, SmallCloseIcon } from "@chakra-ui/icons";
 
 interface ModalProps {
   isModalOpen: boolean;
   onCloseModal: () => void;
-  onClickStake: () => void;
 }
 
-
-const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) => {
-  const [ffAmount, setFfAmount] = useState('');
+const BurningModal = ({ isModalOpen, onCloseModal }: ModalProps) => {
+  const [ffAmount, setFfAmount] = useState<BigNumber | null>(null);
+  const [inputInvalid, setInputInvalid] = useState(false);
+  const [holdingAmount, setHoldingAmount] = useState<number>(0);
   const [loadingForReceivingFMP, setLoadingForReceivingFMP] = useState(false);
-  const [FMPAmountReceived, setFMPAmountReceived] = useState('');
+  const [FMPAmountReceived, setFMPAmountReceived] = useState<BigNumber | null>(
+    null
+  );
+  const [burningInfo, setBurningInfo] = useState<BurningInfo | null>(null);
+  const [sendingTx, setSendingTx] = useState(false);
 
+  const toast = useToast()
+  const { account } = useContext(GlobalContext);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFfAmount(event.target.value);
-    console.log('event.target.value :', event.target.value);
-    setLoadingForReceivingFMP(true)
-    // @todo: api logic for flow amount
-    setTimeout(() => {
-      setLoadingForReceivingFMP(false)
-      // if()
-      setFMPAmountReceived(prev => `${Number(prev) + 1}`)
-    }, 1000)
+  const { fetchBurningInfo, burnInscription } = useFomopolyContract();
+
+  const tokenIssueRatio =
+    burningInfo?.currentIssued.dividedBy(burningInfo.totalSupply) ??
+    BigNumber(0);
+  const tokenIssuePercentage = tokenIssueRatio.multipliedBy(BigNumber(100));
+
+  useEffect(() => {
+    if (!account) return;
+    const fetchInscriptionAmount = async () => {
+      const inscriptionBalance: string = await sendScript(
+        getPersonalAmountScripts(),
+        (arg, t) => [arg(account, t.Address)]
+      );
+      setHoldingAmount(+inscriptionBalance);
+    };
+    fetchInscriptionAmount();
+  }, [account]);
+
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+    if (inputValue) {
+      const bigValue = BigNumber(inputValue);
+      if (!bigValue.isNaN()) {
+        setFfAmount(bigValue);
+        setLoadingForReceivingFMP(true);
+
+        const burningInfoResult = await fetchBurningInfo();
+        setBurningInfo(burningInfoResult);
+        setLoadingForReceivingFMP(false);
+        if (bigValue.isGreaterThan(BigNumber(holdingAmount))) {
+          setInputInvalid(true);
+          setFMPAmountReceived(null);
+        } else {
+          setInputInvalid(false);
+          setFMPAmountReceived(bigValue.dividedBy(burningInfoResult.divisor));
+        }
+      } else {
+        setFfAmount(null);
+        setFMPAmountReceived(null);
+      }
+    } else {
+      setFfAmount(null);
+      setFMPAmountReceived(null);
+    }
   };
+
+  const onClickBurn = async () => {
+    if (
+      ffAmount &&
+      ffAmount.isInteger() &&
+      ffAmount.isGreaterThan(BigNumber(0))
+    ) {
+      setSendingTx(true);
+      try {
+        await burnInscription(ffAmount.toNumber());
+      } catch (err: any) {
+        toast({
+          status: "error",
+          position: "top",
+          duration: null,
+          isClosable: true,
+          containerStyle: {
+            marginTop: "20px",
+          },
+          render: () => (
+            <Flex
+              alignItems="center"
+              bg="red.300"
+              color="white"
+              padding="20px"
+              borderRadius="12px"
+            >
+              <Link
+                to={FLOW_SCAN_URL + err.hash}
+                target="_blank"
+                style={{ textDecoration: "underline" }}
+              >
+                <Icon as={WarningIcon} mr="8px" />
+                {err.origin}
+              </Link>
+              <Box
+                onClick={() => toast.closeAll()}
+                ml="8px"
+                cursor="pointer"
+                p="4px"
+              >
+                <SmallCloseIcon />
+              </Box>
+            </Flex>
+          ),
+        });
+      }
+      setSendingTx(false);
+    }
+  };
+
   return (
     <>
-      <Modal isOpen={isModalOpen} onClose={onCloseModal}  >
+      <Modal isOpen={isModalOpen} onClose={onCloseModal}>
         <ModalOverlay />
         <ModalContent
           bgColor="slate.600"
@@ -58,37 +163,35 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
           mt="5%"
           mx="16px"
         >
-          <Box
-            position="relative"
-            paddingBottom="30%"
-            mb="30px">
+          <Box position="relative" paddingBottom="30%" mb="30px">
             <Box
               position="absolute"
               top="50%"
               left="50%"
               overflow="hidden"
               transform="translate(-50%,-50%)"
-              w="100%">
+              w="100%"
+            >
               <Image src={ModalBanner} width="100%" />
             </Box>
           </Box>
 
-          <ModalBody  >
-
+          <ModalBody>
             <VStack spacing="30px" alignItems="center">
               <Flex
                 width="100%"
                 justifyContent="space-between"
                 flexDirection={["column", "row"]}
                 alignItems="center"
-                gap="16px">
+                gap="16px"
+              >
                 <TokenInput
-                  isDisabled
+                  borderColor={inputInvalid ? "red.300" : "neutral.400"}
                   label="Burn"
                   tokenName="$FF"
-                  value={ffAmount}
+                  value={ffAmount ? ffAmount.toString() : ""}
                   onChange={handleChange}
-                  balance={0}
+                  balance={holdingAmount}
                 />
                 <Flex
                   position="relative"
@@ -96,8 +199,14 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                   h={["20px", "128px"]}
                   justifyContent="center"
                   alignItems="center"
-                  width="100%">
-                  <Box pos="absolute" left="50%" top="60%" transform="translate(-50%,-50%)">
+                  width="100%"
+                >
+                  <Box
+                    pos="absolute"
+                    left="50%"
+                    top="60%"
+                    transform="translate(-50%,-50%)"
+                  >
                     <BurnIcon width="20px" height="20px" />
                   </Box>
                 </Flex>
@@ -105,35 +214,52 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
                   isLoading={loadingForReceivingFMP}
                   label="Receive"
                   tokenName="$FMP"
-                  value={FMPAmountReceived}
-                  borderColor='neutral.700'
+                  value={FMPAmountReceived ? FMPAmountReceived.toString() : ""}
+                  borderColor="neutral.700"
                 />
               </Flex>
               {/* // Detail  */}
 
               <InfoBlock>
                 <HStack justifyContent="space-between" alignItems="center">
-                  <Box>
-                    You're paying
-                  </Box>
-                  <Box>
-                    {`${ffAmount || 0.00} $FF`}
-                  </Box>
+                  <Box>You're paying</Box>
+                  <Box>{`${ffAmount || 0.0} $FF`}</Box>
                 </HStack>
               </InfoBlock>
               <InfoBlock label="Earned">
                 <HStack justifyContent="space-between">
-                  <Box>
-                    Amount
-                  </Box>
+                  {burningInfo && ffAmount && (
+                    <Box>
+                      {ffAmount.dividedBy(burningInfo.divisor).toString()}
+                    </Box>
+                  )}
                   <Box
                     borderRadius="8px"
                     border="1px solid"
                     borderColor="primary"
-                    p="4px 8px">
-                    0.0 <Box as="span" color="primary"> $FMP </Box>
+                    p="4px 8px"
+                  >
+                    0.0{" "}
+                    <Box as="span" color="primary">
+                      {" "}
+                      $FMP{" "}
+                    </Box>
                   </Box>
                 </HStack>
+              </InfoBlock>
+              <InfoBlock>
+                <Flex justify="space-between" alignItems="center">
+                  <Text fontSize="sm">Token distributed</Text>
+                  <Text fontSize="sm">{tokenIssuePercentage.toString()}%</Text>
+                </Flex>
+                <Progress
+                  value={tokenIssuePercentage.toNumber()}
+                  size="sm"
+                  colorScheme="monopolyEarnProgress"
+                  my="12px"
+                  height="16px"
+                  borderRadius="24px"
+                />
               </InfoBlock>
             </VStack>
           </ModalBody>
@@ -143,25 +269,31 @@ const BurningModal = ({ isModalOpen, onCloseModal, onClickStake }: ModalProps) =
               width="full"
               justifyContent="space-between"
               flexDirection={["column-reverse", "row"]}
-              gap="16px">
+              gap="16px"
+            >
               <ChakraButton
                 width={["100%"]}
                 color="neutral.50"
                 border="1px solid"
                 borderColor="neutral.50"
-
-                variant="outline" onClick={onCloseModal}>Cancel</ChakraButton>
+                variant="outline"
+                onClick={onCloseModal}
+              >
+                Cancel
+              </ChakraButton>
               <Button
-                // @todo: add logic for staking
-                isDisabled
+                isDisabled={loadingForReceivingFMP || inputInvalid}
+                isLoading={sendingTx || loadingForReceivingFMP}
                 minW={[0, "65%", "370px"]}
                 width={["100%", "370px"]}
-                onClick={onClickStake}
-              >Burn for $FMP</Button>
+                onClick={onClickBurn}
+              >
+                Burn for $FMP
+              </Button>
             </HStack>
           </ModalFooter>
         </ModalContent>
-      </Modal >
+      </Modal>
     </>
   );
 };

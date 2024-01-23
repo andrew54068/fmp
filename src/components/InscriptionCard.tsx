@@ -13,8 +13,6 @@ interface InscriptionCardProps extends CardProps {
 
 export default function InscriptionsCard({ inscriptionData, selectable, price, isSelected, ...rest }: InscriptionCardProps) {
 
-  BigNumber.config({ DECIMAL_PLACES: 2, CRYPTO: true });
-
   return (
     <Card
       p="24px"

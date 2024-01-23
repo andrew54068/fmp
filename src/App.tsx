@@ -12,6 +12,7 @@ import { logPageView } from "./services/Amplitude/log"
 import { GlobalProvider } from "./context/globalContextProvider";
 import AutoSweepBot from "./components/AutoSweepBot";
 import FomopolyToken from "./components/FomopolyToken";
+import BigNumber from "bignumber.js";
 
 initAmplitude()
 const maxWidthSetting = {
@@ -20,6 +21,8 @@ const maxWidthSetting = {
   "/marketplace": "1020px",
   "/token": "1216px"
 }
+
+BigNumber.config({ DECIMAL_PLACES: 2, CRYPTO: true });
 
 function App() {
   const { pathname } = useLocation();

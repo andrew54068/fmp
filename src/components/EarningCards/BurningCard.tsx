@@ -6,15 +6,18 @@ import {
   Stack,
   Flex,
   Tag,
-  useDisclosure
-} from '@chakra-ui/react';
-import BannerIcon from 'src/assets/fomopolyBanner.svg?react';
-import BurningModal from './components/BurningModal';
+  useDisclosure,
+} from "@chakra-ui/react";
+import BannerIcon from "src/assets/fomopolyBanner.svg?react";
+import BurningModal from "./components/BurningModal";
 
 export default function BurningCard() {
-  const { isOpen: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
+  const {
+    isOpen: isModalOpen,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
   return (
-
     <Card
       maxW="sm"
       borderRadius="30px"
@@ -23,19 +26,23 @@ export default function BurningCard() {
       bg="slate.600"
       color="white"
       cursor="pointer"
-      onClick={onOpenModal}>
+      onClick={onOpenModal}
+    >
       <Box
         position="relative"
         aspectRatio={3.41 / 1.43}
         paddingBottom="42%"
         alignItems="center"
         mb={4}
-        h="0">
+        h="0"
+      >
         <Box
           position="absolute"
           top="50%"
           left="50%"
-          transform="translate(-50%,-50%)" w="100%">
+          transform="translate(-50%,-50%)"
+          w="100%"
+        >
           <BannerIcon width="100%" />
         </Box>
       </Box>
@@ -61,9 +68,15 @@ export default function BurningCard() {
             borderColor="primary.dark"
             color="primary.dark"
           >
-            <Box as="span" width="8px" height="8px" borderRadius="50%" bg="primary.dark" mr="4px" />
-
-            Coming Soon
+            <Box
+              as="span"
+              width="8px"
+              height="8px"
+              borderRadius="50%"
+              bg="primary.dark"
+              mr="4px"
+            />
+            Live
           </Tag>
         </Flex>
 
@@ -71,21 +84,23 @@ export default function BurningCard() {
           <Text fontSize="sm">Token distributed</Text>
           <Text fontSize="sm">0%</Text>
         </Flex>
-        <Progress value={0} size="sm" colorScheme="monopolyEarnProgress" my="12px" height="16px" borderRadius="24px" />
+        <Progress
+          value={0}
+          size="sm"
+          colorScheme="monopolyEarnProgress"
+          my="12px"
+          height="16px"
+          borderRadius="24px"
+        />
 
         <Flex justifyContent="space-between" alignItems="center">
           <Text fontSize="sm">Burn FF to earn FMP</Text>
         </Flex>
       </Stack>
       <BurningModal
-        onClickStake={() => {
-          //@todo: take tx logic.
-          onCloseModal()
-        }}
         isModalOpen={isModalOpen}
         onCloseModal={onCloseModal}
       />
-    </Card >
-
-  )
+    </Card>
+  );
 }

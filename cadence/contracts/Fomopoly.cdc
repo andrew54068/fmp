@@ -40,8 +40,11 @@ pub contract Fomopoly: FungibleToken {
 
     pub var stakingEndTime: UFix64
 
-    // Deside how many flow does stake a inscription need
-    pub let divisor: UFix64
+    // Deside how many Flow does stake a inscription need
+    pub var stakingDivisor: UFix64
+
+    // Deside how many FMP you will get by burning a inscription
+    pub var burningDivisor: UFix64
 
     // Events
 
@@ -171,11 +174,13 @@ pub contract Fomopoly: FungibleToken {
             collectionRef.getIDs().length > 0: "Amount minted must be greater than zero"
         }
         post {
+            getCurrentBlock().timestamp >= self.stakingStartTime: "Can't burn before staking start time."
+            getCurrentBlock().timestamp <= self.stakingEndTime: "Can't burn after staking end time."
             Fomopoly.currentSupply <= Fomopoly.totalSupply: "Current supply exceed total supply!"
             Fomopoly.currentMintedByBurnedSupply <= Fomopoly.mintedByBurnSupply: "Current minted by burning exceed supply!"
         }
         let burnedId: [UInt64] = collectionRef.burnInscription(ids: burnedIds)
-        let mintedAmount: UFix64 = UFix64(burnedId.length) / 0.3
+        let mintedAmount: UFix64 = UFix64(burnedId.length) / self.burningDivisor
         self.currentSupply = self.currentSupply + mintedAmount
         self.currentMintedByBurnedSupply = self.currentMintedByBurnedSupply + mintedAmount
 
@@ -190,7 +195,7 @@ pub contract Fomopoly: FungibleToken {
     ) {
         pre {
             collectionRef.owner != nil: "Owner not found!"
-            flowVault.balance >= UFix64(stakeIds.length) / self.divisor: "Vault balance is not enough."
+            flowVault.balance >= UFix64(stakeIds.length) / self.stakingDivisor: "Vault balance is not enough."
             getCurrentBlock().timestamp <= self.stakingEndTime: "Can't stake after stakingEndTime."
         }
         self.flowVault.deposit(from: <- flowVault)
@@ -402,6 +407,14 @@ pub contract Fomopoly: FungibleToken {
             Fomopoly.stakingStartTime = start
             Fomopoly.stakingEndTime = end
         }
+
+        pub fun updateStakingDivisor(divisor: UFix64) {
+            Fomopoly.stakingDivisor = divisor
+        }
+
+        pub fun updateBurningDivisor(divisor: UFix64) {
+            Fomopoly.burningDivisor = divisor
+        }
     }
 
     init() {
@@ -415,7 +428,8 @@ pub contract Fomopoly: FungibleToken {
         self.currentSupply = 0.0
         self.stakingStartTime = 0.0
         self.stakingEndTime = 0.0
-        self.divisor = 20.0
+        self.stakingDivisor = 20.0
+        self.burningDivisor = 0.3
 
         self.stakingModelMap <- {}
         self.stakingInfoMap = {}
