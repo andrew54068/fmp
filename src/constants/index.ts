@@ -10,7 +10,7 @@ const testnetAddress = {
   FungibleToken: "0x9a0766d93b6608b7",
   ListingUtils: "0x564b229bd8380848",
   MarketplaceCleaner: "",
-  MarketplaceBlacklistV2: "",
+  MarketplaceBlacklistV2: "0x564b229bd8380848",
   Fomopoly: "0x564b229bd8380848",
 }
 
@@ -47,16 +47,16 @@ export const FLOW_SCAN_URL = isMainnet ? 'https://flowdiver.io/tx/' : 'https://t
 export const { NonFungibleToken, FungibleToken, Inscription, InscriptionMetadata, Marketplace, NFTStorefront, FlowToken, ListingUtils, MarketplaceCleaner, MarketplaceBlacklistV2, Fomopoly } = isMainnet ? mainnetAddress : testnetAddress
 
 // Events
-export const FLOW_DEPOSIT_EVENT = 'A.1654653399040a61.FlowToken.TokensDeposited'
-export const INSCRIPTION_DEPOSIT_EVENT = 'A.88dd257fcf26d3cc.Inscription.Deposit'
+export const FLOW_DEPOSIT_EVENT = isMainnet ? 'A.1654653399040a61.FlowToken.TokensDeposited' : 'A.7e60df042a9c0868.FlowToken.TokensDeposited'
+export const INSCRIPTION_DEPOSIT_EVENT = isMainnet ? 'A.88dd257fcf26d3cc.Inscription.Deposit' : 'A.564b229bd8380848.Inscription.Deposit'
 export const ACCOUNT_CREATED_EVENT = 'flow.AccountCreated'
-export const PURCHASE_SUCCEED_EVENT = 'A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted'
-export const MARKETPLACE_BLACKLIST_ADD_EVENT = 'A.4219a16943bb0993.MarketplaceBlacklistV2.MarketplaceBlacklistAdd'
-export const BURN_SUCCEED_EVENT = 'A.88dd257fcf26d3cc.Fomopoly.TokensMinted'
+export const PURCHASE_SUCCEED_EVENT = isMainnet ? 'A.4eb8a10cb9f87357.NFTStorefront.ListingCompleted' : 'A.94b06cfca1d8a476.NFTStorefront.ListingCompleted'
+export const MARKETPLACE_BLACKLIST_ADD_EVENT = isMainnet ? 'A.4219a16943bb0993.MarketplaceBlacklistV2.MarketplaceBlacklistAdd' : 'A.564b229bd8380848.MarketplaceBlacklistV2.MarketplaceBlacklistAdd'
+export const BURN_SUCCEED_EVENT = isMainnet ? 'A.88dd257fcf26d3cc.Fomopoly.TokensMinted' : 'A.564b229bd8380848.Fomopoly.TokensMinted'
 
 // Type
-export const PURCHASE_MODEL_TYPE = 'A.88dd257fcf26d3cc.ListingUtils.PurchaseModel'
-export const LISTING_MODEL_TYPE = 'A.88dd257fcf26d3cc.ListingUtils.ListingModel'
+export const PURCHASE_MODEL_TYPE = isMainnet ? 'A.88dd257fcf26d3cc.ListingUtils.PurchaseModel' : 'A.564b229bd8380848.ListingUtils.PurchaseModel'
+export const LISTING_MODEL_TYPE = isMainnet ? 'A.88dd257fcf26d3cc.ListingUtils.ListingModel' : 'A.564b229bd8380848.ListingUtils.PurchaseModel'
 
 // Address
 export const ROYALTY_ADDRESS = '0x81bfc5cc7d1e0c74'
